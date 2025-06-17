@@ -2,7 +2,7 @@
 
 This project cleans, harmonizes, and combines historical broadband availability data for German municipalities ("Gemeinden") from 2005 to 2021, creating a panel dataset suitable for longitudinal analysis.
 
-## Key features
+## Features
 
 - **Municipality-level panel**: The final output is a panel dataset where each row represents a municipality-year observation.
 - **Harmonized borders**: All municipal boundaries have been standardized to their 2021 equivalents to ensure consistency over time, accounting for mergers and administrative reforms.
@@ -35,7 +35,6 @@ This dataset is a best-effort attempt to harmonize data from various historical 
 
 ## Data source and attribution
 
-Die Informationen aus dem Breitbandatlas dürfen für kommerzielle und nichtkommerzielle Zwecke kostenlos genutzt werden.
+The data provided by the Breitbandatlas is free to use for commercial and non-commercial purposes.
 
-Bei der Verwendung der Informationen aus dem Breitbandatlas, einschließlich der statistischen Auswertung der Breitbandverfügbarkeit in Deutschland, ist die Herkunft dieser Informationen kenntlich zu machen. Daher ist bei allen Verwendungen die Quelle "Breitbandatlas | Gigabit-Grundbuch (<https://gigabitgrundbuch.bund.de>)" anzugeben.
-Etwaige inhaltliche Änderungen an den Informationen müssen mit einem entsprechenden Hinweis versehen werden, aus dem hervorgeht, was verändert wurde. Eigene Interpretationen und Auswertungen sind als solche zu kennzeichnen.
+When using this data, attribution must be given to the original source: **"Breitbandatlas | Gigabit-Grundbuch (<https://gigabitgrundbuch.bund.de>)"**. Any modifications or interpretations of the data, such as this harmonized dataset, must be clearly marked as such.
