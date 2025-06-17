@@ -1,0 +1,56 @@
+"AGS";"Technologie";"Flaechenart";"Flaechen Gruppe";"Flaechen Gruppe Name";"Verfügbarkeit"
+Deutschland;"5G2";Autobahn;30;Infrastruktur;90.12
+Deutschland;"5G2";Bahnstrecken;30;Infrastruktur;76.40
+Deutschland;"5G2";Bundesstraßen;30;Infrastruktur;70.00
+Deutschland;"5G2";Gewässer;20;Gemeindefläche;57.68
+Deutschland;"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;80.36
+Deutschland;"5G2";Kreisstraßen;30;Infrastruktur;55.26
+Deutschland;"5G2";Landstraßen;30;Infrastruktur;59.87
+Deutschland;"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;56.98
+Deutschland;"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;27.28
+Deutschland;"5G2";Wasserstraßen;30;Infrastruktur;66.47
+Deutschland;"5G2";Wohnbaufläche;20;Gemeindefläche;76.60
+Deutschland;LTE10;Autobahn;30;Infrastruktur;99.97
+Deutschland;LTE10;Bahnstrecken;30;Infrastruktur;99.91
+Deutschland;LTE10;Bundesstraßen;30;Infrastruktur;99.88
+Deutschland;LTE10;Gewässer;20;Gemeindefläche;99.48
+Deutschland;LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;99.96
+Deutschland;LTE10;Kreisstraßen;30;Infrastruktur;99.83
+Deutschland;LTE10;Landstraßen;30;Infrastruktur;99.76
+Deutschland;LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.80
+Deutschland;LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;99.08
+Deutschland;LTE10;Wasserstraßen;30;Infrastruktur;98.80
+Deutschland;LTE10;Wohnbaufläche;20;Gemeindefläche;99.92
+Deutschland;LTE2;Autobahn;30;Infrastruktur;100.00
+Deutschland;LTE2;Bahnstrecken;30;Infrastruktur;99.98
+Deutschland;LTE2;Bundesstraßen;30;Infrastruktur;99.95
+Deutschland;LTE2;Gewässer;20;Gemeindefläche;99.77
+Deutschland;LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+Deutschland;LTE2;Kreisstraßen;30;Infrastruktur;99.91
+Deutschland;LTE2;Landstraßen;30;Infrastruktur;99.86
+Deutschland;LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.90
+Deutschland;LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.38
+Deutschland;LTE2;Wasserstraßen;30;Infrastruktur;99.53
+Deutschland;LTE2;Wohnbaufläche;20;Gemeindefläche;99.97
+Deutschland;LTE6;Autobahn;30;Infrastruktur;100.00
+Deutschland;LTE6;Bahnstrecken;30;Infrastruktur;99.97
+Deutschland;LTE6;Bundesstraßen;30;Infrastruktur;99.94
+Deutschland;LTE6;Gewässer;20;Gemeindefläche;99.73
+Deutschland;LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+Deutschland;LTE6;Kreisstraßen;30;Infrastruktur;99.90
+Deutschland;LTE6;Landstraßen;30;Infrastruktur;99.85
+Deutschland;LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.89
+Deutschland;LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;99.32
+Deutschland;LTE6;Wasserstraßen;30;Infrastruktur;99.42
+Deutschland;LTE6;Wohnbaufläche;20;Gemeindefläche;99.97
+Deutschland;Mobil Alle;Autobahn;30;Infrastruktur;100.00
+Deutschland;Mobil Alle;Bahnstrecken;30;Infrastruktur;99.98
+Deutschland;Mobil Alle;Bundesstraßen;30;Infrastruktur;99.95
+Deutschland;Mobil Alle;Gewässer;20;Gemeindefläche;99.77
+Deutschland;Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+Deutschland;Mobil Alle;Kreisstraßen;30;Infrastruktur;99.91
+Deutschland;Mobil Alle;Landstraßen;30;Infrastruktur;99.86
+Deutschland;Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.90
+Deutschland;Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.38
+Deutschland;Mobil Alle;Wasserstraßen;30;Infrastruktur;99.53
+Deutschland;Mobil Alle;Wohnbaufläche;20;Gemeindefläche;99.97

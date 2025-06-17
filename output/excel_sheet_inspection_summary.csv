@@ -1,0 +1,39 @@
+"file_path","sheet_name","ags_column_found","identified_ags_column"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2005_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2005_dsl_gem",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2005_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2005_dsl_krs",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2005_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2005_dsl_lan",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2005_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2005_dsl_sta",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/2006_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2006_dsl_gem",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2006_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2006_dsl_krs",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2006_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2006_dsl_lan",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2006_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2006_dsl_sta",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/2007_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2007_dsl_gem",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2007_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2007_dsl_krs",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2007_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2007_dsl_lan",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2007_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2007_dsl_sta",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/2008_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2008_dsl_gem",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2008_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2008_dsl_krs",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2008_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2008_dsl_lan",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/2008_DSL_Verf�gbarkeit_Deutschland.xlsx","verf_2008_dsl_sta",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx","Ende_2010 ",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx","Ende_2011 ",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx","Mitte_2012  ",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx","Ende_2012 ",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx","Ende_2013 ",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx","Ende_2014 ",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx","Ende_2015 ",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx","Mitte_2016 ",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx","Ende_2016 ",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx","Ende_2017 ",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/verf_privat_alle_2010_2018.xls","verf_deutschland_10_18_percent",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_1/verf_privat_alle_2010_2018.xls","verf_bundesland_10_18_percent",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/verf_privat_alle_2010_2018.xls","verf_landkreis_10_18_percent",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_1/verf_privat_alle_2010_2018.xls","verf_gemeinde_10_18_percent",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_2/2021_BBA_Gemeindedaten.xls","gem_geom_tbl",TRUE,"gem"
+"/Users/hanno/Desktop/broadband/data/Paket_2/2021_BBA_Kreisdaten.xls","krs_geom_tbl",FALSE,NA
+"/Users/hanno/Desktop/broadband/data/Paket_2/BBA_historisch_2018_2021.xlsx","2018_2",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_2/BBA_historisch_2018_2021.xlsx","2019_1",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_2/BBA_historisch_2018_2021.xlsx","2019_2",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_2/BBA_historisch_2018_2021.xlsx","2020_1",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_2/BBA_historisch_2018_2021.xlsx","2020_2",TRUE,"ags"
+"/Users/hanno/Desktop/broadband/data/Paket_2/BBA_historisch_2018_2021.xlsx","2021_1",TRUE,"ags"

@@ -1,0 +1,738 @@
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2005_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2005_dsl_gem 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - id
+  - ags
+  - gen
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2005_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2005_dsl_krs 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - gen
+  - bez
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2005_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2005_dsl_lan 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - gen
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2005_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2005_dsl_sta 
+AGS Column Found: FALSE 
+All Columns:
+  - gen
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2006_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2006_dsl_gem 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - id
+  - ags
+  - gen
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2006_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2006_dsl_krs 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - gen
+  - bez
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2006_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2006_dsl_lan 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - gen
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2006_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2006_dsl_sta 
+AGS Column Found: FALSE 
+All Columns:
+  - gen
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2007_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2007_dsl_gem 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - id
+  - ags
+  - gen
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2007_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2007_dsl_krs 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - gen
+  - bez
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2007_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2007_dsl_lan 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - gen
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2007_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2007_dsl_sta 
+AGS Column Found: FALSE 
+All Columns:
+  - gen
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2008_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2008_dsl_gem 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - id
+  - ags
+  - gen
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2008_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2008_dsl_krs 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - gen
+  - bez
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2008_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2008_dsl_lan 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - gen
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/2008_DSL_Verf�gbarkeit_Deutschland.xlsx 
+Sheet: verf_2008_dsl_sta 
+AGS Column Found: FALSE 
+All Columns:
+  - gen
+  - verf_dsl
+  - ewz 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx 
+Sheet: Ende_2010  
+AGS Column Found: FALSE 
+All Columns:
+  - Breitbandversorgung in Deutschland (Gemeinden) 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx 
+Sheet: Ende_2011  
+AGS Column Found: FALSE 
+All Columns:
+  - Breitbandversorgung in Deutschland (Gemeinden) 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx 
+Sheet: Mitte_2012   
+AGS Column Found: FALSE 
+All Columns:
+  - Breitbandversorgung in Deutschland (Gemeinden) 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx 
+Sheet: Ende_2012  
+AGS Column Found: FALSE 
+All Columns:
+  - Breitbandversorgung in Deutschland (Gemeinden) 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx 
+Sheet: Ende_2013  
+AGS Column Found: FALSE 
+All Columns:
+  - Breitbandversorgung in Deutschland (Gemeinden) 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx 
+Sheet: Ende_2014  
+AGS Column Found: FALSE 
+All Columns:
+  - Breitbandversorgung in Deutschland (Gemeinden) 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx 
+Sheet: Ende_2015  
+AGS Column Found: FALSE 
+All Columns:
+  - Breitbandversorgung in Deutschland (Gemeinden) 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx 
+Sheet: Mitte_2016  
+AGS Column Found: FALSE 
+All Columns:
+  - Breitbandversorgung in Deutschland (Gemeinden) 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx 
+Sheet: Ende_2016  
+AGS Column Found: FALSE 
+All Columns:
+  - Breitbandversorgung in Deutschland (Gemeinden) 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/Breitbandversorgung_Deutschland_2010-2017.Bundesl„nder_final.xlsx 
+Sheet: Ende_2017  
+AGS Column Found: FALSE 
+All Columns:
+  - Breitbandversorgung in Deutschland (Gemeinden) 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/verf_privat_alle_2010_2018.xls 
+Sheet: verf_deutschland_10_18_percent 
+AGS Column Found: FALSE 
+All Columns:
+  - gebiet
+  - verf_300_2_2010
+  - verf_300_50_2010
+  - verf_300_2_2011
+  - verf_300_50_2011
+  - verf_300_2_2012
+  - verf_300_50_2012
+  - verf_300_2_2013
+  - verf_300_16_2013
+  - verf_300_50_2013
+  - verf_300_2_2014
+  - verf_300_16_2014
+  - verf_300_50_2014
+  - verf_300_2_2015
+  - verf_300_16_2015
+  - verf_300_50_2015
+  - verf_300_2_2016
+  - verf_300_16_2016
+  - verf_300_50_2016
+  - verf_300_2_2017
+  - verf_300_16_2017
+  - verf_300_50_2017
+  - verf_300_2_2018
+  - verf_300_16_2018
+  - verf_300_50_2018 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/verf_privat_alle_2010_2018.xls 
+Sheet: verf_bundesland_10_18_percent 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ...1
+  - ags
+  - verf_300_16_2010
+  - verf_300_50_2010
+  - verf_300_16_2011
+  - verf_300_50_2011
+  - verf_300_16_2012
+  - verf_300_50_2012
+  - verf_300_16_2013
+  - verf_300_50_2013
+  - verf_300_16_2014
+  - verf_300_50_2014
+  - verf_300_16_2015
+  - verf_300_50_2015
+  - verf_300_16_2016
+  - verf_300_50_2016
+  - verf_300_16_2017
+  - verf_300_50_2017
+  - verf_300_16_2018
+  - verf_300_50_2018 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/verf_privat_alle_2010_2018.xls 
+Sheet: verf_landkreis_10_18_percent 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - verf_300_2_2010
+  - verf_300_50_2010
+  - verf_300_2_2011
+  - verf_300_50_2011
+  - verf_300_2_2012
+  - verf_300_50_2012
+  - verf_300_2_2013
+  - verf_300_16_2013
+  - verf_300_50_2013
+  - verf_300_2_2014
+  - verf_300_16_2014
+  - verf_300_50_2014
+  - verf_300_2_2015
+  - verf_300_16_2015
+  - verf_300_50_2015
+  - verf_300_2_2016
+  - verf_300_16_2016
+  - verf_300_50_2016
+  - verf_300_2_2017
+  - verf_300_16_2017
+  - verf_300_50_2017
+  - verf_300_2_2018
+  - verf_300_16_2018
+  - verf_300_50_2018 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_1/verf_privat_alle_2010_2018.xls 
+Sheet: verf_gemeinde_10_18_percent 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - id
+  - ags
+  - gen
+  - verf_300_2_2010
+  - verf_300_50_2010
+  - verf_300_2_2011
+  - verf_300_50_2011
+  - verf_300_2_2012
+  - verf_300_50_2012
+  - verf_300_2_2013
+  - verf_300_16_2013
+  - verf_300_50_2013
+  - verf_300_2_2014
+  - verf_300_16_2014
+  - verf_300_50_2014
+  - verf_300_2_2015
+  - verf_300_16_2015
+  - verf_300_50_2015
+  - verf_300_2_2016
+  - verf_300_16_2016
+  - verf_300_50_2016
+  - verf_300_2_2017
+  - verf_300_16_2017
+  - verf_300_50_2017
+  - verf_300_2_2018
+  - verf_300_16_2018
+  - verf_300_50_2018 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_2/2021_BBA_Gemeindedaten.xls 
+Sheet: gem_geom_tbl 
+AGS Column Found: TRUE 
+Identified AGS Column: gem 
+All Columns:
+  - gem
+  - krs
+  - lan
+  - name
+  - priv_alle_tech_16
+  - priv_alle_tech_30
+  - priv_alle_tech_50
+  - priv_alle_tech_100
+  - priv_alle_tech_200
+  - priv_alle_tech_400
+  - priv_alle_tech_1000
+  - priv_lg_tech_10
+  - priv_lg_tech_16
+  - priv_lg_tech_30
+  - priv_lg_tech_50
+  - priv_lg_tech_100
+  - priv_lg_tech_200
+  - priv_lg_tech_400
+  - priv_lg_tech_1000
+  - priv_dsl_10
+  - priv_dsl_16
+  - priv_dsl_30
+  - priv_dsl_50
+  - priv_dsl_100
+  - priv_dsl_200
+  - priv_catv_10
+  - priv_catv_16
+  - priv_catv_30
+  - priv_catv_50
+  - priv_catv_100
+  - priv_catv_200
+  - priv_catv_400
+  - priv_catv_1000
+  - priv_ftthb_1000
+  - gew_lg_tech_10
+  - gew_lg_tech_16
+  - gew_lg_tech_30
+  - gew_lg_tech_50
+  - gew_lg_tech_100
+  - gew_lg_tech_200
+  - gew_lg_tech_400
+  - gew_lg_tech_1000
+  - gew_dsl_10
+  - gew_dsl_16
+  - gew_dsl_30
+  - gew_dsl_50
+  - gew_dsl_100
+  - gew_dsl_200
+  - gew_catv_10
+  - gew_catv_16
+  - gew_catv_30
+  - gew_catv_50
+  - gew_catv_100
+  - gew_catv_200
+  - gew_catv_400
+  - gew_catv_1000
+  - gew_ftthb_1000
+  - schulen_alle_tech_10
+  - schulen_alle_tech_16
+  - schulen_alle_tech_30
+  - schulen_alle_tech_50
+  - schulen_alle_tech_100
+  - schulen_alle_tech_200
+  - schulen_alle_tech_400
+  - schulen_alle_tech_1000
+  - geom_Length
+  - geom_Area 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_2/2021_BBA_Kreisdaten.xls 
+Sheet: krs_geom_tbl 
+AGS Column Found: FALSE 
+All Columns:
+  - krs
+  - lan
+  - name
+  - priv_alle_tech_16
+  - priv_alle_tech_30
+  - priv_alle_tech_50
+  - priv_alle_tech_100
+  - priv_alle_tech_200
+  - priv_alle_tech_400
+  - priv_alle_tech_1000
+  - priv_lg_tech_10
+  - priv_lg_tech_16
+  - priv_lg_tech_30
+  - priv_lg_tech_50
+  - priv_lg_tech_100
+  - priv_lg_tech_200
+  - priv_lg_tech_400
+  - priv_lg_tech_1000
+  - priv_dsl_10
+  - priv_dsl_16
+  - priv_dsl_30
+  - priv_dsl_50
+  - priv_dsl_100
+  - priv_dsl_200
+  - priv_catv_10
+  - priv_catv_16
+  - priv_catv_30
+  - priv_catv_50
+  - priv_catv_100
+  - priv_catv_200
+  - priv_catv_400
+  - priv_catv_1000
+  - priv_ftthb_1000
+  - gew_lg_tech_10
+  - gew_lg_tech_16
+  - gew_lg_tech_30
+  - gew_lg_tech_50
+  - gew_lg_tech_100
+  - gew_lg_tech_200
+  - gew_lg_tech_400
+  - gew_lg_tech_1000
+  - gew_dsl_10
+  - gew_dsl_16
+  - gew_dsl_30
+  - gew_dsl_50
+  - gew_dsl_100
+  - gew_dsl_200
+  - gew_catv_10
+  - gew_catv_16
+  - gew_catv_30
+  - gew_catv_50
+  - gew_catv_100
+  - gew_catv_200
+  - gew_catv_400
+  - gew_catv_1000
+  - gew_ftthb_1000
+  - schulen_alle_tech_10
+  - schulen_alle_tech_16
+  - schulen_alle_tech_30
+  - schulen_alle_tech_50
+  - schulen_alle_tech_100
+  - schulen_alle_tech_200
+  - schulen_alle_tech_400
+  - schulen_alle_tech_1000
+  - geom_Length
+  - geom_Area 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_2/BBA_historisch_2018_2021.xlsx 
+Sheet: 2018_2 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - bez
+  - gen
+  - leitungsg_technologien_gtoe_1_mbits
+  - leitungsg_technologien_gtoe_2_mbits
+  - leitungsg_technologien_gtoe_6_mbits
+  - leitungsg_technologien_gtoe_16_mbits
+  - leitungsg_technologien_gtoe_30_mbits
+  - leitungsg_technologien_gtoe_50_mbits
+  - leitungsg_technologien_gtoe_100_mbits
+  - leitungsg_technologien_gtoe_200_mbits
+  - leitungsg_technologien_gtoe_400_mbits
+  - leitungsg_technologien_gtoe_1000_mbits
+  - dsl_gtoe_1_mbits
+  - dsl_gtoe_2_mbits
+  - dsl_gtoe_6_mbits
+  - dsl_gtoe_16_mbits
+  - dsl_gtoe_30_mbits
+  - dsl_gtoe_50_mbits
+  - dsl_gtoe_100_mbits
+  - dsl_gtoe_200_mbits
+  - catv_gtoe_1_mbits
+  - catv_gtoe_2_mbits
+  - catv_gtoe_6_mbits
+  - catv_gtoe_16_mbits
+  - catv_gtoe_30_mbits
+  - catv_gtoe_50_mbits
+  - catv_gtoe_100_mbits
+  - catv_gtoe_200_mbits
+  - catv_gtoe_400_mbits
+  - catv_gtoe_1000_mbits
+  - ftthb_gtoe_100_mbits
+  - ftthb_gtoe_200_mbits
+  - ftthb_gtoe_400_mbits
+  - ftthb_gtoe_1000_mbits 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_2/BBA_historisch_2018_2021.xlsx 
+Sheet: 2019_1 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - bez
+  - gen
+  - leitungsg_technologien_gtoe_1_mbits
+  - leitungsg_technologien_gtoe_2_mbits
+  - leitungsg_technologien_gtoe_6_mbits
+  - leitungsg_technologien_gtoe_16_mbits
+  - leitungsg_technologien_gtoe_30_mbits
+  - leitungsg_technologien_gtoe_50_mbits
+  - leitungsg_technologien_gtoe_100_mbits
+  - leitungsg_technologien_gtoe_200_mbits
+  - leitungsg_technologien_gtoe_400_mbits
+  - leitungsg_technologien_gtoe_1000_mbits
+  - dsl_gtoe_1_mbits
+  - dsl_gtoe_2_mbits
+  - dsl_gtoe_16_mbits
+  - dsl_gtoe_30_mbits
+  - dsl_gtoe_50_mbits
+  - dsl_gtoe_100_mbits
+  - dsl_gtoe_200_mbits
+  - catv_gtoe_1_mbits
+  - catv_gtoe_2_mbits
+  - catv_gtoe_6_mbits
+  - catv_gtoe_16_mbits
+  - catv_gtoe_30_mbits
+  - catv_gtoe_50_mbits
+  - catv_gtoe_100_mbits
+  - catv_gtoe_200_mbits
+  - catv_gtoe_400_mbits
+  - catv_gtoe_1000_mbits
+  - ftthb_gtoe_100_mbits
+  - ftthb_gtoe_200_mbits
+  - ftthb_gtoe_400_mbits
+  - ftthb_gtoe_1000_mbits 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_2/BBA_historisch_2018_2021.xlsx 
+Sheet: 2019_2 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - bez
+  - gen
+  - leitungsg_technologien_gtoe_1_mbits
+  - leitungsg_technologien_gtoe_2_mbits
+  - leitungsg_technologien_gtoe_6_mbits
+  - leitungsg_technologien_gtoe_16_mbits
+  - leitungsg_technologien_gtoe_30_mbits
+  - leitungsg_technologien_gtoe_50_mbits
+  - leitungsg_technologien_gtoe_100_mbits
+  - leitungsg_technologien_gtoe_200_mbits
+  - leitungsg_technologien_gtoe_400_mbits
+  - leitungsg_technologien_gtoe_1000_mbits
+  - dsl_gtoe_1_mbits
+  - dsl_gtoe_2_mbits
+  - dsl_gtoe_6_mbits
+  - dsl_gtoe_16_mbits
+  - dsl_gtoe_30_mbits
+  - dsl_gtoe_50_mbits
+  - dsl_gtoe_100_mbits
+  - dsl_gtoe_200_mbits
+  - catv_gtoe_1_mbits
+  - catv_gtoe_2_mbits
+  - catv_gtoe_6_mbits
+  - catv_gtoe_16_mbits
+  - catv_gtoe_30_mbits
+  - catv_gtoe_50_mbits
+  - catv_gtoe_100_mbits
+  - catv_gtoe_200_mbits
+  - catv_gtoe_400_mbits
+  - catv_gtoe_1000_mbits
+  - ftthb_gtoe_1000_mbits 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_2/BBA_historisch_2018_2021.xlsx 
+Sheet: 2020_1 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - bez
+  - gen
+  - leitungsg_technologien_gtoe_1_mbits
+  - leitungsg_technologien_gtoe_2_mbits
+  - leitungsg_technologien_gtoe_6_mbits
+  - leitungsg_technologien_gtoe_16_mbits
+  - leitungsg_technologien_gtoe_30_mbits
+  - leitungsg_technologien_gtoe_50_mbits
+  - leitungsg_technologien_gtoe_100_mbits
+  - leitungsg_technologien_gtoe_200_mbits
+  - leitungsg_technologien_gtoe_400_mbits
+  - leitungsg_technologien_gtoe_1000_mbits
+  - dsl_gtoe_1_mbits
+  - dsl_gtoe_2_mbits
+  - dsl_gtoe_6_mbits
+  - dsl_gtoe_16_mbits
+  - dsl_gtoe_30_mbits
+  - dsl_gtoe_50_mbits
+  - dsl_gtoe_100_mbits
+  - dsl_gtoe_200_mbits
+  - catv_gtoe_1_mbits
+  - catv_gtoe_2_mbits
+  - catv_gtoe_6_mbits
+  - catv_gtoe_16_mbits
+  - catv_gtoe_30_mbits
+  - catv_gtoe_50_mbits
+  - catv_gtoe_100_mbits
+  - catv_gtoe_200_mbits
+  - catv_gtoe_400_mbits
+  - catv_gtoe_1000_mbits
+  - ftthb_gtoe_100_mbits
+  - ftthb_gtoe_200_mbits
+  - ftthb_gtoe_400_mbits
+  - ftthb_gtoe_1000_mbits 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_2/BBA_historisch_2018_2021.xlsx 
+Sheet: 2020_2 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - bez
+  - gen
+  - leitungsg_technologien_gtoe_1_mbits
+  - leitungsg_technologien_gtoe_2_mbits
+  - leitungsg_technologien_gtoe_6_mbits
+  - leitungsg_technologien_gtoe_8_mbits
+  - leitungsg_technologien_gtoe_10_mbits
+  - leitungsg_technologien_gtoe_16_mbits
+  - leitungsg_technologien_gtoe_30_mbits
+  - leitungsg_technologien_gtoe_50_mbits
+  - leitungsg_technologien_gtoe_100_mbits
+  - leitungsg_technologien_gtoe_200_mbits
+  - leitungsg_technologien_gtoe_400_mbits
+  - leitungsg_technologien_gtoe_1000_mbits
+  - dsl_gtoe_1_mbits
+  - dsl_gtoe_2_mbits
+  - dsl_gtoe_6_mbits
+  - dsl_gtoe_8_mbits
+  - dsl_gtoe_10_mbits
+  - dsl_gtoe_16_mbits
+  - dsl_gtoe_30_mbits
+  - dsl_gtoe_50_mbits
+  - dsl_gtoe_100_mbits
+  - dsl_gtoe_200_mbits
+  - catv_gtoe_1_mbits
+  - catv_gtoe_2_mbits
+  - catv_gtoe_6_mbits
+  - catv_gtoe_8_mbits
+  - catv_gtoe_10_mbits
+  - catv_gtoe_16_mbits
+  - catv_gtoe_30_mbits
+  - catv_gtoe_50_mbits
+  - catv_gtoe_100_mbits
+  - catv_gtoe_200_mbits
+  - catv_gtoe_400_mbits
+  - catv_gtoe_1000_mbits
+  - ftthb_gtoe_100_mbits
+  - ftthb_gtoe_200_mbits
+  - ftthb_gtoe_400_mbits
+  - ftthb_gtoe_1000_mbits 
+---
+File: /Users/hanno/Desktop/broadband/data/Paket_2/BBA_historisch_2018_2021.xlsx 
+Sheet: 2021_1 
+AGS Column Found: TRUE 
+Identified AGS Column: ags 
+All Columns:
+  - ags
+  - bez
+  - gen
+  - leitungsg_technologien_gtoe_1_mbits
+  - leitungsg_technologien_gtoe_2_mbits
+  - leitungsg_technologien_gtoe_6_mbits
+  - leitungsg_technologien_gtoe_8_mbits
+  - leitungsg_technologien_gtoe_10_mbits
+  - leitungsg_technologien_gtoe_16_mbits
+  - leitungsg_technologien_gtoe_30_mbits
+  - leitungsg_technologien_gtoe_50_mbits
+  - leitungsg_technologien_gtoe_100_mbits
+  - leitungsg_technologien_gtoe_200_mbits
+  - leitungsg_technologien_gtoe_400_mbits
+  - leitungsg_technologien_gtoe_1000_mbits
+  - dsl_gtoe_1_mbits
+  - dsl_gtoe_2_mbits
+  - dsl_gtoe_6_mbits
+  - dsl_gtoe_8_mbits
+  - dsl_gtoe_10_mbits
+  - dsl_gtoe_16_mbits
+  - dsl_gtoe_30_mbits
+  - dsl_gtoe_50_mbits
+  - dsl_gtoe_100_mbits
+  - dsl_gtoe_200_mbits
+  - catv_gtoe_1_mbits
+  - catv_gtoe_2_mbits
+  - catv_gtoe_6_mbits
+  - catv_gtoe_8_mbits
+  - catv_gtoe_10_mbits
+  - catv_gtoe_16_mbits
+  - catv_gtoe_30_mbits
+  - catv_gtoe_50_mbits
+  - catv_gtoe_100_mbits
+  - catv_gtoe_200_mbits
+  - catv_gtoe_400_mbits
+  - catv_gtoe_1000_mbits
+  - ftthb_gtoe_100_mbits
+  - ftthb_gtoe_200_mbits
+  - ftthb_gtoe_400_mbits
+  - ftthb_gtoe_1000_mbits 
+---

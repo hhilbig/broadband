@@ -1,0 +1,881 @@
+"AGS";"Technologie";"Flaechenart";"Flaechen Gruppe";"Flaechen Gruppe Name";"Verfügbarkeit"
+"01";"5G2";Autobahn;30;Infrastruktur;90.86
+"01";"5G2";Bahnstrecken;30;Infrastruktur;80.17
+"01";"5G2";Bundesstraßen;30;Infrastruktur;71.78
+"01";"5G2";Gewässer;20;Gemeindefläche;58.28
+"01";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;86.05
+"01";"5G2";Kreisstraßen;30;Infrastruktur;60.15
+"01";"5G2";Landstraßen;30;Infrastruktur;59.16
+"01";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;55.35
+"01";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;36.61
+"01";"5G2";Wasserstraßen;30;Infrastruktur;54.71
+"01";"5G2";Wohnbaufläche;20;Gemeindefläche;71.37
+"01";LTE10;Autobahn;30;Infrastruktur;100.00
+"01";LTE10;Bahnstrecken;30;Infrastruktur;100.00
+"01";LTE10;Bundesstraßen;30;Infrastruktur;99.97
+"01";LTE10;Gewässer;20;Gemeindefläche;99.95
+"01";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"01";LTE10;Kreisstraßen;30;Infrastruktur;99.98
+"01";LTE10;Landstraßen;30;Infrastruktur;99.92
+"01";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.95
+"01";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;99.87
+"01";LTE10;Wasserstraßen;30;Infrastruktur;100.00
+"01";LTE10;Wohnbaufläche;20;Gemeindefläche;99.99
+"01";LTE2;Autobahn;30;Infrastruktur;100.00
+"01";LTE2;Bahnstrecken;30;Infrastruktur;100.00
+"01";LTE2;Bundesstraßen;30;Infrastruktur;100.00
+"01";LTE2;Gewässer;20;Gemeindefläche;100.00
+"01";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"01";LTE2;Kreisstraßen;30;Infrastruktur;100.00
+"01";LTE2;Landstraßen;30;Infrastruktur;100.00
+"01";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"01";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.99
+"01";LTE2;Wasserstraßen;30;Infrastruktur;100.00
+"01";LTE2;Wohnbaufläche;20;Gemeindefläche;100.00
+"01";LTE6;Autobahn;30;Infrastruktur;100.00
+"01";LTE6;Bahnstrecken;30;Infrastruktur;100.00
+"01";LTE6;Bundesstraßen;30;Infrastruktur;100.00
+"01";LTE6;Gewässer;20;Gemeindefläche;100.00
+"01";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"01";LTE6;Kreisstraßen;30;Infrastruktur;99.99
+"01";LTE6;Landstraßen;30;Infrastruktur;99.99
+"01";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.99
+"01";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;99.92
+"01";LTE6;Wasserstraßen;30;Infrastruktur;100.00
+"01";LTE6;Wohnbaufläche;20;Gemeindefläche;100.00
+"01";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"01";Mobil Alle;Bahnstrecken;30;Infrastruktur;100.00
+"01";Mobil Alle;Bundesstraßen;30;Infrastruktur;100.00
+"01";Mobil Alle;Gewässer;20;Gemeindefläche;100.00
+"01";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"01";Mobil Alle;Kreisstraßen;30;Infrastruktur;100.00
+"01";Mobil Alle;Landstraßen;30;Infrastruktur;100.00
+"01";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"01";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.99
+"01";Mobil Alle;Wasserstraßen;30;Infrastruktur;100.00
+"01";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;100.00
+"02";"5G2";Autobahn;30;Infrastruktur;99.23
+"02";"5G2";Bahnstrecken;30;Infrastruktur;99.85
+"02";"5G2";Bundesstraßen;30;Infrastruktur;99.07
+"02";"5G2";Gewässer;20;Gemeindefläche;94.73
+"02";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;98.69
+"02";"5G2";Kreisstraßen;30;Infrastruktur;90.92
+"02";"5G2";Landstraßen;30;Infrastruktur;77.78
+"02";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;87.90
+"02";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;74.53
+"02";"5G2";Wasserstraßen;30;Infrastruktur;98.09
+"02";"5G2";Wohnbaufläche;20;Gemeindefläche;97.06
+"02";LTE10;Autobahn;30;Infrastruktur;100.00
+"02";LTE10;Bahnstrecken;30;Infrastruktur;100.00
+"02";LTE10;Bundesstraßen;30;Infrastruktur;100.00
+"02";LTE10;Gewässer;20;Gemeindefläche;100.00
+"02";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"02";LTE10;Kreisstraßen;30;Infrastruktur;100.00
+"02";LTE10;Landstraßen;30;Infrastruktur;100.00
+"02";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"02";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;100.00
+"02";LTE10;Wasserstraßen;30;Infrastruktur;100.00
+"02";LTE10;Wohnbaufläche;20;Gemeindefläche;100.00
+"02";LTE2;Autobahn;30;Infrastruktur;100.00
+"02";LTE2;Bahnstrecken;30;Infrastruktur;100.00
+"02";LTE2;Bundesstraßen;30;Infrastruktur;100.00
+"02";LTE2;Gewässer;20;Gemeindefläche;100.00
+"02";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"02";LTE2;Kreisstraßen;30;Infrastruktur;100.00
+"02";LTE2;Landstraßen;30;Infrastruktur;100.00
+"02";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"02";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;100.00
+"02";LTE2;Wasserstraßen;30;Infrastruktur;100.00
+"02";LTE2;Wohnbaufläche;20;Gemeindefläche;100.00
+"02";LTE6;Autobahn;30;Infrastruktur;100.00
+"02";LTE6;Bahnstrecken;30;Infrastruktur;100.00
+"02";LTE6;Bundesstraßen;30;Infrastruktur;100.00
+"02";LTE6;Gewässer;20;Gemeindefläche;100.00
+"02";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"02";LTE6;Kreisstraßen;30;Infrastruktur;100.00
+"02";LTE6;Landstraßen;30;Infrastruktur;100.00
+"02";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"02";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;100.00
+"02";LTE6;Wasserstraßen;30;Infrastruktur;100.00
+"02";LTE6;Wohnbaufläche;20;Gemeindefläche;100.00
+"02";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"02";Mobil Alle;Bahnstrecken;30;Infrastruktur;100.00
+"02";Mobil Alle;Bundesstraßen;30;Infrastruktur;100.00
+"02";Mobil Alle;Gewässer;20;Gemeindefläche;100.00
+"02";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"02";Mobil Alle;Kreisstraßen;30;Infrastruktur;100.00
+"02";Mobil Alle;Landstraßen;30;Infrastruktur;100.00
+"02";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"02";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;100.00
+"02";Mobil Alle;Wasserstraßen;30;Infrastruktur;100.00
+"02";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;100.00
+"03";"5G2";Autobahn;30;Infrastruktur;91.38
+"03";"5G2";Bahnstrecken;30;Infrastruktur;81.97
+"03";"5G2";Bundesstraßen;30;Infrastruktur;72.45
+"03";"5G2";Gewässer;20;Gemeindefläche;68.25
+"03";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;84.46
+"03";"5G2";Kreisstraßen;30;Infrastruktur;61.70
+"03";"5G2";Landstraßen;30;Infrastruktur;64.86
+"03";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;62.71
+"03";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;30.58
+"03";"5G2";Wasserstraßen;30;Infrastruktur;76.36
+"03";"5G2";Wohnbaufläche;20;Gemeindefläche;75.22
+"03";LTE10;Autobahn;30;Infrastruktur;99.98
+"03";LTE10;Bahnstrecken;30;Infrastruktur;99.99
+"03";LTE10;Bundesstraßen;30;Infrastruktur;99.99
+"03";LTE10;Gewässer;20;Gemeindefläche;99.88
+"03";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;99.90
+"03";LTE10;Kreisstraßen;30;Infrastruktur;99.88
+"03";LTE10;Landstraßen;30;Infrastruktur;99.81
+"03";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.84
+"03";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;99.50
+"03";LTE10;Wasserstraßen;30;Infrastruktur;99.97
+"03";LTE10;Wohnbaufläche;20;Gemeindefläche;99.95
+"03";LTE2;Autobahn;30;Infrastruktur;100.00
+"03";LTE2;Bahnstrecken;30;Infrastruktur;100.00
+"03";LTE2;Bundesstraßen;30;Infrastruktur;100.00
+"03";LTE2;Gewässer;20;Gemeindefläche;99.97
+"03";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"03";LTE2;Kreisstraßen;30;Infrastruktur;99.99
+"03";LTE2;Landstraßen;30;Infrastruktur;99.87
+"03";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.98
+"03";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.66
+"03";LTE2;Wasserstraßen;30;Infrastruktur;100.00
+"03";LTE2;Wohnbaufläche;20;Gemeindefläche;99.99
+"03";LTE6;Autobahn;30;Infrastruktur;100.00
+"03";LTE6;Bahnstrecken;30;Infrastruktur;100.00
+"03";LTE6;Bundesstraßen;30;Infrastruktur;100.00
+"03";LTE6;Gewässer;20;Gemeindefläche;99.96
+"03";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;99.98
+"03";LTE6;Kreisstraßen;30;Infrastruktur;99.98
+"03";LTE6;Landstraßen;30;Infrastruktur;99.85
+"03";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.97
+"03";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;99.63
+"03";LTE6;Wasserstraßen;30;Infrastruktur;99.99
+"03";LTE6;Wohnbaufläche;20;Gemeindefläche;99.99
+"03";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"03";Mobil Alle;Bahnstrecken;30;Infrastruktur;100.00
+"03";Mobil Alle;Bundesstraßen;30;Infrastruktur;100.00
+"03";Mobil Alle;Gewässer;20;Gemeindefläche;99.97
+"03";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"03";Mobil Alle;Kreisstraßen;30;Infrastruktur;99.99
+"03";Mobil Alle;Landstraßen;30;Infrastruktur;99.87
+"03";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.98
+"03";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.66
+"03";Mobil Alle;Wasserstraßen;30;Infrastruktur;100.00
+"03";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;99.99
+"04";"5G2";Autobahn;30;Infrastruktur;97.83
+"04";"5G2";Bahnstrecken;30;Infrastruktur;99.58
+"04";"5G2";Bundesstraßen;30;Infrastruktur;99.27
+"04";"5G2";Gewässer;20;Gemeindefläche;95.66
+"04";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;97.31
+"04";"5G2";Kreisstraßen;30;Infrastruktur;99.67
+"04";"5G2";Landstraßen;30;Infrastruktur;94.72
+"04";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;94.56
+"04";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;84.41
+"04";"5G2";Wasserstraßen;30;Infrastruktur;94.78
+"04";"5G2";Wohnbaufläche;20;Gemeindefläche;97.61
+"04";LTE10;Autobahn;30;Infrastruktur;100.00
+"04";LTE10;Bahnstrecken;30;Infrastruktur;100.00
+"04";LTE10;Bundesstraßen;30;Infrastruktur;100.00
+"04";LTE10;Gewässer;20;Gemeindefläche;100.00
+"04";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"04";LTE10;Kreisstraßen;30;Infrastruktur;100.00
+"04";LTE10;Landstraßen;30;Infrastruktur;100.00
+"04";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"04";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;100.00
+"04";LTE10;Wasserstraßen;30;Infrastruktur;100.00
+"04";LTE10;Wohnbaufläche;20;Gemeindefläche;100.00
+"04";LTE2;Autobahn;30;Infrastruktur;100.00
+"04";LTE2;Bahnstrecken;30;Infrastruktur;100.00
+"04";LTE2;Bundesstraßen;30;Infrastruktur;100.00
+"04";LTE2;Gewässer;20;Gemeindefläche;100.00
+"04";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"04";LTE2;Kreisstraßen;30;Infrastruktur;100.00
+"04";LTE2;Landstraßen;30;Infrastruktur;100.00
+"04";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"04";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;100.00
+"04";LTE2;Wasserstraßen;30;Infrastruktur;100.00
+"04";LTE2;Wohnbaufläche;20;Gemeindefläche;100.00
+"04";LTE6;Autobahn;30;Infrastruktur;100.00
+"04";LTE6;Bahnstrecken;30;Infrastruktur;100.00
+"04";LTE6;Bundesstraßen;30;Infrastruktur;100.00
+"04";LTE6;Gewässer;20;Gemeindefläche;100.00
+"04";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"04";LTE6;Kreisstraßen;30;Infrastruktur;100.00
+"04";LTE6;Landstraßen;30;Infrastruktur;100.00
+"04";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"04";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;100.00
+"04";LTE6;Wasserstraßen;30;Infrastruktur;100.00
+"04";LTE6;Wohnbaufläche;20;Gemeindefläche;100.00
+"04";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"04";Mobil Alle;Bahnstrecken;30;Infrastruktur;100.00
+"04";Mobil Alle;Bundesstraßen;30;Infrastruktur;100.00
+"04";Mobil Alle;Gewässer;20;Gemeindefläche;100.00
+"04";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"04";Mobil Alle;Kreisstraßen;30;Infrastruktur;100.00
+"04";Mobil Alle;Landstraßen;30;Infrastruktur;100.00
+"04";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"04";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;100.00
+"04";Mobil Alle;Wasserstraßen;30;Infrastruktur;100.00
+"04";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;100.00
+"05";"5G2";Autobahn;30;Infrastruktur;97.56
+"05";"5G2";Bahnstrecken;30;Infrastruktur;90.15
+"05";"5G2";Bundesstraßen;30;Infrastruktur;82.83
+"05";"5G2";Gewässer;20;Gemeindefläche;77.66
+"05";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;90.22
+"05";"5G2";Kreisstraßen;30;Infrastruktur;77.47
+"05";"5G2";Landstraßen;30;Infrastruktur;80.17
+"05";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;75.03
+"05";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;46.78
+"05";"5G2";Wasserstraßen;30;Infrastruktur;89.78
+"05";"5G2";Wohnbaufläche;20;Gemeindefläche;86.66
+"05";LTE10;Autobahn;30;Infrastruktur;99.93
+"05";LTE10;Bahnstrecken;30;Infrastruktur;99.91
+"05";LTE10;Bundesstraßen;30;Infrastruktur;99.81
+"05";LTE10;Gewässer;20;Gemeindefläche;99.75
+"05";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;99.97
+"05";LTE10;Kreisstraßen;30;Infrastruktur;99.89
+"05";LTE10;Landstraßen;30;Infrastruktur;99.89
+"05";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.81
+"05";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;99.23
+"05";LTE10;Wasserstraßen;30;Infrastruktur;99.77
+"05";LTE10;Wohnbaufläche;20;Gemeindefläche;99.95
+"05";LTE2;Autobahn;30;Infrastruktur;100.00
+"05";LTE2;Bahnstrecken;30;Infrastruktur;99.94
+"05";LTE2;Bundesstraßen;30;Infrastruktur;99.94
+"05";LTE2;Gewässer;20;Gemeindefläche;99.92
+"05";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"05";LTE2;Kreisstraßen;30;Infrastruktur;99.95
+"05";LTE2;Landstraßen;30;Infrastruktur;99.96
+"05";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.93
+"05";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.52
+"05";LTE2;Wasserstraßen;30;Infrastruktur;100.00
+"05";LTE2;Wohnbaufläche;20;Gemeindefläche;99.99
+"05";LTE6;Autobahn;30;Infrastruktur;100.00
+"05";LTE6;Bahnstrecken;30;Infrastruktur;99.94
+"05";LTE6;Bundesstraßen;30;Infrastruktur;99.93
+"05";LTE6;Gewässer;20;Gemeindefläche;99.90
+"05";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"05";LTE6;Kreisstraßen;30;Infrastruktur;99.94
+"05";LTE6;Landstraßen;30;Infrastruktur;99.96
+"05";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.92
+"05";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;99.48
+"05";LTE6;Wasserstraßen;30;Infrastruktur;99.98
+"05";LTE6;Wohnbaufläche;20;Gemeindefläche;99.98
+"05";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"05";Mobil Alle;Bahnstrecken;30;Infrastruktur;99.94
+"05";Mobil Alle;Bundesstraßen;30;Infrastruktur;99.94
+"05";Mobil Alle;Gewässer;20;Gemeindefläche;99.92
+"05";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"05";Mobil Alle;Kreisstraßen;30;Infrastruktur;99.95
+"05";Mobil Alle;Landstraßen;30;Infrastruktur;99.96
+"05";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.93
+"05";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.52
+"05";Mobil Alle;Wasserstraßen;30;Infrastruktur;100.00
+"05";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;99.99
+"06";"5G2";Autobahn;30;Infrastruktur;96.06
+"06";"5G2";Bahnstrecken;30;Infrastruktur;86.79
+"06";"5G2";Bundesstraßen;30;Infrastruktur;78.27
+"06";"5G2";Gewässer;20;Gemeindefläche;70.56
+"06";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;90.21
+"06";"5G2";Kreisstraßen;30;Infrastruktur;64.95
+"06";"5G2";Landstraßen;30;Infrastruktur;64.93
+"06";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;68.21
+"06";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;30.98
+"06";"5G2";Wasserstraßen;30;Infrastruktur;83.08
+"06";"5G2";Wohnbaufläche;20;Gemeindefläche;80.81
+"06";LTE10;Autobahn;30;Infrastruktur;100.00
+"06";LTE10;Bahnstrecken;30;Infrastruktur;99.59
+"06";LTE10;Bundesstraßen;30;Infrastruktur;99.97
+"06";LTE10;Gewässer;20;Gemeindefläche;99.83
+"06";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;99.96
+"06";LTE10;Kreisstraßen;30;Infrastruktur;99.87
+"06";LTE10;Landstraßen;30;Infrastruktur;99.72
+"06";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.84
+"06";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;98.87
+"06";LTE10;Wasserstraßen;30;Infrastruktur;100.00
+"06";LTE10;Wohnbaufläche;20;Gemeindefläche;99.92
+"06";LTE2;Autobahn;30;Infrastruktur;100.00
+"06";LTE2;Bahnstrecken;30;Infrastruktur;99.88
+"06";LTE2;Bundesstraßen;30;Infrastruktur;99.97
+"06";LTE2;Gewässer;20;Gemeindefläche;99.87
+"06";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"06";LTE2;Kreisstraßen;30;Infrastruktur;99.95
+"06";LTE2;Landstraßen;30;Infrastruktur;99.92
+"06";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.92
+"06";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.36
+"06";LTE2;Wasserstraßen;30;Infrastruktur;100.00
+"06";LTE2;Wohnbaufläche;20;Gemeindefläche;99.98
+"06";LTE6;Autobahn;30;Infrastruktur;100.00
+"06";LTE6;Bahnstrecken;30;Infrastruktur;99.88
+"06";LTE6;Bundesstraßen;30;Infrastruktur;99.97
+"06";LTE6;Gewässer;20;Gemeindefläche;99.87
+"06";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"06";LTE6;Kreisstraßen;30;Infrastruktur;99.94
+"06";LTE6;Landstraßen;30;Infrastruktur;99.91
+"06";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.92
+"06";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;99.32
+"06";LTE6;Wasserstraßen;30;Infrastruktur;100.00
+"06";LTE6;Wohnbaufläche;20;Gemeindefläche;99.98
+"06";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"06";Mobil Alle;Bahnstrecken;30;Infrastruktur;99.88
+"06";Mobil Alle;Bundesstraßen;30;Infrastruktur;99.97
+"06";Mobil Alle;Gewässer;20;Gemeindefläche;99.87
+"06";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"06";Mobil Alle;Kreisstraßen;30;Infrastruktur;99.95
+"06";Mobil Alle;Landstraßen;30;Infrastruktur;99.92
+"06";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.92
+"06";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.36
+"06";Mobil Alle;Wasserstraßen;30;Infrastruktur;100.00
+"06";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;99.98
+"07";"5G2";Autobahn;30;Infrastruktur;90.72
+"07";"5G2";Bahnstrecken;30;Infrastruktur;77.43
+"07";"5G2";Bundesstraßen;30;Infrastruktur;69.89
+"07";"5G2";Gewässer;20;Gemeindefläche;63.27
+"07";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;81.73
+"07";"5G2";Kreisstraßen;30;Infrastruktur;54.30
+"07";"5G2";Landstraßen;30;Infrastruktur;58.16
+"07";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;59.25
+"07";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;26.14
+"07";"5G2";Wasserstraßen;30;Infrastruktur;69.45
+"07";"5G2";Wohnbaufläche;20;Gemeindefläche;69.72
+"07";LTE10;Autobahn;30;Infrastruktur;99.98
+"07";LTE10;Bahnstrecken;30;Infrastruktur;99.56
+"07";LTE10;Bundesstraßen;30;Infrastruktur;99.57
+"07";LTE10;Gewässer;20;Gemeindefläche;97.67
+"07";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;99.96
+"07";LTE10;Kreisstraßen;30;Infrastruktur;99.59
+"07";LTE10;Landstraßen;30;Infrastruktur;99.41
+"07";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.66
+"07";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;98.70
+"07";LTE10;Wasserstraßen;30;Infrastruktur;96.51
+"07";LTE10;Wohnbaufläche;20;Gemeindefläche;99.74
+"07";LTE2;Autobahn;30;Infrastruktur;99.99
+"07";LTE2;Bahnstrecken;30;Infrastruktur;99.92
+"07";LTE2;Bundesstraßen;30;Infrastruktur;99.80
+"07";LTE2;Gewässer;20;Gemeindefläche;98.30
+"07";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"07";LTE2;Kreisstraßen;30;Infrastruktur;99.76
+"07";LTE2;Landstraßen;30;Infrastruktur;99.58
+"07";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.81
+"07";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;98.94
+"07";LTE2;Wasserstraßen;30;Infrastruktur;97.47
+"07";LTE2;Wohnbaufläche;20;Gemeindefläche;99.86
+"07";LTE6;Autobahn;30;Infrastruktur;99.99
+"07";LTE6;Bahnstrecken;30;Infrastruktur;99.91
+"07";LTE6;Bundesstraßen;30;Infrastruktur;99.79
+"07";LTE6;Gewässer;20;Gemeindefläche;98.27
+"07";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"07";LTE6;Kreisstraßen;30;Infrastruktur;99.74
+"07";LTE6;Landstraßen;30;Infrastruktur;99.55
+"07";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.79
+"07";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;98.88
+"07";LTE6;Wasserstraßen;30;Infrastruktur;97.45
+"07";LTE6;Wohnbaufläche;20;Gemeindefläche;99.85
+"07";Mobil Alle;Autobahn;30;Infrastruktur;99.99
+"07";Mobil Alle;Bahnstrecken;30;Infrastruktur;99.92
+"07";Mobil Alle;Bundesstraßen;30;Infrastruktur;99.80
+"07";Mobil Alle;Gewässer;20;Gemeindefläche;98.30
+"07";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"07";Mobil Alle;Kreisstraßen;30;Infrastruktur;99.76
+"07";Mobil Alle;Landstraßen;30;Infrastruktur;99.58
+"07";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.81
+"07";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;98.94
+"07";Mobil Alle;Wasserstraßen;30;Infrastruktur;97.47
+"07";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;99.86
+"08";"5G2";Autobahn;30;Infrastruktur;85.54
+"08";"5G2";Bahnstrecken;30;Infrastruktur;74.78
+"08";"5G2";Bundesstraßen;30;Infrastruktur;72.29
+"08";"5G2";Gewässer;20;Gemeindefläche;51.12
+"08";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;76.17
+"08";"5G2";Kreisstraßen;30;Infrastruktur;48.24
+"08";"5G2";Landstraßen;30;Infrastruktur;54.30
+"08";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;51.65
+"08";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;20.20
+"08";"5G2";Wasserstraßen;30;Infrastruktur;55.23
+"08";"5G2";Wohnbaufläche;20;Gemeindefläche;72.76
+"08";LTE10;Autobahn;30;Infrastruktur;100.00
+"08";LTE10;Bahnstrecken;30;Infrastruktur;99.97
+"08";LTE10;Bundesstraßen;30;Infrastruktur;99.97
+"08";LTE10;Gewässer;20;Gemeindefläche;98.74
+"08";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;99.96
+"08";LTE10;Kreisstraßen;30;Infrastruktur;99.78
+"08";LTE10;Landstraßen;30;Infrastruktur;99.64
+"08";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.73
+"08";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;98.90
+"08";LTE10;Wasserstraßen;30;Infrastruktur;97.86
+"08";LTE10;Wohnbaufläche;20;Gemeindefläche;99.90
+"08";LTE2;Autobahn;30;Infrastruktur;100.00
+"08";LTE2;Bahnstrecken;30;Infrastruktur;100.00
+"08";LTE2;Bundesstraßen;30;Infrastruktur;99.99
+"08";LTE2;Gewässer;20;Gemeindefläche;99.62
+"08";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"08";LTE2;Kreisstraßen;30;Infrastruktur;99.85
+"08";LTE2;Landstraßen;30;Infrastruktur;99.75
+"08";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.83
+"08";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.28
+"08";LTE2;Wasserstraßen;30;Infrastruktur;99.46
+"08";LTE2;Wohnbaufläche;20;Gemeindefläche;99.95
+"08";LTE6;Autobahn;30;Infrastruktur;100.00
+"08";LTE6;Bahnstrecken;30;Infrastruktur;99.99
+"08";LTE6;Bundesstraßen;30;Infrastruktur;99.98
+"08";LTE6;Gewässer;20;Gemeindefläche;99.34
+"08";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"08";LTE6;Kreisstraßen;30;Infrastruktur;99.84
+"08";LTE6;Landstraßen;30;Infrastruktur;99.73
+"08";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.81
+"08";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;99.19
+"08";LTE6;Wasserstraßen;30;Infrastruktur;98.95
+"08";LTE6;Wohnbaufläche;20;Gemeindefläche;99.94
+"08";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"08";Mobil Alle;Bahnstrecken;30;Infrastruktur;100.00
+"08";Mobil Alle;Bundesstraßen;30;Infrastruktur;99.99
+"08";Mobil Alle;Gewässer;20;Gemeindefläche;99.62
+"08";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"08";Mobil Alle;Kreisstraßen;30;Infrastruktur;99.85
+"08";Mobil Alle;Landstraßen;30;Infrastruktur;99.75
+"08";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.83
+"08";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.28
+"08";Mobil Alle;Wasserstraßen;30;Infrastruktur;99.46
+"08";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;99.95
+"09";"5G2";Autobahn;30;Infrastruktur;94.48
+"09";"5G2";Bahnstrecken;30;Infrastruktur;80.99
+"09";"5G2";Bundesstraßen;30;Infrastruktur;75.14
+"09";"5G2";Gewässer;20;Gemeindefläche;61.18
+"09";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;84.93
+"09";"5G2";Kreisstraßen;30;Infrastruktur;59.40
+"09";"5G2";Landstraßen;30;Infrastruktur;66.42
+"09";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;61.68
+"09";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;32.36
+"09";"5G2";Wasserstraßen;30;Infrastruktur;66.18
+"09";"5G2";Wohnbaufläche;20;Gemeindefläche;79.40
+"09";LTE10;Autobahn;30;Infrastruktur;99.96
+"09";LTE10;Bahnstrecken;30;Infrastruktur;99.98
+"09";LTE10;Bundesstraßen;30;Infrastruktur;99.75
+"09";LTE10;Gewässer;20;Gemeindefläche;99.37
+"09";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;99.96
+"09";LTE10;Kreisstraßen;30;Infrastruktur;99.78
+"09";LTE10;Landstraßen;30;Infrastruktur;99.75
+"09";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.69
+"09";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;98.67
+"09";LTE10;Wasserstraßen;30;Infrastruktur;98.63
+"09";LTE10;Wohnbaufläche;20;Gemeindefläche;99.94
+"09";LTE2;Autobahn;30;Infrastruktur;100.00
+"09";LTE2;Bahnstrecken;30;Infrastruktur;100.00
+"09";LTE2;Bundesstraßen;30;Infrastruktur;99.87
+"09";LTE2;Gewässer;20;Gemeindefläche;99.64
+"09";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"09";LTE2;Kreisstraßen;30;Infrastruktur;99.87
+"09";LTE2;Landstraßen;30;Infrastruktur;99.88
+"09";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.80
+"09";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.02
+"09";LTE2;Wasserstraßen;30;Infrastruktur;99.29
+"09";LTE2;Wohnbaufläche;20;Gemeindefläche;99.98
+"09";LTE6;Autobahn;30;Infrastruktur;99.99
+"09";LTE6;Bahnstrecken;30;Infrastruktur;100.00
+"09";LTE6;Bundesstraßen;30;Infrastruktur;99.86
+"09";LTE6;Gewässer;20;Gemeindefläche;99.61
+"09";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"09";LTE6;Kreisstraßen;30;Infrastruktur;99.86
+"09";LTE6;Landstraßen;30;Infrastruktur;99.87
+"09";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.79
+"09";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;98.97
+"09";LTE6;Wasserstraßen;30;Infrastruktur;99.23
+"09";LTE6;Wohnbaufläche;20;Gemeindefläche;99.98
+"09";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"09";Mobil Alle;Bahnstrecken;30;Infrastruktur;100.00
+"09";Mobil Alle;Bundesstraßen;30;Infrastruktur;99.87
+"09";Mobil Alle;Gewässer;20;Gemeindefläche;99.64
+"09";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"09";Mobil Alle;Kreisstraßen;30;Infrastruktur;99.87
+"09";Mobil Alle;Landstraßen;30;Infrastruktur;99.88
+"09";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.80
+"09";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.02
+"09";Mobil Alle;Wasserstraßen;30;Infrastruktur;99.29
+"09";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;99.98
+"10";"5G2";Autobahn;30;Infrastruktur;91.97
+"10";"5G2";Bahnstrecken;30;Infrastruktur;83.77
+"10";"5G2";Bundesstraßen;30;Infrastruktur;77.33
+"10";"5G2";Gewässer;20;Gemeindefläche;64.29
+"10";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;87.00
+"10";"5G2";Kreisstraßen;30;Infrastruktur;70.65
+"10";"5G2";Landstraßen;30;Infrastruktur;75.45
+"10";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;64.58
+"10";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;48.16
+"10";"5G2";Wasserstraßen;30;Infrastruktur;69.13
+"10";"5G2";Wohnbaufläche;20;Gemeindefläche;79.10
+"10";LTE10;Autobahn;30;Infrastruktur;99.71
+"10";LTE10;Bahnstrecken;30;Infrastruktur;99.94
+"10";LTE10;Bundesstraßen;30;Infrastruktur;99.71
+"10";LTE10;Gewässer;20;Gemeindefläche;99.32
+"10";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;99.91
+"10";LTE10;Kreisstraßen;30;Infrastruktur;99.84
+"10";LTE10;Landstraßen;30;Infrastruktur;99.80
+"10";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.59
+"10";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;99.52
+"10";LTE10;Wasserstraßen;30;Infrastruktur;98.33
+"10";LTE10;Wohnbaufläche;20;Gemeindefläche;99.90
+"10";LTE2;Autobahn;30;Infrastruktur;100.00
+"10";LTE2;Bahnstrecken;30;Infrastruktur;100.00
+"10";LTE2;Bundesstraßen;30;Infrastruktur;99.97
+"10";LTE2;Gewässer;20;Gemeindefläche;99.97
+"10";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"10";LTE2;Kreisstraßen;30;Infrastruktur;99.97
+"10";LTE2;Landstraßen;30;Infrastruktur;99.93
+"10";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.92
+"10";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.76
+"10";LTE2;Wasserstraßen;30;Infrastruktur;99.99
+"10";LTE2;Wohnbaufläche;20;Gemeindefläche;99.99
+"10";LTE6;Autobahn;30;Infrastruktur;100.00
+"10";LTE6;Bahnstrecken;30;Infrastruktur;100.00
+"10";LTE6;Bundesstraßen;30;Infrastruktur;99.92
+"10";LTE6;Gewässer;20;Gemeindefläche;99.91
+"10";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"10";LTE6;Kreisstraßen;30;Infrastruktur;99.96
+"10";LTE6;Landstraßen;30;Infrastruktur;99.91
+"10";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.88
+"10";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;99.72
+"10";LTE6;Wasserstraßen;30;Infrastruktur;99.83
+"10";LTE6;Wohnbaufläche;20;Gemeindefläche;99.98
+"10";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"10";Mobil Alle;Bahnstrecken;30;Infrastruktur;100.00
+"10";Mobil Alle;Bundesstraßen;30;Infrastruktur;99.97
+"10";Mobil Alle;Gewässer;20;Gemeindefläche;99.97
+"10";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"10";Mobil Alle;Kreisstraßen;30;Infrastruktur;99.97
+"10";Mobil Alle;Landstraßen;30;Infrastruktur;99.93
+"10";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.92
+"10";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.76
+"10";Mobil Alle;Wasserstraßen;30;Infrastruktur;99.99
+"10";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;99.99
+"11";"5G2";Autobahn;30;Infrastruktur;99.75
+"11";"5G2";Bahnstrecken;30;Infrastruktur;98.80
+"11";"5G2";Bundesstraßen;30;Infrastruktur;99.78
+"11";"5G2";Gewässer;20;Gemeindefläche;95.47
+"11";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;99.78
+"11";"5G2";Kreisstraßen;30;Infrastruktur;100.00
+"11";"5G2";Landstraßen;30;Infrastruktur;93.88
+"11";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;96.58
+"11";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;68.90
+"11";"5G2";Wasserstraßen;30;Infrastruktur;94.67
+"11";"5G2";Wohnbaufläche;20;Gemeindefläche;99.41
+"11";LTE10;Autobahn;30;Infrastruktur;100.00
+"11";LTE10;Bahnstrecken;30;Infrastruktur;100.00
+"11";LTE10;Bundesstraßen;30;Infrastruktur;100.00
+"11";LTE10;Gewässer;20;Gemeindefläche;100.00
+"11";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"11";LTE10;Kreisstraßen;30;Infrastruktur;100.00
+"11";LTE10;Landstraßen;30;Infrastruktur;100.00
+"11";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"11";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;100.00
+"11";LTE10;Wasserstraßen;30;Infrastruktur;100.00
+"11";LTE10;Wohnbaufläche;20;Gemeindefläche;100.00
+"11";LTE2;Autobahn;30;Infrastruktur;100.00
+"11";LTE2;Bahnstrecken;30;Infrastruktur;100.00
+"11";LTE2;Bundesstraßen;30;Infrastruktur;100.00
+"11";LTE2;Gewässer;20;Gemeindefläche;100.00
+"11";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"11";LTE2;Kreisstraßen;30;Infrastruktur;100.00
+"11";LTE2;Landstraßen;30;Infrastruktur;100.00
+"11";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"11";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;100.00
+"11";LTE2;Wasserstraßen;30;Infrastruktur;100.00
+"11";LTE2;Wohnbaufläche;20;Gemeindefläche;100.00
+"11";LTE6;Autobahn;30;Infrastruktur;100.00
+"11";LTE6;Bahnstrecken;30;Infrastruktur;100.00
+"11";LTE6;Bundesstraßen;30;Infrastruktur;100.00
+"11";LTE6;Gewässer;20;Gemeindefläche;100.00
+"11";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"11";LTE6;Kreisstraßen;30;Infrastruktur;100.00
+"11";LTE6;Landstraßen;30;Infrastruktur;100.00
+"11";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"11";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;100.00
+"11";LTE6;Wasserstraßen;30;Infrastruktur;100.00
+"11";LTE6;Wohnbaufläche;20;Gemeindefläche;100.00
+"11";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"11";Mobil Alle;Bahnstrecken;30;Infrastruktur;100.00
+"11";Mobil Alle;Bundesstraßen;30;Infrastruktur;100.00
+"11";Mobil Alle;Gewässer;20;Gemeindefläche;100.00
+"11";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"11";Mobil Alle;Kreisstraßen;30;Infrastruktur;100.00
+"11";Mobil Alle;Landstraßen;30;Infrastruktur;100.00
+"11";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;100.00
+"11";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;100.00
+"11";Mobil Alle;Wasserstraßen;30;Infrastruktur;100.00
+"11";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;100.00
+"12";"5G2";Autobahn;30;Infrastruktur;77.06
+"12";"5G2";Bahnstrecken;30;Infrastruktur;54.11
+"12";"5G2";Bundesstraßen;30;Infrastruktur;44.92
+"12";"5G2";Gewässer;20;Gemeindefläche;37.72
+"12";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;65.87
+"12";"5G2";Kreisstraßen;30;Infrastruktur;28.04
+"12";"5G2";Landstraßen;30;Infrastruktur;37.05
+"12";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;33.29
+"12";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;15.94
+"12";"5G2";Wasserstraßen;30;Infrastruktur;47.09
+"12";"5G2";Wohnbaufläche;20;Gemeindefläche;57.41
+"12";LTE10;Autobahn;30;Infrastruktur;99.99
+"12";LTE10;Bahnstrecken;30;Infrastruktur;99.99
+"12";LTE10;Bundesstraßen;30;Infrastruktur;99.97
+"12";LTE10;Gewässer;20;Gemeindefläche;98.98
+"12";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;99.97
+"12";LTE10;Kreisstraßen;30;Infrastruktur;99.98
+"12";LTE10;Landstraßen;30;Infrastruktur;99.97
+"12";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.95
+"12";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;99.95
+"12";LTE10;Wasserstraßen;30;Infrastruktur;96.19
+"12";LTE10;Wohnbaufläche;20;Gemeindefläche;99.94
+"12";LTE2;Autobahn;30;Infrastruktur;100.00
+"12";LTE2;Bahnstrecken;30;Infrastruktur;100.00
+"12";LTE2;Bundesstraßen;30;Infrastruktur;99.99
+"12";LTE2;Gewässer;20;Gemeindefläche;99.91
+"12";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"12";LTE2;Kreisstraßen;30;Infrastruktur;100.00
+"12";LTE2;Landstraßen;30;Infrastruktur;99.98
+"12";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.99
+"12";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.97
+"12";LTE2;Wasserstraßen;30;Infrastruktur;99.69
+"12";LTE2;Wohnbaufläche;20;Gemeindefläche;99.97
+"12";LTE6;Autobahn;30;Infrastruktur;100.00
+"12";LTE6;Bahnstrecken;30;Infrastruktur;100.00
+"12";LTE6;Bundesstraßen;30;Infrastruktur;99.99
+"12";LTE6;Gewässer;20;Gemeindefläche;99.83
+"12";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"12";LTE6;Kreisstraßen;30;Infrastruktur;100.00
+"12";LTE6;Landstraßen;30;Infrastruktur;99.98
+"12";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.99
+"12";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;99.96
+"12";LTE6;Wasserstraßen;30;Infrastruktur;99.45
+"12";LTE6;Wohnbaufläche;20;Gemeindefläche;99.96
+"12";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"12";Mobil Alle;Bahnstrecken;30;Infrastruktur;100.00
+"12";Mobil Alle;Bundesstraßen;30;Infrastruktur;99.99
+"12";Mobil Alle;Gewässer;20;Gemeindefläche;99.91
+"12";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"12";Mobil Alle;Kreisstraßen;30;Infrastruktur;100.00
+"12";Mobil Alle;Landstraßen;30;Infrastruktur;99.98
+"12";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.99
+"12";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.97
+"12";Mobil Alle;Wasserstraßen;30;Infrastruktur;99.69
+"12";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;99.97
+"13";"5G2";Autobahn;30;Infrastruktur;51.79
+"13";"5G2";Bahnstrecken;30;Infrastruktur;52.11
+"13";"5G2";Bundesstraßen;30;Infrastruktur;48.55
+"13";"5G2";Gewässer;20;Gemeindefläche;35.15
+"13";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;60.52
+"13";"5G2";Kreisstraßen;30;Infrastruktur;28.68
+"13";"5G2";Landstraßen;30;Infrastruktur;40.85
+"13";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;33.03
+"13";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;14.52
+"13";"5G2";Wasserstraßen;30;Infrastruktur;45.53
+"13";"5G2";Wohnbaufläche;20;Gemeindefläche;83.81
+"13";LTE10;Autobahn;30;Infrastruktur;99.99
+"13";LTE10;Bahnstrecken;30;Infrastruktur;100.00
+"13";LTE10;Bundesstraßen;30;Infrastruktur;99.99
+"13";LTE10;Gewässer;20;Gemeindefläche;99.97
+"13";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"13";LTE10;Kreisstraßen;30;Infrastruktur;99.98
+"13";LTE10;Landstraßen;30;Infrastruktur;99.99
+"13";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.98
+"13";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;99.93
+"13";LTE10;Wasserstraßen;30;Infrastruktur;100.00
+"13";LTE10;Wohnbaufläche;20;Gemeindefläche;100.00
+"13";LTE2;Autobahn;30;Infrastruktur;100.00
+"13";LTE2;Bahnstrecken;30;Infrastruktur;100.00
+"13";LTE2;Bundesstraßen;30;Infrastruktur;99.99
+"13";LTE2;Gewässer;20;Gemeindefläche;99.99
+"13";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"13";LTE2;Kreisstraßen;30;Infrastruktur;99.99
+"13";LTE2;Landstraßen;30;Infrastruktur;100.00
+"13";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.99
+"13";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.97
+"13";LTE2;Wasserstraßen;30;Infrastruktur;100.00
+"13";LTE2;Wohnbaufläche;20;Gemeindefläche;100.00
+"13";LTE6;Autobahn;30;Infrastruktur;100.00
+"13";LTE6;Bahnstrecken;30;Infrastruktur;100.00
+"13";LTE6;Bundesstraßen;30;Infrastruktur;99.99
+"13";LTE6;Gewässer;20;Gemeindefläche;99.99
+"13";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"13";LTE6;Kreisstraßen;30;Infrastruktur;99.99
+"13";LTE6;Landstraßen;30;Infrastruktur;99.99
+"13";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.99
+"13";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;99.95
+"13";LTE6;Wasserstraßen;30;Infrastruktur;100.00
+"13";LTE6;Wohnbaufläche;20;Gemeindefläche;100.00
+"13";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"13";Mobil Alle;Bahnstrecken;30;Infrastruktur;100.00
+"13";Mobil Alle;Bundesstraßen;30;Infrastruktur;99.99
+"13";Mobil Alle;Gewässer;20;Gemeindefläche;99.99
+"13";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;100.00
+"13";Mobil Alle;Kreisstraßen;30;Infrastruktur;99.99
+"13";Mobil Alle;Landstraßen;30;Infrastruktur;100.00
+"13";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.99
+"13";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.97
+"13";Mobil Alle;Wasserstraßen;30;Infrastruktur;100.00
+"13";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;100.00
+"14";"5G2";Autobahn;30;Infrastruktur;82.28
+"14";"5G2";Bahnstrecken;30;Infrastruktur;61.96
+"14";"5G2";Bundesstraßen;30;Infrastruktur;61.63
+"14";"5G2";Gewässer;20;Gemeindefläche;42.28
+"14";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;68.06
+"14";"5G2";Kreisstraßen;30;Infrastruktur;41.12
+"14";"5G2";Landstraßen;30;Infrastruktur;44.86
+"14";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;46.35
+"14";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;22.11
+"14";"5G2";Wasserstraßen;30;Infrastruktur;52.47
+"14";"5G2";Wohnbaufläche;20;Gemeindefläche;57.10
+"14";LTE10;Autobahn;30;Infrastruktur;100.00
+"14";LTE10;Bahnstrecken;30;Infrastruktur;99.82
+"14";LTE10;Bundesstraßen;30;Infrastruktur;99.85
+"14";LTE10;Gewässer;20;Gemeindefläche;99.45
+"14";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;99.94
+"14";LTE10;Kreisstraßen;30;Infrastruktur;99.86
+"14";LTE10;Landstraßen;30;Infrastruktur;99.60
+"14";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.83
+"14";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;98.95
+"14";LTE10;Wasserstraßen;30;Infrastruktur;97.77
+"14";LTE10;Wohnbaufläche;20;Gemeindefläche;99.82
+"14";LTE2;Autobahn;30;Infrastruktur;100.00
+"14";LTE2;Bahnstrecken;30;Infrastruktur;99.96
+"14";LTE2;Bundesstraßen;30;Infrastruktur;99.98
+"14";LTE2;Gewässer;20;Gemeindefläche;99.81
+"14";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"14";LTE2;Kreisstraßen;30;Infrastruktur;99.97
+"14";LTE2;Landstraßen;30;Infrastruktur;99.74
+"14";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.94
+"14";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.36
+"14";LTE2;Wasserstraßen;30;Infrastruktur;99.24
+"14";LTE2;Wohnbaufläche;20;Gemeindefläche;99.93
+"14";LTE6;Autobahn;30;Infrastruktur;100.00
+"14";LTE6;Bahnstrecken;30;Infrastruktur;99.94
+"14";LTE6;Bundesstraßen;30;Infrastruktur;99.96
+"14";LTE6;Gewässer;20;Gemeindefläche;99.68
+"14";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;99.98
+"14";LTE6;Kreisstraßen;30;Infrastruktur;99.94
+"14";LTE6;Landstraßen;30;Infrastruktur;99.72
+"14";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.92
+"14";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;99.28
+"14";LTE6;Wasserstraßen;30;Infrastruktur;98.75
+"14";LTE6;Wohnbaufläche;20;Gemeindefläche;99.91
+"14";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"14";Mobil Alle;Bahnstrecken;30;Infrastruktur;99.96
+"14";Mobil Alle;Bundesstraßen;30;Infrastruktur;99.98
+"14";Mobil Alle;Gewässer;20;Gemeindefläche;99.81
+"14";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"14";Mobil Alle;Kreisstraßen;30;Infrastruktur;99.97
+"14";Mobil Alle;Landstraßen;30;Infrastruktur;99.74
+"14";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.94
+"14";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.36
+"14";Mobil Alle;Wasserstraßen;30;Infrastruktur;99.24
+"14";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;99.93
+"15";"5G2";Autobahn;30;Infrastruktur;81.41
+"15";"5G2";Bahnstrecken;30;Infrastruktur;64.40
+"15";"5G2";Bundesstraßen;30;Infrastruktur;54.53
+"15";"5G2";Gewässer;20;Gemeindefläche;53.03
+"15";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;68.13
+"15";"5G2";Kreisstraßen;30;Infrastruktur;36.81
+"15";"5G2";Landstraßen;30;Infrastruktur;41.56
+"15";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;40.91
+"15";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;13.48
+"15";"5G2";Wasserstraßen;30;Infrastruktur;58.49
+"15";"5G2";Wohnbaufläche;20;Gemeindefläche;78.88
+"15";LTE10;Autobahn;30;Infrastruktur;100.00
+"15";LTE10;Bahnstrecken;30;Infrastruktur;100.00
+"15";LTE10;Bundesstraßen;30;Infrastruktur;99.99
+"15";LTE10;Gewässer;20;Gemeindefläche;99.97
+"15";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;99.97
+"15";LTE10;Kreisstraßen;30;Infrastruktur;99.91
+"15";LTE10;Landstraßen;30;Infrastruktur;99.86
+"15";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.95
+"15";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;98.98
+"15";LTE10;Wasserstraßen;30;Infrastruktur;100.00
+"15";LTE10;Wohnbaufläche;20;Gemeindefläche;99.98
+"15";LTE2;Autobahn;30;Infrastruktur;100.00
+"15";LTE2;Bahnstrecken;30;Infrastruktur;100.00
+"15";LTE2;Bundesstraßen;30;Infrastruktur;99.99
+"15";LTE2;Gewässer;20;Gemeindefläche;99.99
+"15";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"15";LTE2;Kreisstraßen;30;Infrastruktur;99.97
+"15";LTE2;Landstraßen;30;Infrastruktur;99.92
+"15";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.98
+"15";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.49
+"15";LTE2;Wasserstraßen;30;Infrastruktur;100.00
+"15";LTE2;Wohnbaufläche;20;Gemeindefläche;99.99
+"15";LTE6;Autobahn;30;Infrastruktur;100.00
+"15";LTE6;Bahnstrecken;30;Infrastruktur;100.00
+"15";LTE6;Bundesstraßen;30;Infrastruktur;99.99
+"15";LTE6;Gewässer;20;Gemeindefläche;99.98
+"15";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"15";LTE6;Kreisstraßen;30;Infrastruktur;99.96
+"15";LTE6;Landstraßen;30;Infrastruktur;99.91
+"15";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.98
+"15";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;99.42
+"15";LTE6;Wasserstraßen;30;Infrastruktur;100.00
+"15";LTE6;Wohnbaufläche;20;Gemeindefläche;99.99
+"15";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"15";Mobil Alle;Bahnstrecken;30;Infrastruktur;100.00
+"15";Mobil Alle;Bundesstraßen;30;Infrastruktur;99.99
+"15";Mobil Alle;Gewässer;20;Gemeindefläche;99.99
+"15";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"15";Mobil Alle;Kreisstraßen;30;Infrastruktur;99.97
+"15";Mobil Alle;Landstraßen;30;Infrastruktur;99.92
+"15";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.98
+"15";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.49
+"15";Mobil Alle;Wasserstraßen;30;Infrastruktur;100.00
+"15";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;99.99
+"16";"5G2";Autobahn;30;Infrastruktur;84.03
+"16";"5G2";Bahnstrecken;30;Infrastruktur;62.59
+"16";"5G2";Bundesstraßen;30;Infrastruktur;59.19
+"16";"5G2";Gewässer;20;Gemeindefläche;44.79
+"16";"5G2";Gewerbliche Nutzfläche;20;Gemeindefläche;67.30
+"16";"5G2";Kreisstraßen;30;Infrastruktur;40.22
+"16";"5G2";Landstraßen;30;Infrastruktur;42.59
+"16";"5G2";Landwirtschaftliche Flächen;20;Gemeindefläche;42.34
+"16";"5G2";Wald-, Wiesenflächen;20;Gemeindefläche;18.01
+"16";"5G2";Wasserstraßen;30;Infrastruktur;59.41
+"16";"5G2";Wohnbaufläche;20;Gemeindefläche;68.20
+"16";LTE10;Autobahn;30;Infrastruktur;100.00
+"16";LTE10;Bahnstrecken;30;Infrastruktur;100.00
+"16";LTE10;Bundesstraßen;30;Infrastruktur;99.94
+"16";LTE10;Gewässer;20;Gemeindefläche;99.92
+"16";LTE10;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"16";LTE10;Kreisstraßen;30;Infrastruktur;99.98
+"16";LTE10;Landstraßen;30;Infrastruktur;99.92
+"16";LTE10;Landwirtschaftliche Flächen;20;Gemeindefläche;99.94
+"16";LTE10;Wald-, Wiesenflächen;20;Gemeindefläche;99.48
+"16";LTE10;Wasserstraßen;30;Infrastruktur;100.00
+"16";LTE10;Wohnbaufläche;20;Gemeindefläche;99.99
+"16";LTE2;Autobahn;30;Infrastruktur;100.00
+"16";LTE2;Bahnstrecken;30;Infrastruktur;100.00
+"16";LTE2;Bundesstraßen;30;Infrastruktur;100.00
+"16";LTE2;Gewässer;20;Gemeindefläche;99.93
+"16";LTE2;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"16";LTE2;Kreisstraßen;30;Infrastruktur;100.00
+"16";LTE2;Landstraßen;30;Infrastruktur;99.95
+"16";LTE2;Landwirtschaftliche Flächen;20;Gemeindefläche;99.97
+"16";LTE2;Wald-, Wiesenflächen;20;Gemeindefläche;99.66
+"16";LTE2;Wasserstraßen;30;Infrastruktur;100.00
+"16";LTE2;Wohnbaufläche;20;Gemeindefläche;100.00
+"16";LTE6;Autobahn;30;Infrastruktur;100.00
+"16";LTE6;Bahnstrecken;30;Infrastruktur;100.00
+"16";LTE6;Bundesstraßen;30;Infrastruktur;100.00
+"16";LTE6;Gewässer;20;Gemeindefläche;99.93
+"16";LTE6;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"16";LTE6;Kreisstraßen;30;Infrastruktur;99.99
+"16";LTE6;Landstraßen;30;Infrastruktur;99.95
+"16";LTE6;Landwirtschaftliche Flächen;20;Gemeindefläche;99.96
+"16";LTE6;Wald-, Wiesenflächen;20;Gemeindefläche;99.62
+"16";LTE6;Wasserstraßen;30;Infrastruktur;100.00
+"16";LTE6;Wohnbaufläche;20;Gemeindefläche;100.00
+"16";Mobil Alle;Autobahn;30;Infrastruktur;100.00
+"16";Mobil Alle;Bahnstrecken;30;Infrastruktur;100.00
+"16";Mobil Alle;Bundesstraßen;30;Infrastruktur;100.00
+"16";Mobil Alle;Gewässer;20;Gemeindefläche;99.93
+"16";Mobil Alle;Gewerbliche Nutzfläche;20;Gemeindefläche;99.99
+"16";Mobil Alle;Kreisstraßen;30;Infrastruktur;100.00
+"16";Mobil Alle;Landstraßen;30;Infrastruktur;99.95
+"16";Mobil Alle;Landwirtschaftliche Flächen;20;Gemeindefläche;99.97
+"16";Mobil Alle;Wald-, Wiesenflächen;20;Gemeindefläche;99.66
+"16";Mobil Alle;Wasserstraßen;30;Infrastruktur;100.00
+"16";Mobil Alle;Wohnbaufläche;20;Gemeindefläche;100.00
