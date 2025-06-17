@@ -1,0 +1,6 @@
+output/broadband_gemeinde_combined_long.csv
+output/broadband_gemeinde_combined_long_ags2021.csv
+output/broadband_gemeinde_privat_long.csv
+output/broadband_gemeinde_paket_2_long.csv
+output/broadband_gemeinde_paket_3_long.csv
+output/broadband_gemeinde_paket_1_long.csv

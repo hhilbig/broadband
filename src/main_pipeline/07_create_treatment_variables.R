@@ -2,26 +2,15 @@ library(tidyverse)
 library(here)
 
 # 1. Read cleaned long data ----------
-input_file <- here("output", "broadband_gemeinde_combined_long_ags2021.csv")
+input_file <- here("output", "broadband_gemeinde_combined_long_ags2021.rds")
 output_file_panel <- here("output", "panel_data_with_treatment.csv")
 output_plot_avg_coverage <- here("output", "average_annual_coverage_plot.png")
 
 if (!file.exists(input_file)) {
-    stop(paste("Input file not found:", input_file, "\nPlease run combine_datasets.R first."))
+    stop(paste("Input file not found:", input_file, "\nPlease run the standardization script (06_standardize_ags_to_2021.R) first."))
 }
 
-bb_long <- read_csv(input_file,
-    col_types = cols(
-        AGS = col_character(),
-        year = col_integer(),
-        data_category = col_character(), # Added based on actual combined file structure
-        technology_group = col_character(), # Added based on actual combined file structure
-        speed_mbps_gte = col_integer(),
-        value = col_double(),
-        original_variable = col_character(), # Added
-        source_paket = col_character() # Added
-    )
-)
+bb_long <- readRDS(input_file)
 
 print(paste("Loaded", nrow(bb_long), "rows and", ncol(bb_long), "columns from", basename(input_file)))
 
@@ -400,6 +389,24 @@ summary(panel)
 # Save the final panel dataset
 write_csv(panel, output_file_panel)
 print(paste("Saved final panel data to:", output_file_panel))
+
+# 5. Create and save public version of the dataset ----------
+print("--- Creating and saving public version of the panel data ---")
+output_file_panel_public <- here("output", "panel_data_public.csv")
+
+panel_public <- panel %>%
+    select(
+        AGS,
+        year,
+        share_gte1mbps,
+        share_gte6mbps,
+        share_gte30mbps,
+        method_change_2015
+    )
+
+write_csv(panel_public, output_file_panel_public)
+print(paste("Saved public panel data to:", output_file_panel_public))
+# ----------------------------------------------------
 
 print("--- Script Finished ---")
 

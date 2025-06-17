@@ -254,48 +254,26 @@ if (length(gemeinde_files_paket3) == 0) {
     }
 
     if (length(all_processed_paket3_data) > 0) {
-        final_paket3_data <- bind_rows(all_processed_paket3_data)
+        final_paket3_df <- bind_rows(all_processed_paket3_data)
 
-        # Final cleaning and distinct
-        final_paket3_data <- final_paket3_data %>%
-            mutate(
-                speed_mbps_gte = as.integer(speed_mbps_gte), # Ensure correct type
-                value = as.numeric(value) # Ensure correct type
-            ) %>%
-            filter(
-                data_category == "privat", # Explicitly keep only privat, though file loop should ensure this
-                !str_detect(tolower(technology_group), "mobil") # Exclude mobile technologies
-            ) %>%
+        # Final cleanup and type enforcement
+        final_paket3_df <- final_paket3_df %>%
             filter(!is.na(AGS), !is.na(year), !is.na(value)) %>%
+            mutate(
+                AGS = str_pad(AGS, 8, pad = "0"),
+                speed_mbps_gte = as.integer(speed_mbps_gte)
+            ) %>%
+            filter(str_length(AGS) == 8) %>%
             distinct()
 
-        print(paste("Total rows in combined Paket 3 (privat, fixed-line only) dataset:", nrow(final_paket3_data)))
-        print("Summary of final_paket3_data:")
-        summary(final_paket3_data)
-        print("Sample of final_paket3_data (first 6 rows):")
-        print(head(final_paket3_data))
+        # Save the final combined data for Paket 3
+        output_file_rds <- here("output", "broadband_gemeinde_paket_3_long.rds")
+        saveRDS(final_paket3_df, file = output_file_rds)
 
-        # Check for unparsed technology groups (where speed is NA but it's not an expected non-speed column)
-        unparsed_tech_summary_p3 <- final_paket3_data %>%
-            filter(is.na(speed_mbps_gte)) %>%
-            # Add known non-speed columns here if any are identified and need to be excluded from this summary
-            # For now, assume all NA speeds are unexpected for data that's not 'mobilfunk' without Mbit/s
-            # or if 'mobilfunk' columns are expected to parse to speeds via the Mbit/s rule.
-            # Since we are filtering for privat and non-mobile, this summary should be more targeted.
-            count(data_category, technology_group, original_variable, sort = TRUE)
-
-        if (nrow(unparsed_tech_summary_p3) > 0) {
-            print("Summary of Paket 3 (privat, fixed-line only) technology groups that might need refined parsing logic (speed_mbps_gte is NA):")
-            print(unparsed_tech_summary_p3, n = 50)
-        } else {
-            print("All relevant technology groups in Paket 3 seem to have been parsed into speed categories or are non-speed variables handled by NA.")
-        }
-
-        output_file_p3 <- file.path(output_dir, "broadband_gemeinde_paket_3_long.csv")
-        write_csv(final_paket3_data, output_file_p3)
-        print(paste("Saved processed Paket 3 data to:", output_file_p3))
+        print(paste("Successfully processed Paket 3. Final data has", nrow(final_paket3_df), "rows."))
+        print(paste("Saved combined Paket 3 data to:", output_file_rds))
     } else {
-        print("No data was processed successfully for Paket 3.")
+        print("No data was processed from Paket 3.")
     }
 }
 

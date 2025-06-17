@@ -1,10 +1,17 @@
 library(tidyverse)
 library(readxl)
+library(stringr)
 library(here)
 
 # --- Configuration ---
-file_mergers_2000_2010 <- here("data", "muni_mergers", "ref-gemeinden-umrech-2021-2000-2010.xlsx")
-file_mergers_2011_2020 <- here("data", "muni_mergers", "ref-gemeinden-umrech-2021-2011-2020.xlsx")
+# Input file (now .rds)
+input_file <- here("output", "broadband_gemeinde_combined_long.rds")
+# Output file (now .rds)
+output_file <- here("output", "broadband_gemeinde_combined_long_ags2021.rds")
+
+# Paths to the Destatis reclassification files
+merger_file_2000_2010 <- here("data", "muni_mergers", "ref-gemeinden-umrech-2021-2000-2010.xlsx")
+merger_file_2011_2020 <- here("data", "muni_mergers", "ref-gemeinden-umrech-2021-2011-2020.xlsx")
 
 # Column names - these are PREDICTED based on inspection and user feedback.
 # We will VERIFY these within process_merger_sheet by printing actual colnames.
@@ -107,8 +114,8 @@ process_merger_sheet <- function(file_path, sheet_name_year_str) {
 print("Starting AGS standardization to 2021 borders...")
 
 # For testing the process_merger_sheet function with one sheet:
-test_sheet_data <- process_merger_sheet(file_mergers_2000_2010, "2010")
-test_sheet_data <- process_merger_sheet(file_mergers_2000_2010, "2005")
+test_sheet_data <- process_merger_sheet(merger_file_2000_2010, "2010")
+test_sheet_data <- process_merger_sheet(merger_file_2000_2010, "2005")
 
 if (!is.null(test_sheet_data)) {
     print("Test run for 2010 sheet summary:")
@@ -134,9 +141,9 @@ for (year_val in years_to_process) {
     current_file <- NA
 
     if (year_val >= 2000 && year_val <= 2010) {
-        current_file <- file_mergers_2000_2010
+        current_file <- merger_file_2000_2010
     } else if (year_val >= 2011 && year_val <= 2020) {
-        current_file <- file_mergers_2011_2020
+        current_file <- merger_file_2011_2020
     }
 
     if (!is.na(current_file)) {
@@ -178,20 +185,18 @@ if (length(all_crosswalk_data) > 0) {
     stop("Master crosswalk generation failed.")
 }
 
-# --- Load Broadband Data ---
-print("--- Loading Combined Broadband Data ---")
-broadband_file <- here("output", "broadband_gemeinde_combined_long.csv")
-if (!file.exists(broadband_file)) {
-    stop(paste("Broadband data file not found:", broadband_file))
+# --- Load and Prepare Broadband Data ---
+print(paste("Loading combined broadband data from:", basename(input_file)))
+if (!file.exists(input_file)) {
+    stop("Input file not found. Please run the combination script (05_combine_datasets.R) first.")
 }
-broadband_data <- read_csv(broadband_file, show_col_types = FALSE)
+# Read the .rds file
+bb_data_hist <- readRDS(input_file)
 
-table(broadband_data$year)
+print(paste("Loaded", nrow(bb_data_hist), "rows."))
 
-print(paste("Loaded", nrow(broadband_data), "rows from", basename(broadband_file)))
-
-# Ensure AGS and year in broadband_data are of correct types for joining
-broadband_data <- broadband_data %>%
+# Ensure correct data types for joining
+bb_data_hist <- bb_data_hist %>%
     mutate(
         AGS = as.character(AGS),
         year = as.integer(year)
@@ -211,7 +216,7 @@ crosswalk_renamed <- master_crosswalk %>%
 
 # Identify AGS-year combinations in broadband data that are *not* in the crosswalk
 # These are assumed to be 1:1 mappings to themselves in 2021 terms for those years.
-broadband_ags_years <- broadband_data %>% distinct(AGS, year)
+broadband_ags_years <- bb_data_hist %>% distinct(AGS, year)
 crosswalk_ags_years <- crosswalk_renamed %>% distinct(AGS_hist_cw, year_hist_cw)
 
 ags_not_in_crosswalk <- broadband_ags_years %>%
@@ -237,7 +242,7 @@ if (nrow(ags_not_in_crosswalk) > 0) {
 }
 
 # Now join broadband data with the (potentially augmented) crosswalk
-joined_data <- broadband_data %>%
+joined_data <- bb_data_hist %>%
     left_join(crosswalk_for_join, by = c("AGS" = "AGS_hist_cw", "year" = "year_hist_cw"))
 
 # Check for rows that didn't get a match (should not happen if supplementary_crosswalk logic is correct)
@@ -262,7 +267,6 @@ if (nrow(missing_join_info) > 0) {
 } else {
     print("Join successful. All rows have AGS_2021 and pop_share.")
 }
-
 
 # --- Apportion and Aggregate Data to AGS_2021 ---
 print("--- Apportioning and Aggregating Data to AGS_2021 ---")
@@ -289,9 +293,13 @@ print("Summary of standardized_data:")
 summary(standardized_data)
 glimpse(standardized_data)
 
-# --- Save Standardized Data ---
-output_file_standardized <- here("output", "broadband_gemeinde_combined_long_ags2021.csv")
-write_csv(standardized_data, output_file_standardized)
-print(paste("Saved AGS 2021 standardized data to:", output_file_standardized))
+# --- Save the Final, Apportioned, and Aggregated Data ---
+print(paste("Final dataset has", nrow(standardized_data), "rows after aggregation."))
+print("Summary of aggregated 'value' column:")
+print(summary(standardized_data$value))
 
-print("AGS standardization script finished.")
+# Save to .rds
+saveRDS(standardized_data, file = output_file)
+print(paste("Saved AGS-2021 standardized data to:", output_file))
+
+print("--- Script Finished ---")

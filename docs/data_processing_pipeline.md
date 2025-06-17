@@ -265,6 +265,23 @@ The final panel dataset for analysis (`output/panel_data_with_treatment.csv`) is
 - **`first_year50_6`**: The first year that a municipality met the `treat_medium` condition (i.e., the first year its `share_gte6mbps` reached 50%). It is `NA` if the municipality never reached this threshold in the observed period.
 - **`event_time`**: A variable for event study analysis, calculated as `year - first_year50_6`. It is negative for years before treatment, 0 in the treatment year, positive for years after, and `NA` for never-treated municipalities.
 
+### Final Dataset: Variable Dictionary
+
+| Variable             | Type      | Description                                                                                                                   | Values                                                                |
+| -------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `AGS`                | character | 8-digit official municipality key, standardized to 2021 borders.                                                              | e.g., "01001000"                                                      |
+| `year`               | integer   | The year of the observation.                                                                                                  | 2005-2021                                                             |
+| `share_gte1mbps`     | double    | Share of households (%) with access to ≥1 Mbps but <6 Mbps.                                                                   | 0-100                                                                 |
+| `share_gte6mbps`     | double    | Share of households (%) with access to ≥6 Mbps but <30 Mbps.                                                                  | 0-100                                                                 |
+| `share_gte30mbps`    | double    | Share of households (%) with access to ≥30 Mbps.                                                                              | 0-100                                                                 |
+| `treat_low`          | integer   | Binary treatment dummy: `1` if `share_gte1mbps` ≥ 50, otherwise `0`.                                                          | `0`, `1`                                                              |
+| `treat_medium`       | integer   | Binary treatment dummy: `1` if `share_gte6mbps` ≥ 50, otherwise `0`.                                                          | `0`, `1`                                                              |
+| `treat_high`         | integer   | Binary treatment dummy: `1` if `share_gte30mbps` ≥ 50, otherwise `0`.                                                         | `0`, `1`                                                              |
+| `log_share6`         | double    | Continuous treatment variable: `log(1 + share_gte6mbps)`.                                                                     | 0 - 4.615 (`log(101)`)                                                |
+| `method_change_2015` | integer   | Dummy variable: `1` if `year` is 2015, otherwise `0`.                                                                         | `0`, `1`                                                              |
+| `first_year50_6`     | integer   | The first year the municipality reached the `treat_medium` threshold.                                                         | Integer (Year, e.g., 2010) or `NA` if never treated.                  |
+| `event_time`         | integer   | Relative time to treatment: `year` - `first_year50_6`.                                                                        | Integer (e.g., -2, -1, 0, 1, 2) or `NA` if `first_year50_6` is `NA`. |
+
 ## 12. Analytical Potential and Data Availability
 
 ### Analytical Potential

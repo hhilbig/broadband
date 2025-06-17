@@ -130,46 +130,49 @@ process_sheet_data_paket1 <- function(data_df, ags_col_name, year_val_sheet_file
 
     # Find the cleaned version of the AGS column name
     ags_col_name_clean <- names(names_map)[which(names_map == ags_col_name)]
-    if (length(ags_col_name_clean) == 0) ags_col_name_clean <- NA_character_ # Should not happen if ags_col_name is valid
+    if (length(ags_col_name_clean) == 0) {
+        ags_col_name_clean <- make.names(ags_col_name)
+    }
 
     if (is.na(ags_col_name_clean) || !(ags_col_name_clean %in% colnames(data_df))) {
         message(paste("AGS column (", ags_col_name, "->", ags_col_name_clean, ") not found after cleaning or invalid for file:", file_basename_for_log))
         return(NULL)
     }
 
+    # Rename the identified AGS column to a standard name for simplicity.
     data_df <- data_df %>%
-        mutate(!!sym(ags_col_name_clean) := as.character(!!sym(ags_col_name_clean)))
+        rename(AGS = all_of(ags_col_name_clean)) %>%
+        mutate(AGS = as.character(AGS))
 
-    # Identify other non-metric columns to exclude from pivot, using their *cleaned* names
-    potential_non_metric_originals_lower <- c("id", "gen", "ewz", "bez") # 'ags' is handled by ags_col_name_clean
+    # Identify all columns that should NOT be pivoted (id_cols)
+    # These are AGS and any other known non-metric identifiers
+    known_id_patterns <- c("id", "gen", "ewz", "bez")
 
-    # Find which of these non_metrics are actually in the original_colnames and get their clean names
-    # names_map is clean_name -> original_name
-    # We want to find clean_names whose original_name (in lower case) is in our list
-    non_metric_cols_to_exclude_clean <- character(0)
-    for (clean_name_iter in names(names_map)) {
-        original_name_iter <- names_map[[clean_name_iter]]
-        if (tolower(original_name_iter) %in% potential_non_metric_originals_lower) {
-            non_metric_cols_to_exclude_clean <- c(non_metric_cols_to_exclude_clean, clean_name_iter)
+    # Find the cleaned names of the id columns that exist in the current dataframe
+    id_cols_to_keep <- c("AGS") # Start with our standardized AGS column
+
+    for (clean_name in names(names_map)) {
+        original_name <- names_map[[clean_name]]
+        if (tolower(original_name) %in% known_id_patterns) {
+            # Add the cleaned name, but avoid adding the original AGS column's clean name again
+            if (clean_name != ags_col_name_clean) {
+                id_cols_to_keep <- c(id_cols_to_keep, clean_name)
+            }
         }
     }
-    # Ensure AGS column is not duplicated if it was somehow matched as a non-metric (unlikely with current patterns)
-    non_metric_cols_to_exclude_clean <- setdiff(non_metric_cols_to_exclude_clean, ags_col_name_clean)
 
-    cols_to_pivot_around_clean <- unique(c(ags_col_name_clean, non_metric_cols_to_exclude_clean))
+    # Ensure the columns to keep actually exist in the dataframe before proceeding
+    id_cols_to_keep <- intersect(id_cols_to_keep, colnames(data_df))
 
     long_data <- data_df %>%
-        rename(AGS = !!sym(ags_col_name_clean)) %>%
-        # Select AGS and any other explicitly excluded non-metric columns first if they need to be preserved as columns.
-        # However, the current goal is to only pivot metric columns, so we exclude AGS and these non-metrics from the pivot target.
         pivot_longer(
-            cols = -all_of(cols_to_pivot_around_clean),
-            names_to = "variable_raw_clean", # Pivoting with cleaned names
+            cols = -all_of(id_cols_to_keep),
+            names_to = "variable_raw_clean",
             values_to = "value_raw",
             values_transform = list(value_raw = as.character)
         ) %>%
         mutate(
-            year_sheet_file = year_val_sheet_file, # Year derived from sheet/file name
+            year_sheet_file = year_val_sheet_file,
             data_category = "privat",
             variable_original = names_map[variable_raw_clean]
         ) %>%
@@ -281,38 +284,18 @@ if (nrow(paket1_sheets_to_process) == 0) {
     }
 
     if (length(all_processed_paket1_data) > 0) {
-        final_paket1_data <- bind_rows(all_processed_paket1_data)
-        final_paket1_data <- final_paket1_data %>%
-            mutate(
-                AGS = str_pad(AGS, 8, pad = "0"),
-                speed_mbps_gte = as.integer(speed_mbps_gte),
-                value = as.numeric(value) # Ensure value is numeric one last time
-            ) %>%
-            filter(!is.na(AGS), !is.na(year), !is.na(value), str_length(AGS) == 8) %>%
-            distinct()
+        final_paket1_df <- bind_rows(all_processed_paket1_data) %>%
+            mutate(AGS = str_pad(AGS, 8, pad = "0")) %>%
+            filter(str_length(AGS) == 8) # Final safety check for AGS length
 
-        print(paste("Total rows in combined Paket 1 dataset:", nrow(final_paket1_data)))
-        print("Summary of Paket 1 final_data:")
-        summary(final_paket1_data)
-        print("Sample of Paket 1 final_data (first 6 rows):")
-        print(head(final_paket1_data))
+        # Save the final combined data for Paket 1
+        output_file_rds <- here("output", "broadband_gemeinde_paket_1_long.rds")
+        saveRDS(final_paket1_df, file = output_file_rds)
 
-        unparsed_tech_summary_p1 <- final_paket1_data %>%
-            filter(is.na(speed_mbps_gte) | str_detect(technology_group, "hist_verf_|hist_tech_") | technology_group == original_variable) %>%
-            count(technology_group, original_variable, sort = TRUE)
-
-        if (nrow(unparsed_tech_summary_p1) > 0) {
-            print("Summary of technology groups from Paket 1 that might need refined parsing logic:")
-            print(unparsed_tech_summary_p1, n = 50)
-        } else {
-            print("All technology groups in Paket 1 seem to have been parsed into speed categories.")
-        }
-
-        output_file_paket1 <- here("output", "broadband_gemeinde_paket_1_long.csv")
-        write_csv(final_paket1_data, output_file_paket1)
-        print(paste("Saved processed Paket 1 data to:", output_file_paket1))
+        print(paste("Successfully processed Paket 1. Final data has", nrow(final_paket1_df), "rows."))
+        print(paste("Saved combined Paket 1 data to:", output_file_rds))
     } else {
-        print("No data was processed successfully for Paket 1.")
+        print("No data was processed from Paket 1.")
     }
 }
 

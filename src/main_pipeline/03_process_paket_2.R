@@ -323,41 +323,18 @@ if (nrow(paket2_sheets_to_process) == 0) {
     }
 
     if (length(all_processed_paket2_data) > 0) {
-        final_paket2_data <- bind_rows(all_processed_paket2_data)
-        final_paket2_data <- final_paket2_data %>%
-            mutate(
-                AGS = str_pad(AGS, 8, pad = "0"),
-                speed_mbps_gte = as.integer(speed_mbps_gte),
-                value = as.numeric(value)
-            ) %>%
-            filter(!is.na(AGS), !is.na(year), !is.na(value), str_length(AGS) == 8) %>%
-            distinct()
+        final_paket2_df <- bind_rows(all_processed_paket2_data) %>%
+            mutate(AGS = str_pad(AGS, 8, pad = "0")) %>%
+            filter(str_length(AGS) == 8)
 
-        print(paste("Total rows in combined Paket 2 dataset:", nrow(final_paket2_data)))
-        print("Summary of final_paket2_data:")
-        summary(final_paket2_data)
-        print("Sample of final_paket2_data (first 6 rows):")
-        print(head(final_paket2_data))
+        # Save the final combined data for Paket 2
+        output_file_rds <- here("output", "broadband_gemeinde_paket_2_long.rds")
+        saveRDS(final_paket2_df, file = output_file_rds)
 
-        unparsed_tech_summary_p2 <- final_paket2_data %>%
-            filter(is.na(speed_mbps_gte) & !technology_group %in% c("HH_ges", "HH_gesamt", "GemFl", "Gemeindeflaeche", "Gemeindefläche")) %>%
-            count(technology_group, original_variable, sort = TRUE)
-
-        if (nrow(unparsed_tech_summary_p2) > 0) {
-            print("Summary of Paket 2 technology groups that might need refined parsing logic (excluding HH_ges, GemFl):")
-            print(unparsed_tech_summary_p2, n = 50)
-        } else {
-            print("All relevant technology groups in Paket 2 seem to have been parsed into speed categories or are known non-speed variables.")
-        }
-
-        output_file_p2 <- here("output", "broadband_gemeinde_paket_2_long.csv")
-        if (!dir.exists(here("output"))) {
-            dir.create(here("output"))
-        }
-        write_csv(final_paket2_data, output_file_p2)
-        print(paste("Saved processed Paket 2 data to:", output_file_p2))
+        print(paste("Successfully processed Paket 2. Final data has", nrow(final_paket2_df), "rows."))
+        print(paste("Saved combined Paket 2 data to:", output_file_rds))
     } else {
-        print("No data was processed successfully for Paket 2.")
+        print("No data was processed from Paket 2.")
     }
 }
 
