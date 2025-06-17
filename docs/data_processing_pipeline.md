@@ -218,12 +218,12 @@ This list is not exhaustive, as new or unparsed variable names would become thei
         b.  The `weighted_value` is summed for these groups to get the new `value` for the 2021 AGS.
         c.  `original_variable` and `source_paket` are handled by concatenating unique sorted values, separated by a semicolon, to preserve traceability. An `n_agg` column counts how many original rows were aggregated.
         d.  The aggregated `value` (coverage) is capped at 100 if any sums slightly exceed this due to floating-point arithmetic.
-- **Output**: `output/broadband_gemeinde_combined_long_ags2021.csv`. This file contains broadband data where all municipalities are represented by their 2021 AGS codes, with coverage values appropriately apportioned.
+- **Output**: `output/broadband_gemeinde_combined_long_ags2021.rds`. This file contains broadband data where all municipalities are represented by their 2021 AGS codes, with coverage values appropriately apportioned.
 
-## 10. Creating Treatment Variables (`create_treatment_variables.R`)
+## 10. Final Panel Creation (`create_treatment_variables.R`)
 
-- **Purpose**: To generate broadband treatment variables and event study timing variables for econometric analysis, based on the AGS-2021 standardized dataset.
-- **Input**: `output/broadband_gemeinde_combined_long_ags2021.csv` (the output from the AGS standardization step).
+- **Purpose**: To generate the final, wide-format panel dataset from the AGS-2021 standardized long-format data.
+- **Input**: `output/broadband_gemeinde_combined_long_ags2021.rds` (the output from the AGS standardization step).
 - **Key Steps**:
     1. **Data Loading and Initial Filtering**:
         a.  Loads the AGS-2021 standardized data.
@@ -236,36 +236,16 @@ This list is not exhaustive, as new or unparsed variable names would become thei
     3. **Hierarchical Consistency**: Ensures that `share_gte1mbps >= share_gte6mbps >= share_gte30mbps`. Values are adjusted upwards if a lower-speed bucket has less coverage than a higher-speed bucket for the same AGS and year.
     4. **2015 Methodological Change Dummy**: Based on external analysis indicating a methodological shift, a dummy variable `method_change_2015` is added. It takes the value `1` for observations in the year 2015 and `0` otherwise.
     5. **Diagnostic Checks**: Includes summaries of panel dimensions, AGS-year uniqueness, and share column distributions. Also calculates year-on-year changes in share columns to flag large increases (>50 ppt) or significant decreases (< -20 ppt), summarizing these by year and generating a plot (`output/large_yoy_changes_plot.png`).
-    6. **Treatment Variable Creation**:
-        - `treat_low = share_gte1mbps >= 50`
-        - `treat_medium = share_gte6mbps >= 50`
-        - `treat_high = share_gte30mbps >= 50`
-        - `log_share6 = log1p(share_gte6mbps)`
-    7. **Event Study Timing Variables**:
-        - `first_year50_6 = min(year)` where `treat_medium == 1`, by `AGS`.
-        - `event_time = year - first_year50_6`.
-    8. **Further Diagnostics**: Includes counts and summaries for treatment variables and event study variables, including NA checks and sanity checks for `event_time` calculation.
-    9. **Plotting Average Coverage**: Generates and saves a plot (`output/average_annual_coverage_plot.png`) showing the average annual coverage across all municipalities for the three share categories.
-- **Output**: `output/panel_data_with_treatment.csv`. This is the final dataset intended for econometric analysis.
+    6. **Plotting Average Coverage**: Generates and saves a plot (`output/average_annual_coverage_plot.png`) showing the average annual coverage across all municipalities for the three share categories.
+- **Outputs**:
+  - `output/panel_data_public.csv`: The final public dataset.
+  - `output/panel_data_with_treatment.csv`: A version of the dataset including variables for internal econometric analysis.
 
-## 11. Final Data Structure (Panel for Analysis)
+## 11. Final Data Structure (Public Panel)
 
-The final panel dataset for analysis (`output/panel_data_with_treatment.csv`) is structured at the municipality-year level and contains the following key columns:
+The final public panel dataset (`output/panel_data_public.csv`) is structured at the municipality-year level and contains the following key columns:
 
-- **`AGS`**: The 8-digit official municipality key (character), standardized to **2021 borders**. This is the primary identifier for each municipality.
-- **`year`**: The year the data pertains to (integer).
-- **`share_gte1mbps`**: Percentage of households (0-100) in the municipality with access to broadband speeds of at least 1 Mbit/s but less than 6 Mbit/s.
-- **`share_gte6mbps`**: Percentage of households (0-100) with access to speeds of at least 6 Mbit/s but less than 30 Mbit/s.
-- **`share_gte30mbps`**: Percentage of households (0-100) with access to speeds of at least 30 Mbit/s.
-- **`treat_low`**: Binary indicator (`1`/`0`) if `share_gte1mbps` is 50% or greater.
-- **`treat_medium`**: Binary indicator (`1`/`0`) if `share_gte6mbps` is 50% or greater.
-- **`treat_high`**: Binary indicator (`1`/`0`) if `share_gte30mbps` is 50% or greater.
-- **`log_share6`**: The natural logarithm of `1 + share_gte6mbps`, providing a continuous variable for treatment intensity.
-- **`method_change_2015`**: Binary indicator (`1`/`0`) that flags the year 2015 to account for a significant change in data collection methodology.
-- **`first_year50_6`**: The first year that a municipality met the `treat_medium` condition (i.e., the first year its `share_gte6mbps` reached 50%). It is `NA` if the municipality never reached this threshold in the observed period.
-- **`event_time`**: A variable for event study analysis, calculated as `year - first_year50_6`. It is negative for years before treatment, 0 in the treatment year, positive for years after, and `NA` for never-treated municipalities.
-
-### Final Dataset: Variable Dictionary
+### Variable Dictionary
 
 | Variable             | Type      | Description                                                                                                                   | Values                                                                |
 | -------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
@@ -274,13 +254,7 @@ The final panel dataset for analysis (`output/panel_data_with_treatment.csv`) is
 | `share_gte1mbps`     | double    | Share of households (%) with access to ≥1 Mbps but <6 Mbps.                                                                   | 0-100                                                                 |
 | `share_gte6mbps`     | double    | Share of households (%) with access to ≥6 Mbps but <30 Mbps.                                                                  | 0-100                                                                 |
 | `share_gte30mbps`    | double    | Share of households (%) with access to ≥30 Mbps.                                                                              | 0-100                                                                 |
-| `treat_low`          | integer   | Binary treatment dummy: `1` if `share_gte1mbps` ≥ 50, otherwise `0`.                                                          | `0`, `1`                                                              |
-| `treat_medium`       | integer   | Binary treatment dummy: `1` if `share_gte6mbps` ≥ 50, otherwise `0`.                                                          | `0`, `1`                                                              |
-| `treat_high`         | integer   | Binary treatment dummy: `1` if `share_gte30mbps` ≥ 50, otherwise `0`.                                                         | `0`, `1`                                                              |
-| `log_share6`         | double    | Continuous treatment variable: `log(1 + share_gte6mbps)`.                                                                     | 0 - 4.615 (`log(101)`)                                                |
 | `method_change_2015` | integer   | Dummy variable: `1` if `year` is 2015, otherwise `0`.                                                                         | `0`, `1`                                                              |
-| `first_year50_6`     | integer   | The first year the municipality reached the `treat_medium` threshold.                                                         | Integer (Year, e.g., 2010) or `NA` if never treated.                  |
-| `event_time`         | integer   | Relative time to treatment: `year` - `first_year50_6`.                                                                        | Integer (e.g., -2, -1, 0, 1, 2) or `NA` if `first_year50_6` is `NA`. |
 
 ## 12. Analytical Potential and Data Availability
 
@@ -288,7 +262,7 @@ The final panel dataset for analysis (`output/panel_data_with_treatment.csv`) is
 
 This dataset is designed for quantitative longitudinal analysis of the effects of broadband internet rollout in Germany. Potential applications include:
 
-1. **Econometric Impact Evaluation**: The `treat_*` and `event_time` variables allow for the use of quasi-experimental methods like **Difference-in-Differences (DiD)** or **Event Study** designs. Researchers can merge this dataset with other municipal-level data (e.g., on economic outcomes, demographics, political behavior) to measure the causal impact of reaching certain broadband availability thresholds.
+1. **Econometric Impact Evaluation**: Researchers can merge this dataset with other municipal-level data (e.g., on economic outcomes, demographics, political behavior) to study the impact of broadband availability. The panel structure is suitable for methods like Difference-in-Differences, though treatment indicators would need to be constructed by the user based on their research question.
 2. **Descriptive Analysis**: The `share_*` variables can be used to describe the spatio-temporal diffusion of different tiers of broadband technology across Germany. The generated plots (`average_annual_coverage_plot.png`, `large_yoy_changes_plot.png`) provide an initial overview of these trends.
 3. **Controlling for Methodological Breaks**: The `method_change_2015` dummy is crucial for any analysis spanning this year, as it allows researchers to control for the structural break in the data series caused by changes in the data provider and reporting standards.
 
@@ -305,7 +279,7 @@ The panel is unbalanced, as not all municipalities report data in all years, and
 
 ### Observing Changes Over Time
 
-- **Identifying Treatment Thresholds**: **Yes**, the dataset is explicitly designed to identify when a municipality's broadband coverage crosses a specific threshold. The `first_year50_6` variable, for example, pinpoints the exact year that 50% coverage was achieved for the ≥6 Mbit/s tier. This logic can be extended to create other threshold indicators as needed.
+- **Identifying Coverage Thresholds**: **Yes**, the dataset allows users to identify when a municipality's broadband coverage crosses a specific threshold (e.g., 50%) by observing the `share_*` variables over time. This can be used to construct custom treatment indicators for analysis.
 - **Temporal Granularity**: The key limitation is that observations are **annual snapshots**. If coverage in a municipality jumps from 10% to 60% between 2012 and 2013, we know the change occurred *during* that period, but we cannot know the specific month or the trajectory of the change (e.g., a gradual rollout vs. a single switch-on event).
 
 ### Limitations and Unobserved Factors
@@ -319,4 +293,4 @@ There are several dimensions that this dataset, by design, cannot measure:
 
 ## 13. Conclusion
 
-This pipeline transforms diverse historical broadband data files into a structured, AGS-2021 standardized panel dataset suitable for econometric analysis. The process involves careful parsing of filenames, sheet names, and column headers; meticulous handling of municipal border changes using official reclassification tables; and the creation of theoretically grounded treatment and event study variables. While efforts were made to standardize categories, the `original_variable` and `source_paket` columns in intermediate datasets provide traceability to the raw data. The final panel data is robustly prepared for further analytical work.
+This pipeline transforms diverse historical broadband data files into a structured, AGS-2021 standardized panel dataset. The process involves careful parsing of filenames, sheet names, and column headers; meticulous handling of municipal border changes using official reclassification tables; and the creation of a clean, wide-format panel. While efforts were made to standardize categories, the `original_variable` and `source_paket` columns in intermediate datasets provide traceability to the raw data. The final public panel data is robustly prepared for analytical work.
