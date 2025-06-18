@@ -1,24 +1,24 @@
 # Harmonized historical broadband data for German municipalities
 
-This project cleans, harmonizes, and combines historical broadband availability data for German municipalities ("Gemeinden") from 2005 to 2021, creating a panel dataset suitable for longitudinal analysis.
+This project cleans, harmonizes, and combines historical broadband availability data for German municipalities ("Gemeinden") from 2005 to 2021. There are some data limitations, which are listed below.
 
-## Features
+## Characteristics of the data
 
 - **Municipality-level panel**: The final output is a panel dataset where each row represents a municipality-year observation.
-- **Harmonized borders**: All municipal boundaries have been standardized to their 2021 equivalents to ensure consistency over time, accounting for mergers and administrative reforms.
+- **Harmonized borders**: All municipal boundaries have been standardized to their 2021 equivalents by accounting for mergers and administrative reforms. I use the official BBSR crosswalk files for this.
 
 ## Data provenance and quality
 
 This dataset is a best-effort attempt to harmonize data from various historical sources provided by the Breitbandatlas. Users should be aware of the following:
 
-- **Limited documentation**: The historical broadband data comes from multiple providers and periods. According to direct correspondence with the Bundesnetzagentur, detailed information on how the raw data was originally compiled by providers is often lacking.
+- **Limited documentation**: The historical broadband data comes from multiple providers and periods. Based on correspondence with the Bundesnetzagentur, detailed information on how the raw data was originally compiled by providers is often lacking.
 - **Methodological break in 2015**: A significant change in the data provider and reporting standards in 2015 led to a structural break in the time series. This is visible as a large, discontinuous jump in coverage levels for that year. The `method_change_2015` dummy is included in the dataset to help account for this.
 
 ## Project resources
 
 - **Data processing pipeline**: The full documentation of the data cleaning and harmonization process can be found here: **[data_processing_pipeline.md](./docs/data_processing_pipeline.md)**.
-- **Descriptive analysis**: A summary of the data's key features, including its structural breaks, is available in [this PDF document](./docs/descriptive_analysis.pdf).
-- **Final dataset**: The final, analysis-ready public dataset can be found here: **[panel_data_public.csv](./output/panel_data_public.csv)**.
+- **Descriptive analysis**: A summary of the data's key features, including the structural breaks, is available in [this PDF document](./docs/descriptive_analysis.pdf).
+- **Final dataset**: The final dataset can be found here: **[panel_data_public.csv](./output/panel_data_public.csv)**.
 
 ## Codebook for the public data file
 
