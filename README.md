@@ -17,7 +17,7 @@ This dataset is a best-effort attempt to harmonize data from various historical 
 ## Project resources
 
 - **Data processing pipeline**: The full documentation of the data cleaning and harmonization process can be found here: **[data_processing_pipeline.md](./docs/data_processing_pipeline.md)**.
-- **Descriptive analysis**: A summary of the data's key features, including its structural breaks, is available in [this compiled PDF document](./docs/descriptive_analysis.pdf).
+- **Descriptive analysis**: A summary of the data's key features, including its structural breaks, is available in [this PDF document](./docs/descriptive_analysis.pdf).
 - **Final dataset**: The final, analysis-ready public dataset can be found here: **[panel_data_public.csv](./output/panel_data_public.csv)**.
 
 ## Codebook for the public data file
