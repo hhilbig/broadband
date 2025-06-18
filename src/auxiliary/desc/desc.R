@@ -1,114 +1,121 @@
 library(tidyverse)
-library(haschaR)
+library(here)
 
-# Define the path to the data file
-# Assumes the script is run from the project root or that the path is relative to the script's location in a way that resolves correctly.
-# Adjust the path if necessary, e.g., using here::here() for better path management.
-data_file_path <- "output/panel_data_with_treatment.csv"
+# --- Configuration ---
+# Use the public dataset for descriptions
+data_file_path <- here("output", "panel_data_public.csv")
+output_dir <- here("output", "descriptives")
 
-# Load the data
-tryCatch(
-    {
-        panel_data <- read_csv(data_file_path, show_col_types = FALSE)
-    },
-    error = function(e) {
-        stop(paste("Error loading data file:", data_file_path, "\nOriginal error:", e$message))
-    }
-)
-
-# Ensure 'year' is integer and treatment variables are numeric/integer
-panel_data <- panel_data %>%
-    mutate(
-        year = as.integer(year),
-        treat_low = as.integer(treat_low),
-        treat_medium = as.integer(treat_medium),
-        treat_high = as.integer(treat_high)
-    )
-
-# Function to calculate first treatment year and share of newly treated municipalities
-calculate_first_treatment_share <- function(df, treatment_var_name) {
-    treatment_var_sym <- sym(treatment_var_name)
-
-    # Find the first year each AGS is treated
-    first_treatment_year <- df %>%
-        filter({{ treatment_var_sym }} == 1) %>%
-        group_by(AGS) %>%
-        summarise(first_treated_year = min(year, na.rm = TRUE), .groups = "drop") %>%
-        filter(is.finite(first_treated_year)) # Ensure first_treated_year is not Inf
-
-    # Count newly treated municipalities per year
-    newly_treated_counts <- first_treatment_year %>%
-        group_by(first_treated_year) %>%
-        summarise(newly_treated_count = n(), .groups = "drop") %>%
-        rename(year = first_treated_year)
-
-    # Count total unique municipalities observed per year in the original panel
-    total_munis_per_year <- df %>%
-        group_by(year) %>%
-        summarise(total_munis_in_year = n_distinct(AGS), .groups = "drop")
-
-    # Join newly treated counts with total munis per year and calculate share
-    treatment_summary <- newly_treated_counts %>%
-        left_join(total_munis_per_year, by = "year") %>%
-        mutate(
-            share_newly_treated = ifelse(total_munis_in_year > 0, newly_treated_count / total_munis_in_year, 0),
-            treatment_variable = treatment_var_name
-        ) %>%
-        select(year, treatment_variable, newly_treated_count, total_munis_in_year, share_newly_treated) %>%
-        arrange(year)
-
-    return(treatment_summary)
+# Create output directory if it doesn't exist
+if (!dir.exists(output_dir)) {
+    dir.create(output_dir, recursive = TRUE)
 }
 
-# Calculate for each treatment variable
-treat_low_summary <- calculate_first_treatment_share(panel_data, "treat_low")
-treat_medium_summary <- calculate_first_treatment_share(panel_data, "treat_medium")
-treat_high_summary <- calculate_first_treatment_share(panel_data, "treat_high")
+# --- Load Data ---
+panel_data <- read_csv(data_file_path, show_col_types = FALSE)
 
-# Combine and print results
-all_treatment_summary <- bind_rows(
-    treat_low_summary,
-    treat_medium_summary,
-    treat_high_summary
-)
+# --- Plot 1: Year-over-Year Change in Mean Coverage ---
+yoy_changes <- panel_data %>%
+    group_by(year) %>%
+    summarise(
+        avg_baseline = mean(share_broadband_baseline, na.rm = TRUE),
+        avg_gte6 = mean(share_gte6mbps, na.rm = TRUE),
+        avg_gte30 = mean(share_gte30mbps, na.rm = TRUE)
+    ) %>%
+    arrange(year) %>%
+    mutate(
+        yoy_change_baseline = avg_baseline - lag(avg_baseline),
+        yoy_change_gte6 = avg_gte6 - lag(avg_gte6),
+        yoy_change_gte30 = avg_gte30 - lag(avg_gte30)
+    ) %>%
+    pivot_longer(
+        cols = starts_with("yoy_change_"),
+        names_to = "speed_tier",
+        values_to = "yoy_change",
+        names_prefix = "yoy_change_"
+    )
 
-print("Share of municipalities 'Treated' for the first time, by year and treatment variable:")
-print(all_treatment_summary, n = Inf)
-
-# --- Create and save a plot ---
-plot_path <- "output/newly_treated_share_plot.png"
-
-newly_treated_plot <- ggplot(
-    all_treatment_summary,
-    aes(x = year, y = share_newly_treated, group = treatment_variable, color = treatment_variable)
-) +
-    geom_line() +
-    geom_point() +
-    facet_wrap(~treatment_variable, scales = "free_y", ncol = 1) +
+plot_yoy <- ggplot(yoy_changes, aes(x = year, y = yoy_change, color = speed_tier)) +
+    geom_line(linewidth = 1) +
+    geom_point(size = 2) +
+    geom_vline(xintercept = 2015, linetype = "dashed", color = "red") +
+    annotate("text", x = 2015.5, y = max(yoy_changes$yoy_change, na.rm = TRUE), label = "2015 Break", hjust = 0, size = 3) +
     labs(
-        title = "Share of Municipalities Newly Treated Each Year",
-        subtitle = "By treatment variable definition",
+        title = "Year-over-Year Change in Mean Broadband Coverage",
+        subtitle = "The structural break in 2015 is clearly visible across all speed tiers.",
         x = "Year",
-        y = "Share of Municipalities Newly Treated",
-        color = "Treatment Variable"
+        y = "Change in Mean Coverage (Percentage Points)",
+        color = "Speed Tier"
     ) +
-    scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-    theme_hanno() +
+    theme_minimal() +
     theme(legend.position = "bottom")
 
-tryCatch(
-    {
-        ggsave(plot_path, newly_treated_plot, width = 8, height = 10, dpi = 300)
-        cat(paste("\nPlot saved to:", normalizePath(plot_path, mustWork = FALSE), "\n"))
-    },
-    error = function(e) {
-        cat(paste("\nError saving plot:", e$message, "\n"))
-    }
-)
+ggsave(here(output_dir, "yoy_coverage_change_plot.png"), plot_yoy, width = 10, height = 6)
+print("--- Data for: Year-over-Year Change in Mean Coverage ---")
+print(yoy_changes, n = Inf)
 
-# You might want to save this to a CSV:
-# write_csv(all_treatment_summary, "output/newly_treated_municipalities_summary.csv")
+# --- Plot 2: Distribution of Coverage Levels ---
+coverage_long <- panel_data %>%
+    select(year, share_broadband_baseline, share_gte6mbps, share_gte30mbps) %>%
+    pivot_longer(
+        cols = -year,
+        names_to = "speed_tier",
+        values_to = "coverage",
+        names_prefix = "share_"
+    )
 
-cat("\nScript execution finished.\n")
-cat("Summary table 'all_treatment_summary' contains the results.\n")
-cat(paste("Data loaded from:", normalizePath(data_file_path, mustWork = FALSE), "\n"))
+plot_dist <- ggplot(coverage_long, aes(x = coverage, fill = speed_tier)) +
+    geom_histogram(binwidth = 5, position = "identity", alpha = 0.7) +
+    facet_wrap(~speed_tier, scales = "free_y") +
+    labs(
+        title = "Distribution of Municipality-Level Broadband Coverage",
+        subtitle = "Shows high concentration at 0% and near 100% coverage.",
+        x = "Coverage Share (%)",
+        y = "Count of Municipality-Year Observations"
+    ) +
+    theme_minimal() +
+    theme(legend.position = "none")
+
+ggsave(here(output_dir, "coverage_distribution_plot.png"), plot_dist, width = 10, height = 6)
+print("--- Data for: Distribution of Coverage Levels (Summary) ---")
+print(coverage_long %>% group_by(speed_tier) %>% summarise(
+    mean = mean(coverage, na.rm = TRUE),
+    median = median(coverage, na.rm = TRUE),
+    min = min(coverage, na.rm = TRUE),
+    max = max(coverage, na.rm = TRUE),
+    n_obs = n()
+))
+
+
+# --- Plot 3: Average Annual Coverage (from main pipeline) ---
+avg_coverage_data <- panel_data %>%
+    select(year, share_broadband_baseline, share_gte6mbps, share_gte30mbps) %>%
+    pivot_longer(
+        cols = -year,
+        names_to = "speed_tier",
+        values_to = "coverage",
+        names_prefix = "share_"
+    ) %>%
+    group_by(year, speed_tier) %>%
+    summarise(mean_coverage = mean(coverage, na.rm = TRUE), .groups = "drop")
+
+avg_coverage_plot <- ggplot(avg_coverage_data, aes(x = year, y = mean_coverage, color = speed_tier)) +
+    geom_line(linewidth = 1) +
+    geom_point(size = 2) +
+    labs(
+        title = "Average Annual Broadband Coverage by Speed Tier",
+        subtitle = "Mean coverage across all municipalities in the panel.",
+        x = "Year",
+        y = "Mean Coverage (%)",
+        color = "Speed Tier"
+    ) +
+    scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+    theme_minimal() +
+    theme(legend.position = "bottom")
+
+ggsave(here(output_dir, "average_annual_coverage_plot.png"), avg_coverage_plot, width = 10, height = 6)
+print("--- Data for: Average Annual Coverage by Speed Tier ---")
+print(avg_coverage_data, n = Inf)
+
+
+print("Descriptive plots have been generated and saved to 'output/descriptives'.")

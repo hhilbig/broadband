@@ -90,63 +90,31 @@ if (nrow(example_early_years_data) > 0) {
 panel <- bb_long %>%
     filter(!is.na(speed_mbps_gte)) %>% # Ignore non-speed rows (e.g., where speed_mbps_gte is NA)
     filter(value >= 0 & value <= 100) %>% # Ensure value is a percentage, filter out anomalies if any
+    # First, ensure that for a given AGS, year, and speed, we have only one value (the max)
     group_by(AGS, year, speed_mbps_gte) %>%
-    # Take the maximum reported coverage for any specific technology at that speed, AGS, and year
-    summarise(coverage_at_specific_speed = max(value, na.rm = TRUE), .groups = "drop") %>%
-    # Define speed buckets. This is where we aggregate coverage across different specific speeds into broader buckets.
-    # For example, if a municipality has 50% coverage at 30Mbit/s and 60% at 50Mbit/s,
-    # both fall into "≥30" bucket. We then want the max coverage for that bucket.
-    mutate(speed_bucket = case_when(
-        speed_mbps_gte >= 1 & speed_mbps_gte < 6 ~ "gte1",
-        speed_mbps_gte >= 6 & speed_mbps_gte < 30 ~ "gte6",
-        speed_mbps_gte >= 30 ~ "gte30",
-        TRUE ~ NA_character_
-    )) %>%
-    filter(!is.na(speed_bucket)) %>%
-    # Now, for each AGS, year, and speed_bucket, find the maximum coverage achieved.
-    # This correctly handles cases where multiple speed_mbps_gte values fall into the same bucket.
-    # For example, if AGS X in Year Y has 70% for 30Mbps and 60% for 50Mbps,
-    # both are in bucket '≥30'. The share for '≥30' for AGS X in Year Y will be max(70, 60) = 70%.
-    group_by(AGS, year, speed_bucket) %>%
-    summarise(share = max(coverage_at_specific_speed, na.rm = TRUE), .groups = "drop") %>%
-    # Handle cases where max results in -Inf if all values were NA in a group
-    mutate(share = ifelse(is.infinite(share) | is.na(share), 0, share)) %>%
-    pivot_wider(
-        names_from = speed_bucket,
-        names_glue = "share_{speed_bucket}mbps",
-        values_from = share, # ensure this is specified
-        values_fill = 0
-    ) # ensure this fills for the correct column if using list
-
-# Ensure all expected share columns exist, even if no data fell into a bucket for any AGS/year combo
-# (pivot_wider with values_fill should handle this, but this is an explicit check/addition)
-expected_share_cols <- c("share_gte1mbps", "share_gte6mbps", "share_gte30mbps")
-for (col_name in expected_share_cols) {
-    if (!col_name %in% names(panel)) {
-        panel[[col_name]] <- 0
-    }
-}
+    summarise(coverage_at_specific_speed = max(value), .groups = "drop") %>%
+    # Now, create the share columns. This is the key part.
+    group_by(AGS, year) %>%
+    summarise(
+        # Create a baseline share variable that includes the historical >=0.128 Mbps data
+        share_broadband_baseline = max(coverage_at_specific_speed[speed_mbps_gte >= 0.128], 0, na.rm = TRUE),
+        # For each speed bucket, find the max coverage of any tech at or above that speed
+        share_gte1mbps = max(coverage_at_specific_speed[speed_mbps_gte >= 1], 0, na.rm = TRUE),
+        share_gte6mbps = max(coverage_at_specific_speed[speed_mbps_gte >= 6], 0, na.rm = TRUE),
+        share_gte30mbps = max(coverage_at_specific_speed[speed_mbps_gte >= 30], 0, na.rm = TRUE)
+    ) %>%
+    ungroup()
 
 # --- Enforce Hierarchical Consistency in Share Columns ---
 print("--- Enforcing Hierarchical Consistency in Share Columns ---")
-if (all(expected_share_cols %in% names(panel))) {
-    # Track adjustments
-    adjusted_gte6 <- sum(panel$share_gte6mbps < panel$share_gte30mbps & !is.na(panel$share_gte6mbps) & !is.na(panel$share_gte30mbps), na.rm = TRUE)
+if (all(c("share_gte30mbps", "share_gte6mbps", "share_gte1mbps", "share_broadband_baseline") %in% names(panel))) {
+    print("--- Enforcing hierarchical consistency in share columns ---")
     panel <- panel %>%
-        mutate(share_gte6mbps = pmax(share_gte6mbps, share_gte30mbps, na.rm = TRUE))
-    print(paste("Adjusted", adjusted_gte6, "rows for share_gte6mbps to be at least share_gte30mbps."))
-
-    # After share_gte6mbps is adjusted, use it to adjust share_gte1mbps
-    adjusted_gte1 <- sum(panel$share_gte1mbps < panel$share_gte6mbps & !is.na(panel$share_gte1mbps) & !is.na(panel$share_gte6mbps), na.rm = TRUE)
-    panel <- panel %>%
-        mutate(share_gte1mbps = pmax(share_gte1mbps, share_gte6mbps, na.rm = TRUE))
-    print(paste("Adjusted", adjusted_gte1, "rows for share_gte1mbps to be at least share_gte6mbps (after gte6 was potentially adjusted by gte30)."))
-
-    # Re-summarize share columns after adjustment
-    print("Summary of share columns after hierarchical adjustment:")
-    if ("share_gte1mbps" %in% names(panel)) print(summary(panel$share_gte1mbps))
-    if ("share_gte6mbps" %in% names(panel)) print(summary(panel$share_gte6mbps))
-    if ("share_gte30mbps" %in% names(panel)) print(summary(panel$share_gte30mbps))
+        mutate(
+            share_gte6mbps = pmax(share_gte6mbps, share_gte30mbps, na.rm = TRUE),
+            share_gte1mbps = pmax(share_gte1mbps, share_gte6mbps, na.rm = TRUE),
+            share_broadband_baseline = pmax(share_broadband_baseline, share_gte1mbps, na.rm = TRUE)
+        )
 } else {
     print("Skipping hierarchical consistency check due to missing share columns.")
 }
@@ -165,138 +133,59 @@ print(table(panel$method_change_2015, useNA = "ifany"))
 print("--- Panel (after aggregation & hierarchy enforcement) diagnostics ---")
 print(paste("Panel dimensions:", nrow(panel), "rows,", ncol(panel), "columns"))
 
-duplicate_ags_year <- panel %>%
-    count(AGS, year) %>%
-    filter(n > 1) %>%
-    nrow()
-if (duplicate_ags_year == 0) {
-    print("AGS-year combinations are unique in the panel. OK.")
+# Check for uniqueness of AGS-year combinations
+if (any(duplicated(panel[, c("AGS", "year")]))) {
+    warning("AGS-year combinations are NOT unique in the panel. Check aggregation logic.")
 } else {
-    print(paste("ERROR: Found", duplicate_ags_year, "duplicate AGS-year combinations in the panel."))
+    print("AGS-year combinations are unique in the panel. OK.")
 }
 
+# Summary of share columns
 print("Summary of share columns:")
+if ("share_broadband_baseline" %in% names(panel)) print(summary(panel$share_broadband_baseline))
 if ("share_gte1mbps" %in% names(panel)) print(summary(panel$share_gte1mbps))
 if ("share_gte6mbps" %in% names(panel)) print(summary(panel$share_gte6mbps))
 if ("share_gte30mbps" %in% names(panel)) print(summary(panel$share_gte30mbps))
-print(paste("Max value across all share columns (should be <= 100):"))
-print(max(select(panel, starts_with("share_")), na.rm = TRUE))
 
-# --- Sanity Check: Large year-on-year changes in shares ---
-print("--- Sanity Check: Large Year-on-Year Changes in Share Columns ---")
-if (nrow(panel) > 0 && all(c("AGS", "year", expected_share_cols) %in% names(panel))) {
-    yoy_changes <- panel %>%
-        arrange(AGS, year) %>%
-        group_by(AGS) %>%
-        mutate(
-            lag_year = lag(year, 1),
-            lag_share1 = lag(share_gte1mbps, 1),
-            lag_share6 = lag(share_gte6mbps, 1),
-            lag_share30 = lag(share_gte30mbps, 1),
-            diff_share1 = share_gte1mbps - lag_share1,
-            diff_share6 = share_gte6mbps - lag_share6,
-            diff_share30 = share_gte30mbps - lag_share30
-        ) %>%
-        ungroup() %>%
-        filter(year == lag_year + 1) # Only consider consecutive years
+# Max value check
+max_share_val <- max(sapply(panel[grep("share_", names(panel))], max, na.rm = TRUE))
+print(paste("Max value across all share columns (should be <= 100):", max_share_val))
 
-    large_increase_threshold <- 50
-    significant_decrease_threshold <- -20 # Represents a drop of 20ppt or more
-
-    # Check for Large Increases
-    flagged_increases <- yoy_changes %>%
-        filter(
-            (diff_share1 > large_increase_threshold & !is.na(diff_share1)) |
-                (diff_share6 > large_increase_threshold & !is.na(diff_share6)) |
-                (diff_share30 > large_increase_threshold & !is.na(diff_share30))
-        ) %>%
-        select(AGS, year, lag_year, starts_with("share_"), starts_with("lag_share"), starts_with("diff_share"))
-
-    if (nrow(flagged_increases) > 0) {
-        print(paste("WARNING: Found", nrow(flagged_increases), "instances of large year-on-year INCREASES ( >", large_increase_threshold, "ppt) in coverage shares."))
-        print("Sample of flagged INCREASES (first 10 rows):")
-        print(head(flagged_increases, 10))
-    } else {
-        print(paste("Sanity Check for large YoY INCREASES (>", large_increase_threshold, "ppt): No such increases detected. OK."))
-    }
-
-    # Check for Significant Decreases
-    flagged_decreases <- yoy_changes %>%
-        filter(
-            (diff_share1 < significant_decrease_threshold & !is.na(diff_share1)) |
-                (diff_share6 < significant_decrease_threshold & !is.na(diff_share6)) |
-                (diff_share30 < significant_decrease_threshold & !is.na(diff_share30))
-        ) %>%
-        select(AGS, year, lag_year, starts_with("share_"), starts_with("lag_share"), starts_with("diff_share"))
-
-    if (nrow(flagged_decreases) > 0) {
-        print(paste("WARNING: Found", nrow(flagged_decreases), "instances of significant year-on-year DECREASES ( <", significant_decrease_threshold, "ppt) in coverage shares."))
-        print("Sample of flagged DECREASES (first 10 rows):")
-        print(head(flagged_decreases, 10))
-    } else {
-        print(paste("Sanity Check for significant YoY DECREASES (<", significant_decrease_threshold, "ppt): No such decreases detected. OK."))
-    }
-} else {
-    print("Skipping YoY change check due to empty panel or missing columns.")
-}
-# -------------------------------------------------------------
-
-# --- Summarize and Plot Large Year-on-Year Changes by Year ---
-print("--- Summarizing and Plotting Large Year-on-Year Changes by Year ---")
-if (exists("flagged_increases") && exists("flagged_decreases") && nrow(yoy_changes) > 0) {
-    counts_large_increases_by_year <- flagged_increases %>%
-        group_by(year) %>%
-        summarise(count_increases = n(), .groups = "drop")
-
-    counts_significant_decreases_by_year <- flagged_decreases %>%
-        group_by(year) %>%
-        summarise(count_decreases = n(), .groups = "drop")
-
-    # Combine counts for plotting
-    # The yoy_summary_for_plot and pivot_longer logic was problematic and not used.
-    # yoy_plot_data is created directly and more robustly below.
-
-    yoy_plot_data <- bind_rows(
-        flagged_increases %>% count(year, name = "count") %>% mutate(change_type = paste0("Large Increase (>", large_increase_threshold, "ppt)")),
-        flagged_decreases %>% count(year, name = "count") %>% mutate(change_type = paste0("Significant Decrease (<", significant_decrease_threshold, "ppt)"))
+# --- Sanity Check: Large Year-on-Year Changes in Share Columns ---
+# This check helps identify potential data errors or significant events (like the 2015 change)
+yoy_changes_diagnostic <- panel %>%
+    arrange(AGS, year) %>%
+    group_by(AGS) %>%
+    mutate(
+        yoy_diff_baseline = share_broadband_baseline - lag(share_broadband_baseline),
+        yoy_diff_gte30 = share_gte30mbps - lag(share_gte30mbps)
     ) %>%
-        filter(!is.na(year)) # Ensure year is not NA
+    ungroup()
 
-    if (nrow(yoy_plot_data) > 0) {
-        print("Summary of Large/Significant YoY Changes by Year:")
-        print(yoy_plot_data %>% arrange(year, change_type) %>% print(n = Inf))
+large_increases <- yoy_changes_diagnostic %>% filter(yoy_diff_baseline > 50 | yoy_diff_gte30 > 50)
+large_decreases <- yoy_changes_diagnostic %>% filter(yoy_diff_baseline < -20 | yoy_diff_gte30 < -20)
 
-        yoy_changes_plot <- ggplot(yoy_plot_data, aes(x = factor(year), y = count, fill = change_type)) +
-            geom_bar(stat = "identity", position = position_dodge(preserve = "single")) +
-            scale_fill_manual(
-                values = setNames(
-                    c("tomato3", "steelblue"),
-                    c(paste0("Large Increase (>", large_increase_threshold, "ppt)"), paste0("Significant Decrease (<", significant_decrease_threshold, "ppt)"))
-                )
-            ) +
-            labs(
-                title = "Count of Municipalities with Large Year-on-Year Coverage Changes",
-                x = "Year of Change (Change from Year-1 to Year)",
-                y = "Number of Municipalities Affected",
-                fill = "Type of Change"
-            ) +
-            theme_minimal(base_size = 14) +
-            theme(
-                axis.text.x = element_text(angle = 45, hjust = 1),
-                legend.position = "bottom",
-                plot.title = element_text(hjust = 0.5)
-            )
+print(paste("Found", nrow(large_increases), "instances of large (>50ppt) year-on-year increases in baseline or gte30 coverage."))
+print(paste("Found", nrow(large_decreases), "instances of large (<-20ppt) year-on-year decreases."))
 
-        plot_yoy_output_file <- here("output", "large_yoy_changes_plot.png")
-        ggsave(plot_yoy_output_file, plot = yoy_changes_plot, width = 10, height = 7, dpi = 300)
-        print(paste("Saved plot of large YoY changes to:", plot_yoy_output_file))
-    } else {
-        print("No large YoY changes were flagged, skipping plot.")
-    }
-} else {
-    print("Skipping summary/plot of large YoY changes as no flagged data frames exist or yoy_changes is empty.")
-}
-# ----------------------------------------------------------------
+# Plotting the distribution of these changes by year can be insightful
+plot_yoy_dist <- yoy_changes_diagnostic %>%
+    select(year, yoy_diff_baseline, yoy_diff_gte30) %>%
+    pivot_longer(cols = c(yoy_diff_baseline, yoy_diff_gte30), names_to = "share_type", values_to = "yoy_diff") %>%
+    filter(!is.na(yoy_diff)) %>%
+    ggplot(aes(x = as.factor(year), y = yoy_diff)) +
+    geom_boxplot() +
+    facet_wrap(~share_type, scales = "free_y") +
+    labs(
+        title = "Distribution of Year-on-Year Coverage Changes",
+        subtitle = "The 2015 jump is clearly visible. Other years show smaller variations.",
+        x = "Year",
+        y = "Year-on-Year Change (Percentage Points)"
+    ) +
+    theme_minimal()
+
+ggsave(here("output", "large_yoy_changes_plot.png"), plot_yoy_dist, width = 12, height = 6)
+print(paste("Saved plot of year-on-year change distributions to:", here("output", "large_yoy_changes_plot.png")))
 
 print("Panel after speed bucket aggregation and widening (first 6 rows):")
 print(head(panel))
@@ -398,6 +287,7 @@ panel_public <- panel %>%
     select(
         AGS,
         year,
+        share_broadband_baseline,
         share_gte1mbps,
         share_gte6mbps,
         share_gte30mbps,
@@ -413,64 +303,48 @@ print("--- Script Finished ---")
 # --- Generate and Save Average Annual Coverage Plot ---
 print("--- Generating Average Annual Coverage Plot ---")
 
-if (nrow(panel) > 0 && all(c("year", expected_share_cols) %in% names(panel))) {
-    avg_coverage_by_year <- panel %>%
-        group_by(year) %>%
+# Define the share columns to plot
+share_cols_to_plot <- c("share_broadband_baseline", "share_gte1mbps", "share_gte6mbps", "share_gte30mbps")
+
+# Check which of the expected columns are actually in the panel
+existing_share_cols <- intersect(share_cols_to_plot, names(panel))
+
+if (length(existing_share_cols) > 0) {
+    avg_coverage_data <- panel %>%
+        select(year, all_of(existing_share_cols)) %>%
+        pivot_longer(
+            cols = all_of(existing_share_cols),
+            names_to = "share_type",
+            values_to = "coverage"
+        ) %>%
+        group_by(year, share_type) %>%
         summarise(
-            avg_share_gte1mbps = mean(share_gte1mbps, na.rm = TRUE),
-            avg_share_gte6mbps = mean(share_gte6mbps, na.rm = TRUE),
-            avg_share_gte30mbps = mean(share_gte30mbps, na.rm = TRUE),
+            mean_coverage = mean(coverage, na.rm = TRUE),
             .groups = "drop"
         ) %>%
-        pivot_longer(
-            cols = starts_with("avg_share_"),
-            names_to = "share_category_raw",
-            values_to = "mean_share"
-        ) %>%
         mutate(
-            share_category = factor(
-                str_replace(share_category_raw, "avg_share_gte", "≥"),
-                levels = c("≥1mbps", "≥6mbps", "≥30mbps") # Ensure correct order in legend
-            )
+            share_type = factor(share_type, levels = share_cols_to_plot) # Ensure consistent order in plot
         )
 
-    print("--- Average Coverage by Year and Speed Category ---")
-    print(
-        avg_coverage_by_year %>%
-            select(year, share_category, mean_share) %>%
-            arrange(year, share_category) %>%
-            mutate(mean_share = round(mean_share, 2)) %>%
-            pivot_wider(names_from = share_category, values_from = mean_share) %>%
-            print(n = Inf) # Print all rows
-    )
-    print("---------------------------------------------------")
-
-    coverage_plot <- ggplot(avg_coverage_by_year, aes(x = year, y = mean_share, color = share_category, group = share_category)) +
+    avg_coverage_plot <- ggplot(avg_coverage_data, aes(x = year, y = mean_coverage, color = share_type)) +
         geom_line(linewidth = 1) +
         geom_point(size = 2) +
-        scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 10), labels = function(x) paste0(x, "%")) +
-        scale_x_continuous(breaks = scales::pretty_breaks(n = length(unique(avg_coverage_by_year$year)))) +
         labs(
-            title = "Average Broadband Coverage Share Over Time",
-            subtitle = "Across all municipalities, by minimum speed threshold",
+            title = "Average Annual Broadband Coverage by Share Type",
+            subtitle = "Mean coverage across all municipalities",
             x = "Year",
-            y = "Average Coverage Share (% of Households)",
-            color = "Speed Threshold"
+            y = "Mean Coverage (%)",
+            color = "Share Type"
         ) +
-        theme_minimal(base_size = 14) +
-        theme(
-            legend.position = "bottom",
-            plot.title = element_text(hjust = 0.5),
-            plot.subtitle = element_text(hjust = 0.5)
-        )
+        scale_y_continuous(labels = scales::percent) +
+        theme_minimal() +
+        theme(legend.position = "bottom")
 
-    plot_output_file <- output_plot_avg_coverage
-    ggsave(plot_output_file, plot = coverage_plot, width = 10, height = 7, dpi = 300)
-    print(paste("Saved average annual coverage plot to:", plot_output_file))
+    ggsave(output_plot_avg_coverage, plot = avg_coverage_plot, width = 10, height = 6)
+    print(paste("Saved average annual coverage plot to:", output_plot_avg_coverage))
 } else {
-    print("Skipping plot generation due to empty panel or missing columns.")
+    print("Skipping average annual coverage plot as no share columns were found.")
 }
-# ------------------------------------------------------
 
 # Rationales from blueprint for thresholds:
 # Threshold  | Rationale
