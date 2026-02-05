@@ -1,5 +1,14 @@
 # Data processing pipeline for Breitbandatlas historical data
 
+## Recent updates (February 2026)
+
+This version fixes several data quality issues:
+
+1. **2005-2008 Baseline Fix**: Historical DSL coverage (`speed_mbps_gte = 0`) now correctly included in `share_broadband_baseline`. Previously these years showed 0% coverage.
+2. **AGS Validation**: All output AGS codes validated against Destatis 2021 reference. ~1,388 unmapped codes filtered out (see [unmapped_ags_documentation.md](unmapped_ags_documentation.md)).
+3. **Value Bounds**: All coverage values capped to [0, 100] range.
+4. **Deduplication**: Duplicate rows removed in Paket 2/3 processing via `distinct()`.
+
 ## Introduction
 
 This document details the data processing pipeline created to clean, standardize, and combine historical broadband availability data for German municipalities ("Gemeinden"). The goal is to produce a single, long-format dataset where each row represents a municipality-year combination, along with broadband technology, speed, and a corresponding value (typically percentage coverage or household count).
@@ -227,10 +236,12 @@ This list is not exhaustive, as new or unparsed variable names would become thei
 - **Key Steps**:
   1. **Data Loading and Initial Filtering**:
      a.  Loads the AGS-2021 standardized data.
-     b.  Filters out rows with NA `speed_mbps_gte` and `value` not in the [0,100] range.
+     b.  **AGS Validation**: Filters to only include AGS codes that exist in the official Destatis 2021 reference list. This removes ~1,388 unmapped AGS codes (~3.9% of observations). See [unmapped_ags_documentation.md](unmapped_ags_documentation.md) for details.
+     c.  Filters out rows with NA `speed_mbps_gte` and `value` not in the [0,100] range.
   2. **Collapse and Widen to Share Columns**:
      a.  The script first groups data by `AGS`, `year`, and `speed_mbps_gte` to get the maximum coverage for each specific speed.
      b.  It then calculates several "greater-than-or-equal-to" share variables by taking the maximum coverage for any speed at or above a given threshold. This includes the new `share_broadband_baseline` (>=0.128 Mbps) and the standard tiers (>=1, >=6, >=30 Mbps).
+     c.  **Critical for 2005-2008**: The `share_broadband_baseline` variable includes `speed_mbps_gte == 0` which represents historical DSL availability (>=0.128 Mbps). This ensures 2005-2008 baseline coverage is correctly populated (~82% mean) rather than showing 0%.
   3. **Hierarchical Consistency**: Ensures that `share_broadband_baseline >= share_gte1mbps >= share_gte6mbps >= share_gte30mbps`. Values are adjusted upwards if a lower-speed bucket has less coverage than a higher-speed bucket for the same AGS and year.
   4. **2015 Methodological Change Dummy**: Based on external analysis indicating a methodological shift, a dummy variable `method_change_2015` is added. It takes the value `1` for observations in the year 2015 and `0` otherwise.
   5. **Diagnostic Checks**: Includes summaries of panel dimensions, AGS-year uniqueness, and share column distributions. Also calculates year-on-year changes in share columns to flag large increases (>50 ppt) or significant decreases (< -20 ppt), summarizing these by year and generating a plot (`output/large_yoy_changes_plot.png`).
@@ -288,6 +299,27 @@ There are several dimensions that this dataset, by design, cannot measure:
 - **Competition and Technology Mix**: To create a consistent measure of access, the pipeline collapses all underlying technologies (DSL, Cable, Fiber) and providers into a single metric for the *maximum* available speed in an area. Therefore, the dataset does not provide information on the level of competition (e.g., number of providers) or the specific technology mix within a municipality.
 - **Intra-Municipal Variation**: The final panel data is aggregated at the municipality level. While the raw data is based on a 100m x 100m grid, this fine-grained spatial information is lost in the final panel, meaning we cannot observe which specific neighborhoods within a town are covered.
 
+## Known limitations
+
+### Methodological breaks
+
+1. **2010 baseline definition change**: `share_broadband_baseline` switches from >=0.128 Mbps (2005-2009) to >=1 Mbps (2010+). This creates a discontinuous jump in the series.
+2. **2015 provider change**: A new data provider and reporting standards caused a large discontinuous jump across all speed tiers. Use the `method_change_2015` dummy to control for this.
+
+### Filtered observations
+
+~3.9% of observations (~1,388 unique AGS codes) were filtered out because they could not be mapped to official Destatis 2021 municipality boundaries. Most affected:
+
+- **Sachsen-Anhalt 2005-2006**: ~688 AGS codes used a non-standard coding scheme
+- **2018-2021**: Some newer AGS codes not yet in crosswalk files
+
+See [unmapped_ags_documentation.md](unmapped_ags_documentation.md) for complete details.
+
+### Missing geographic coverage
+
+- **City-states**: Hamburg (02) and Berlin (11) are not consistently present in the source data
+- **Sparse years**: 2009-2017 have limited data availability across all municipalities
+
 ## Conclusion
 
-This pipeline transforms diverse historical broadband data files into a structured, AGS-2021 standardized panel dataset. The process involves careful parsing of filenames, sheet names, and column headers; meticulous handling of municipal border changes using official reclassification tables; and the creation of a clean, wide-format panel with a consistent baseline broadband metric. While efforts were made to standardize categories, the `original_variable` and `source_paket` columns in intermediate datasets provide traceability to the raw data. The final public panel data is robustly prepared for analytical work.
+This pipeline transforms historical broadband data files into a panel dataset standardized to 2021 municipal boundaries. The `original_variable` and `source_paket` columns in intermediate files preserve traceability to the raw data.

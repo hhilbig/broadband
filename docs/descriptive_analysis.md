@@ -2,6 +2,24 @@
 
 This document provides a brief descriptive overview of the harmonized German municipal broadband panel dataset (2005-2021).
 
+## Data quality notes
+
+### Use with caution
+
+This dataset has known limitations that users should be aware of:
+
+1. **Methodological breaks**: Two major breaks (2010, 2015) affect comparability across years
+2. **Missing years**: 2009-2017 have limited data availability
+3. **Filtered observations**: ~3.9% of observations filtered due to unmapped AGS codes (see [unmapped_ags_documentation.md](unmapped_ags_documentation.md) for details)
+
+### If using prior data
+
+If you previously used this dataset, please re-download. Fixes include:
+
+- 2005-2008 baseline coverage now correctly populated (~82% mean, was 0%)
+- All values validated to [0, 100] range
+- AGS codes validated against official Destatis 2021 reference
+
 ## Discontinuous changes in the data
 
 The panel data is constructed from historical sources with changing methodologies. This results in two  "breaks" in the time series that users must be aware of.
