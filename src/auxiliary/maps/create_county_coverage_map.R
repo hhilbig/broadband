@@ -73,7 +73,14 @@ county_shapes <- st_read(county_shape_file, quiet = TRUE) %>%
     mutate(county_ags = str_sub(as.character(AGS), 1, 5))
 
 county_map <- county_shapes %>%
-    left_join(county_coverage, by = "county_ags")
+    left_join(county_coverage, by = "county_ags") %>%
+    mutate(
+        uncovered_share = if_else(
+            is.na(share_gte30mbps),
+            NA_real_,
+            pmax(100 - share_gte30mbps, 0.1)
+        )
+    )
 
 missing_counties <- county_map %>%
     st_drop_geometry() %>%
@@ -84,21 +91,24 @@ if (nrow(missing_counties) > 0) {
 }
 
 plot_map <- ggplot(county_map) +
-    geom_sf(aes(fill = share_gte30mbps), color = "white", linewidth = 0.08) +
+    geom_sf(aes(fill = uncovered_share), color = "white", linewidth = 0.08) +
     scale_fill_distiller(
         palette = "YlGnBu",
-        direction = 1,
+        direction = -1,
         na.value = "grey90",
-        limits = c(50, 100),
-        breaks = c(50, 75, 90, 100),
-        labels = scales::label_number(suffix = "%"),
-        oob = scales::squish
+        trans = "log10",
+        limits = c(0.1, 50),
+        breaks = c(0.1, 1, 5, 10, 25, 50),
+        labels = c("100%", "99%", "95%", "90%", "75%", "50%"),
+        oob = scales::squish,
+        guide = guide_colorbar(reverse = TRUE)
     ) +
     coord_sf(datum = NA) +
     labs(
         title = "Broadband Coverage >=30 Mbps by County, 2021",
         subtitle = "Population-weighted average of municipality coverage",
-        fill = NULL
+        fill = NULL,
+        caption = "Color scale is log-transformed by uncovered share to show variation near full coverage."
     ) +
     haschaR::theme_hanno() +
     theme(
