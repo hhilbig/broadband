@@ -1,4 +1,8 @@
 output/broadband_gemeinde_*.csv
+*.DS_Store
+*.crdownload
+src/verification_framework/
+data/gebietsreformen/*.xlsx
 
 # Agent-facing files (Claude Code, scaffolding, session state)
 CLAUDE.md
