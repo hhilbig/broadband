@@ -1,5 +1,7 @@
 # Antworten auf die offenen Sach- und Klärungsfragen (Stand 17 Juni 2025)
 
+Archivhinweis: Diese Datei dokumentiert offene Fragen und Zwischenantworten aus dem Juni 2025. Sie ist nicht die aktuelle Release-Dokumentation. Für den Stand der harmonisierten Daten nach den Korrekturen vom Mai 2026 siehe `README.md`, `docs/data_processing_pipeline.md` und `docs/unmapped_ags_documentation.md`.
+
 Diese Datei fasst Ihre noch offenen Punkte zusammen. Grundlage sind
 
 * **Methodik‑PDFs 2005 – 2020** (TÜV Rheinland / atene KOM)

@@ -2,6 +2,8 @@
 
 This document provides a brief descriptive overview of the harmonized German municipal broadband panel dataset (2005-2021).
 
+Last updated: May 7, 2026. Plots were regenerated from `output/panel_data_public.csv`.
+
 ## Data quality notes
 
 ### Use with caution
@@ -23,7 +25,7 @@ If you previously used this dataset, please re-download. Fixes include:
 
 ## Discontinuous changes in the data
 
-The panel data is constructed from historical sources with changing methodologies. This results in two  "breaks" in the time series that users must be aware of.
+The panel data is constructed from historical sources with changing methodologies. This results in two "breaks" in the time series that users must be aware of.
 
 ### The 2009/2010 break
 
@@ -33,7 +35,7 @@ To create a continuous series for basic internet availability, the `share_broadb
 - **For 2009**: No municipality panel is available in the current input files.
 - **From 2010 onwards**: The variable is based on >=1 Mbps coverage. Since >=1 Mbps implies >=0.128 Mbps, this is a lower bound on basic access.
 
-**The consequence is a "jump" in the data where the definition of the baseline metric changes.** This is visible in the plots as a sharp jump between 2008 and 2010, when the data source switches. This is distinct from organic growth.
+**The consequence is a discontinuity in the data where the definition of the baseline metric changes.** In the current panel, this appears as a sharp drop between 2008 and 2010, when the source switches from historical DSL availability to the stricter >=1 Mbps metric. This is distinct from organic change in broadband availability.
 
 ### The 2015 break
 
@@ -45,13 +47,13 @@ As noted in the project documentation, 2015 marks a major structural break due t
 
 ### Average annual coverage
 
-This plot shows the mean coverage for the baseline metric alongside higher speed tiers. The two key events are clearly visible: the **2010 jump** where the baseline definition changes, and the massive **2015 methodological break**.
+This plot shows the mean coverage for the baseline metric alongside higher speed tiers. The two key events are clearly visible: the **2010 definition break** in the baseline series and the large **2015 methodological break**.
 
 ![Average Annual Coverage](../output/descriptives/average_annual_coverage_plot.png)
 
 ### Year-over-year change in coverage
 
-This plot highlights the magnitude of the two breaks. The jump in `baseline` coverage between 2008 and 2010 is substantial. However, it is dwarfed by the massive spike across all speed tiers in 2015.
+This plot highlights the magnitude of the two breaks. The `baseline` change between 2008 and 2010 is substantial and definition-driven. The 2015 spike is large across all speed tiers and reflects the documented methodological break.
 
 ![Year-over-Year Change in Coverage](../output/descriptives/yoy_coverage_change_plot.png)
 

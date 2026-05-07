@@ -1,5 +1,7 @@
-Goal:
+# Project Goal
 
-Create dataset of broadband exposure at the "Gemeinde" level (municipality)
+This project harmonizes historical Breitbandatlas data into a municipality-level panel of broadband availability in Germany.
 
-Retain as much info on the type and speed of broadband. Resulting dataset should be "long", i.e. rows are municipality-year combinations. The ID for municipalities is the 8-digit AGS key.
+The pipeline preserves a long-format intermediate file with municipality-year-technology-speed observations (`output/broadband_gemeinde_combined_long_ags2021.rds`). The public release is a wide municipality-year panel (`output/panel_data_public.csv`) with one row per municipality-year.
+
+Municipality identifiers use 8-digit AGS codes standardized to Destatis 2021 boundaries. The public data preserve as much usable speed-tier information as the source files allow while documenting the main limitations: no 2009 municipality panel, early years with only baseline DSL coverage, a 2015 methodological break, and a small share of historical AGS codes that cannot be mapped defensibly to 2021 boundaries.

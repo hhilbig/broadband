@@ -11,7 +11,7 @@ This version fixes several data quality issues:
 
 ## Introduction
 
-This document details the data processing pipeline created to clean, standardize, and combine historical broadband availability data for German municipalities ("Gemeinden"). The goal is to produce a single, long-format dataset where each row represents a municipality-year combination, along with broadband technology, speed, and a corresponding value (typically percentage coverage or household count).
+This document details the data processing pipeline created to clean, standardize, and combine historical broadband availability data for German municipalities ("Gemeinden"). The pipeline produces a long-format intermediate dataset with municipality-year-technology-speed observations and a final public wide panel with one row per municipality-year.
 
 The data originates from three main "Pakets" (bundles) provided by the Bundesnetzagentur, containing historical data from previous Breitbandatlas operators. The focus of this processing is on data relevant to private households ("privat").
 
@@ -24,7 +24,7 @@ The core strategy involves:
 3. **Data Harmonization**: Transforming varied column names and data structures into a consistent schema across all Pakets. This includes extracting technology type, minimum speed (>= Mbit/s), and the reported value.
 4. **Filtering**: Focusing on data for "privat" (private households) and excluding "gewerbe" (business) and "mobilfunk" (mobile telecommunications) where specified.
 5. **Verification**: Implementing checks within scripts and separate verification scripts to ensure data integrity (e.g., correct AGS format, consistent year assignment).
-6. **Combination**: Merging the processed data from individual Pakets into a final, comprehensive long-format dataset.
+6. **Combination**: Merging the processed data from individual Pakets into a comprehensive long-format intermediate dataset used to build the public panel.
 
 All R scripts utilize libraries from the `tidyverse` for data manipulation, `readxl` for Excel files, `stringr` for string operations, and `here` for path management.
 
@@ -259,7 +259,7 @@ The final public panel dataset (`output/panel_data_public.csv`) is structured at
 | Variable                     | Type      | Description                                                                                                                                              | Values           |
 | ---------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
 | `AGS`                      | character | 8-digit official municipality key, standardized to 2021 borders.                                                                                         | e.g., "01001000" |
-| `year`                     | integer   | The year of the observation.                                                                                                                             | 2005-2021        |
+| `year`                     | integer   | The year of the observation.                                                                                                                             | 2005-2021, excluding 2009 |
 | `share_broadband_baseline` | double    | Share of households (%) with access to basic broadband (**>=0.128 Mbps**). This variable provides the most complete time series, starting in 2005. | 0-100            |
 | `share_gte1mbps`           | double    | Share of households (%) with access to **>=1 Mbps**. Missing before the tier is reported.                                                          | 0-100 or missing |
 | `share_gte6mbps`           | double    | Share of households (%) with access to **>=6 Mbps**. Missing before the tier is reported.                                                          | 0-100 or missing |
@@ -280,7 +280,7 @@ This dataset is designed for quantitative longitudinal analysis of the effects o
 
 The panel is unbalanced, as not all municipalities report data in all years, and the availability of specific speed tiers varies over time.
 
-- **Time Period**: The dataset covers the years **2005 to 2021**. The new `share_broadband_baseline` variable provides a consistent measure of basic availability across this entire period.
+- **Time Period**: The dataset covers the years **2005 to 2021**, excluding 2009. The `share_broadband_baseline` variable provides the most complete measure of basic availability, but it has a definition break between 2008 and 2010.
 - **Broadband Tiers**: Meaningful data for the higher-speed `share_*` variables still emerges over time:
   - `share_gte1mbps`, `share_gte6mbps`, and `share_gte30mbps` are observed from **2010 onwards** in the current final panel.
   - Before 2010, higher speed tiers are left missing rather than filled with zero.
@@ -304,7 +304,7 @@ There are several dimensions that this dataset, by design, cannot measure:
 
 ### Methodological breaks
 
-1. **2010 baseline definition change**: `share_broadband_baseline` switches from >=0.128 Mbps (2005-2008) to >=1 Mbps (2010+). There is no 2009 municipality panel in the current input files. This creates a discontinuous jump in the series.
+1. **2010 baseline definition change**: `share_broadband_baseline` switches from >=0.128 Mbps (2005-2008) to >=1 Mbps (2010+). There is no 2009 municipality panel in the current input files. This creates a discontinuity in the series.
 2. **2015 provider change**: A new data provider and reporting standards caused a large discontinuous jump across all speed tiers. Use the `method_change_2015` dummy to control for this.
 
 ### Filtered observations
