@@ -1,11 +1,9 @@
 library(tidyverse)
 library(here)
-library(readxl)
 
 # --- Configuration ---
 # Use the public dataset for descriptions
 data_file_path <- here("output", "panel_data_public.csv")
-crosswalk_file <- here("data", "muni_mergers", "ref-gemeinden-umrech-2021-2011-2020.xlsx")
 output_dir <- here("output", "descriptives")
 
 # Create output directory if it doesn't exist
@@ -15,43 +13,6 @@ if (!dir.exists(output_dir)) {
 
 # --- Load Data ---
 panel_data <- read_csv(data_file_path, show_col_types = FALSE)
-
-standardize_ags_8 <- function(x) {
-    str_pad(str_replace_all(as.character(x), "\\D", ""), 8, pad = "0")
-}
-
-find_col <- function(names_vec, patterns) {
-    hit <- which(map_lgl(names_vec, ~ all(str_detect(str_to_lower(.x), patterns))))
-    if (length(hit) == 0) {
-        stop("Could not find column matching: ", paste(patterns, collapse = ", "))
-    }
-    names_vec[hit[1]]
-}
-
-weighted_mean_or_na <- function(values, weights) {
-    valid <- !is.na(values) & !is.na(weights) & weights > 0
-    if (!any(valid)) {
-        return(NA_real_)
-    }
-    weighted.mean(values[valid], weights[valid])
-}
-
-raw_pop <- read_excel(crosswalk_file, sheet = "2020")
-names_raw_pop <- names(raw_pop)
-
-ags_2021_col <- find_col(names_raw_pop, c("gemeinden", "2021"))
-pop_col <- find_col(names_raw_pop, c("bevölkerung", "2020"))
-transition_col <- find_col(names_raw_pop, c("bevölkerungs", "schlüssel"))
-
-population_weights <- raw_pop %>%
-    transmute(
-        AGS = standardize_ags_8(.data[[ags_2021_col]]),
-        transition_share = as.numeric(.data[[transition_col]]),
-        population = 100 * as.numeric(.data[[pop_col]])
-    ) %>%
-    filter(!is.na(AGS), !is.na(population), !is.na(transition_share)) %>%
-    group_by(AGS) %>%
-    summarise(population_weight = sum(population * transition_share, na.rm = TRUE), .groups = "drop")
 
 share_cols <- c(
     "share_broadband_baseline",
@@ -157,18 +118,14 @@ print(coverage_long %>% group_by(speed_tier) %>% summarise(
 
 # --- Plot 3: Average Annual Coverage (from main pipeline) ---
 avg_coverage_data <- panel_data %>%
-    left_join(population_weights, by = "AGS") %>%
-    select(year, population_weight, all_of(share_cols)) %>%
+    select(year, all_of(share_cols)) %>%
     pivot_longer(
-        cols = all_of(share_cols),
+        cols = -year,
         names_to = "speed_tier",
         values_to = "coverage"
     ) %>%
     group_by(year, speed_tier) %>%
-    summarise(
-        mean_coverage = weighted_mean_or_na(coverage, population_weight),
-        .groups = "drop"
-    ) %>%
+    summarise(mean_coverage = mean(coverage, na.rm = TRUE), .groups = "drop") %>%
     filter(is.finite(mean_coverage)) %>%
     mutate(speed_tier = factor(speed_tier, levels = share_cols, labels = share_labels))
 
@@ -196,9 +153,9 @@ avg_coverage_plot <- ggplot(avg_coverage_data, aes(x = year, y = mean_coverage, 
         color = "grey25"
     ) +
     labs(
-        title = "Population-Weighted Annual Broadband Coverage in German Municipalities",
+        title = "Average Annual Broadband Coverage in German Municipalities",
         x = "Year",
-        y = "Population-Weighted Coverage (%)",
+        y = "Mean Coverage (%)",
         color = NULL
     ) +
     scale_y_continuous(
