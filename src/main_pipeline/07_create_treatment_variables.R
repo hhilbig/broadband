@@ -17,6 +17,19 @@ share_cols <- c(
     "share_gte30mbps"
 )
 
+share_labels <- c(
+    share_broadband_baseline = "Baseline",
+    share_gte1mbps = ">=1 Mbps",
+    share_gte6mbps = ">=6 Mbps",
+    share_gte30mbps = ">=30 Mbps"
+)
+
+break_labels <- tibble(
+    year = c(2010, 2015),
+    text_x = c(2009.85, 2014.85),
+    label = c("definition break", "method break")
+)
+
 max_or_na <- function(x) {
     if (length(x) == 0 || all(is.na(x))) {
         return(NA_real_)
@@ -275,19 +288,42 @@ avg_coverage_data <- panel %>%
     group_by(year, share_type) %>%
     summarise(mean_coverage = mean(coverage, na.rm = TRUE), .groups = "drop") %>%
     filter(is.finite(mean_coverage)) %>%
-    mutate(share_type = factor(share_type, levels = share_cols))
+    mutate(share_type = factor(share_type, levels = share_cols, labels = share_labels))
 
 avg_coverage_plot <- ggplot(avg_coverage_data, aes(x = year, y = mean_coverage, color = share_type)) +
+    geom_vline(
+        data = break_labels,
+        aes(xintercept = year),
+        inherit.aes = FALSE,
+        linetype = "dashed",
+        linewidth = 0.4,
+        color = "grey45"
+    ) +
+    geom_text(
+        data = break_labels,
+        aes(x = text_x, y = 101, label = label),
+        inherit.aes = FALSE,
+        angle = 90,
+        hjust = 1,
+        vjust = 0.5,
+        size = 3.2,
+        color = "grey25"
+    ) +
     geom_line(linewidth = 1) +
     geom_point(size = 2) +
     labs(
-        title = "Average Annual Broadband Coverage by Share Type",
+        title = "Average Annual Broadband Coverage in German Municipalities",
         x = "Year",
         y = "Mean Coverage (%)",
-        color = "Share Type"
+        color = NULL
     ) +
-    scale_y_continuous(labels = scales::label_number(suffix = "%")) +
-    theme_minimal() +
+    scale_y_continuous(
+        limits = c(0, 105),
+        breaks = seq(0, 100, 25),
+        labels = scales::label_number(suffix = "%")
+    ) +
+    scale_x_continuous(breaks = c(2005, 2010, 2015, 2020)) +
+    haschaR::theme_hanno() +
     theme(legend.position = "bottom")
 
 ggsave(output_plot_avg_coverage, plot = avg_coverage_plot, width = 10, height = 6)
