@@ -1,1 +1,15 @@
 output/broadband_gemeinde_*.csv
+
+# Agent-facing files (Claude Code, scaffolding, session state)
+CLAUDE.md
+.claude/
+MEMORY.md
+KNOWLEDGE_BASE.md
+plans/
+session_logs/
+templates/
+agents/
+.cursor/
+.cursorrules
+.aider*
+.continue/
