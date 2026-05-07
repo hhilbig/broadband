@@ -18,7 +18,7 @@ share_cols <- c(
 )
 
 share_labels <- c(
-    share_broadband_baseline = "Baseline",
+    share_broadband_baseline = "Basic access",
     share_gte1mbps = ">=1 Mbps",
     share_gte6mbps = ">=6 Mbps",
     share_gte30mbps = ">=30 Mbps"
@@ -315,7 +315,8 @@ avg_coverage_plot <- ggplot(avg_coverage_data, aes(x = year, y = mean_coverage, 
         title = "Average Annual Broadband Coverage in German Municipalities",
         x = "Year",
         y = "Mean Coverage (%)",
-        color = NULL
+        color = NULL,
+        caption = "Basic access: >=0.128 Mbps in 2005-2008; >=1 Mbps from 2010 onward."
     ) +
     scale_y_continuous(
         limits = c(0, 105),
@@ -323,6 +324,7 @@ avg_coverage_plot <- ggplot(avg_coverage_data, aes(x = year, y = mean_coverage, 
         labels = scales::label_number(suffix = "%")
     ) +
     scale_x_continuous(breaks = c(2005, 2010, 2015, 2020)) +
+    scale_color_manual(values = setNames(RColorBrewer::brewer.pal(5, "YlGnBu")[2:5], share_labels)) +
     haschaR::theme_hanno() +
     theme(legend.position = "bottom")
 

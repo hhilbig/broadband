@@ -30,6 +30,7 @@ Details on filtered AGS codes are in `docs/unmapped_ags_documentation.md`.
 - `output/panel_data_with_treatment.csv`: internal version with treatment indicators and event-time variables.
 - `docs/data_processing_pipeline.md`: processing details and validation notes.
 - `output/average_annual_coverage_plot.png` and `output/large_yoy_changes_plot.png`: diagnostic plots.
+- `output/county_gte30_coverage_map_2021.png`: county-level 2021 map of `>=30 Mbps` coverage, aggregating municipality values with population weights.
 
 ## Public Data Codebook
 
