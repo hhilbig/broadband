@@ -2,11 +2,13 @@
 
 ## Overview
 
-During the data processing pipeline, **1,388 unique AGS codes** (affecting ~3.9% of panel rows) were identified that do not exist in the official Destatis 2021 municipality reference list. These records are **filtered out** in step 07 of the pipeline.
+During AGS standardization, step 06 filters **68,328 post-deduplicated long rows** because their historical AGS codes cannot be mapped to the official Destatis 2021 municipality reference. This is **2.22%** of the post-deduplicated long input to the crosswalk step.
+
+The filtered rows cover **1,206 unique historical AGS codes**. The final public panel contains only AGS codes present in the Destatis 2021 reference.
 
 ## Root Cause
 
-The broadband source data (particularly Paket 1, years 2005-2008) uses an **AGS coding scheme that differs from official Destatis records** for certain regions, especially Sachsen-Anhalt.
+The broadband source data, especially Paket 1 in 2005-2008, uses AGS coding schemes that differ from official Destatis records for some regions. Sachsen-Anhalt is the largest case.
 
 ### Example: Sachsen-Anhalt
 
@@ -15,67 +17,58 @@ The broadband source data (particularly Paket 1, years 2005-2008) uses an **AGS 
 | Broadband data | `15081005`, `15081010` | 081, 082, 083... |
 | Destatis crosswalk | `15101000`, `15151002` | 101, 151, 152... |
 
-There is **zero overlap** between these two coding systems for Sachsen-Anhalt municipalities.
+There is no reliable overlap between these two coding systems for many affected Sachsen-Anhalt municipalities.
 
-## Why Matching is Impossible
+## Mapping Attempt
 
-1. **Different AGS numbering schemes**: The broadband data provider used a non-standard or preliminary AGS system
-2. **Missing municipality names**: Only 168 of 995 Sachsen-Anhalt entries in the source data have municipality names (83% are `NA`)
-3. **No conversion table exists**: We searched all available Gebietsreformen files (1969-2024) and found no mapping between these schemes
+Step 06 uses three mapping sources:
 
-## Affected Data
+1. The official Destatis 2005-2020 to 2021 population-proportional crosswalks.
+2. Direct 1:1 mappings only when the source AGS already exists in the Destatis 2021 reference.
+3. Deterministic reform-chain mappings from `data/gebietsreformen/combined_reform_mappings.rds`.
 
-### By Year
-| Year | Rows Filtered | Unique AGS |
-|------|---------------|------------|
-| 2005 | 896 | 896 |
-| 2006 | 888 | 888 |
-| 2007 | 83 | 83 |
-| 2008 | 2 | 2 |
-| 2018 | 171 | 171 |
-| 2019 | 469 | 469 |
-| 2020 | 450 | 450 |
-| 2021 | 461 | 461 |
+The current run maps **525 unique historical AGS codes** through deterministic reform chains. These are saved in `output/supplementary_ags_crosswalk.rds`. Ambiguous reform paths, cycles, and codes with no path to a 2021 reference AGS are not forced into a mapping.
+
+## Remaining Unmapped Codes
+
+The remaining **1,206 unique historical AGS codes** are saved in `output/unmapped_ags_for_review.csv`.
 
 ### By State
-| State | Code | Count | % of Filtered |
-|-------|------|-------|---------------|
-| Sachsen-Anhalt | 15 | 688 | 49.6% |
-| Thüringen | 16 | 243 | 17.5% |
-| Sachsen | 14 | 85 | 6.1% |
-| Niedersachsen | 03 | 84 | 6.1% |
-| Other states | various | 288 | 20.7% |
 
-## Resolution Attempts
-
-### Successfully Mapped (609 AGS)
-Using the Gebietsreformen files (2006-2024), we were able to chain municipality reform mappings for 609 AGS codes. These are applied during the AGS standardization step (06).
-
-### Could Not Map (779 AGS)
-The remaining 779 AGS codes (primarily Sachsen-Anhalt) cannot be mapped due to the incompatible coding schemes described above.
+| State code | Unique AGS |
+|------------|------------|
+| 15 | 688 |
+| 16 | 239 |
+| 03 | 80 |
+| 09 | 63 |
+| 13 | 37 |
+| 07 | 29 |
+| 14 | 23 |
+| 11 | 12 |
+| 05 | 9 |
+| 02 | 7 |
+| 01 | 6 |
+| 06 | 6 |
+| 04 | 5 |
+| 10 | 1 |
+| 12 | 1 |
 
 ## Decision: Filter Out
 
-These unmapped AGS codes are **filtered out** in `07_create_treatment_variables.R` because:
+These unmapped AGS codes are filtered out in `06_standardize_ags_to_2021.R` because:
 
-1. They cannot be linked to official 2021 municipality boundaries
-2. They would cause issues when merging with other datasets using official AGS codes
-3. The affected data represents only ~3.9% of the total panel
-4. Most affected years (2005-2006) have limited broadband variation anyway (early DSL era)
-
-## Impact on Analysis
-
-- **Final panel**: Contains only AGS codes that exist in official Destatis 2021 records
-- **Data loss**: ~3.9% of observations filtered out
-- **Geographic coverage**: Some Sachsen-Anhalt municipalities in 2005-2006 are not represented
-- **Temporal coverage**: 2005-2008 data for affected municipalities is missing
+1. They cannot be linked defensibly to official 2021 municipality boundaries.
+2. Keeping them would reintroduce non-reference AGS codes into the public panel.
+3. The affected rows are 2.22% of the post-deduplicated long input to the standardization step.
+4. Most affected early-year codes are in periods with limited broadband tier detail.
 
 ## Files
 
 - Filtered AGS list: `output/unmapped_ags_for_review.csv`
-- Supplementary crosswalk (for 609 mapped): `output/supplementary_ags_crosswalk.rds`
+- Reform-chain mapping details: `output/missing_ags_to_2021_mapping.rds`
+- Supplementary crosswalk: `output/supplementary_ags_crosswalk.rds`
 - Reform mappings source: `data/gebietsreformen/combined_reform_mappings.rds`
 
 ## Future Improvements
 
-If additional data sources become available (e.g., historical municipality name lists for Sachsen-Anhalt), the unmapped AGS codes could potentially be reconciled through name-based matching.
+If additional historical municipality-name or provider-code crosswalks become available, especially for Sachsen-Anhalt, some currently unmapped AGS codes could potentially be reconciled through name-based or provider-code matching.

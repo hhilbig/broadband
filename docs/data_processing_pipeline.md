@@ -1,13 +1,13 @@
 # Data processing pipeline for Breitbandatlas historical data
 
-## Recent updates (February 2026)
+## Recent updates (May 2026)
 
 This version fixes several data quality issues:
 
-1. **2005-2008 Baseline Fix**: Historical DSL coverage (`speed_mbps_gte = 0`) now correctly included in `share_broadband_baseline`. Previously these years showed 0% coverage.
-2. **AGS Validation**: All output AGS codes validated against Destatis 2021 reference. ~1,388 unmapped codes filtered out (see [unmapped_ags_documentation.md](unmapped_ags_documentation.md)).
-3. **Value Bounds**: All coverage values capped to [0, 100] range.
-4. **Deduplication**: Duplicate rows removed in Paket 2/3 processing via `distinct()`.
+1. **2005-2008 Baseline Fix**: Historical DSL coverage (`speed_mbps_gte = 0.128`) is correctly included in `share_broadband_baseline`. Previously these years showed 0% coverage.
+2. **AGS Validation**: All output AGS codes are validated against the Destatis 2021 reference. Step 06 filters 1,206 unmapped historical AGS codes, affecting 68,328 post-deduplicated long rows (2.22%).
+3. **Value Bounds**: Coverage values outside [0, 100] are filtered before aggregation. Standardized outputs fail validation if out-of-bounds values remain; they are not capped.
+4. **Deduplication**: Duplicate AGS-year-technology-speed cells are collapsed with `max(value)` before AGS standardization so overlapping source files do not inflate percentages.
 
 ## Introduction
 
@@ -186,7 +186,7 @@ This list is not exhaustive, as new or unparsed variable names would become thei
      f.  Adds a `source_paket` column (e.g., "Paket 1", "Paket 2", "Paket 3") to trace data origin.
      g.  **Column Standardization**: Ensures a `data_category` column exists (adds as `NA_character_` if missing). Converts `value` to numeric (handling potential commas as decimals). Selects a common, defined set of columns (`AGS, year, data_category, technology_group, speed_mbps_gte, value, original_variable, source_paket`) to ensure consistent schemas before binding.
   2. The processed data frames from each Paket are combined using `bind_rows()`.
-  3. Ensures consistent data types for key columns (`speed_mbps_gte` as integer, `value` as numeric, `year` as integer) across the combined dataset.
+  3. Ensures consistent data types for key columns (`speed_mbps_gte` as numeric, preserving `0.128`, `value` as numeric, `year` as integer) across the combined dataset.
   4. A final `distinct()` operation is performed on the entire combined dataset to remove any rows that are identical across all columns.
   5. Prints various summaries of the final dataset:
      - Total row counts before/after distinct.
@@ -210,23 +210,23 @@ This list is not exhaustive, as new or unparsed variable names would become thei
   1. **Master Crosswalk Generation**:
      a.  The `process_merger_sheet` function reads individual sheets from the Destatis Excel files. Each sheet typically corresponds to a specific historical year (e.g., "2010", "2015").
      b.  It dynamically identifies key columns within each sheet: the historical AGS (e.g., "Gemeinden 31.12.YYYY"), the target 2021 AGS ("Gemeinden 31.12.2021"), and the population-proportional key ("bevölkerungs- proportionaler Umsteige- schlüssel"). Column names containing `\r\n` are handled by `str_detect`.
-     c.  Crucially, the values from the "bevölkerungs- proportionaler Umsteige- schlüssel" column are treated as raw population figures for the part of the historical municipality mapping to a 2021 municipality. The function calculates the true `pop_share` (0-1 proportion) for each mapping by dividing this part-population by the sum of all part-populations for that specific historical AGS in that year. This ensures that the sum of `pop_share` for any given historical AGS (for a specific year) equals 1.0.
+     c.  The population-proportional transition key is combined with the historical population column to construct a `population_weight` for each historical-to-2021 mapping row.
      d.  AGS codes are standardized to 8-digit character strings with leading zeros.
-     e.  The script iterates through all relevant years (2005-2020), processes the corresponding sheets from the two Excel files, and binds them into a single `master_crosswalk` table containing `AGS_hist`, `year_hist`, `AGS_2021`, and `pop_share`.
-     f.  A validation step checks that the sum of `pop_share` for each `AGS_hist` and `year_hist` combination in the `master_crosswalk` is approximately 1.0.
+     e.  The script iterates through all relevant years (2005-2020), processes the corresponding sheets from the two Excel files, and binds them into a single `master_crosswalk` table containing `AGS_hist`, `year_hist`, `AGS_2021`, `transition_share`, and `population_weight`.
+     f.  A validation step checks that the transition shares for each `AGS_hist` and `year_hist` combination sum to approximately 1.0.
   2. **Loading and Preparing Broadband Data**:
      a.  Loads `output/broadband_gemeinde_combined_long.rds`.
      b.  Ensures `AGS` and `year` columns are of the correct type for joining (character and integer, respectively).
   3. **Joining Broadband Data with Master Crosswalk**:
-     a.  The `master_crosswalk` is augmented: AGS-year combinations present in the broadband data but *not* in the Destatis 2005-2020 crosswalks (e.g., data from years > 2020, or stable municipalities within the 2005-2020 period not listed in merger files) are assumed to represent 1:1 mappings. For these, `AGS_2021` is set to the original `AGS`, and `pop_share` is set to 1.0.
-     b.  The broadband data is then left-joined with this augmented crosswalk using the historical `AGS` and `year`.
-  4. **Apportioning Broadband Values**:
-     a.  For each row in the joined data, the broadband `value` (which is a coverage percentage) is multiplied by the corresponding `pop_share` from the crosswalk. This calculates the `weighted_value`, representing the contribution of that historical AGS part to the 2021 AGS's overall broadband coverage for a specific metric.
-  5. **Aggregating to 2021 AGS**:
+     a.  The `master_crosswalk` is augmented only when a defensible mapping exists: valid 2021 AGS codes are mapped 1:1, and selected invalid historical AGS codes are mapped through deterministic reform chains in `data/gebietsreformen/combined_reform_mappings.rds`.
+     b.  Invalid AGS codes that cannot be mapped to the Destatis 2021 reference are written to `output/unmapped_ags_for_review.csv` and filtered. The current run filters 68,328 post-deduplicated long rows (2.22%) covering 1,206 historical AGS codes.
+     c.  Before joining, duplicate historical AGS-year-technology-speed cells are collapsed with `max(value)`, preserving traceability in `original_variable` and `source_paket`.
+     d.  The broadband data is left-joined with the crosswalk using historical `AGS` and `year`.
+  4. **Aggregating Percentage Values to 2021 AGS**:
      a.  The data is grouped by the new `AGS_2021` (renamed to `AGS`), `year`, `data_category`, `technology_group`, and `speed_mbps_gte`.
-     b.  The `weighted_value` is summed for these groups to get the new `value` for the 2021 AGS.
+     b.  Coverage percentages are aggregated with a population-weighted mean using `population_weight`. This avoids the prior error of summing percentages across merged municipalities or overlapping source packages.
      c.  `original_variable` and `source_paket` are handled by concatenating unique sorted values, separated by a semicolon, to preserve traceability. An `n_agg` column counts how many original rows were aggregated.
-     d.  The aggregated `value` (coverage) is capped at 100 if any sums slightly exceed this due to floating-point arithmetic.
+     d.  The script validates that aggregated coverage remains within [0, 100] and stops if it does not.
 - **Output**: `output/broadband_gemeinde_combined_long_ags2021.rds`. This file contains broadband data where all municipalities are represented by their 2021 AGS codes, with coverage values appropriately apportioned.
 
 ## Final panel creation (`create_treatment_variables.R`)
@@ -236,13 +236,14 @@ This list is not exhaustive, as new or unparsed variable names would become thei
 - **Key Steps**:
   1. **Data Loading and Initial Filtering**:
      a.  Loads the AGS-2021 standardized data.
-     b.  **AGS Validation**: Filters to only include AGS codes that exist in the official Destatis 2021 reference list. This removes ~1,388 unmapped AGS codes (~3.9% of observations). See [unmapped_ags_documentation.md](unmapped_ags_documentation.md) for details.
-     c.  Filters out rows with NA `speed_mbps_gte` and `value` not in the [0,100] range.
+     b.  Re-validates that AGS codes exist in the official Destatis 2021 reference list. The filtering of unmapped AGS codes occurs in step 06.
+     c.  Filters only invalid rows with missing speed/value or values outside [0,100]. The current run filters zero rows at this stage.
   2. **Collapse and Widen to Share Columns**:
      a.  The script first groups data by `AGS`, `year`, and `speed_mbps_gte` to get the maximum coverage for each specific speed.
      b.  It then calculates several "greater-than-or-equal-to" share variables by taking the maximum coverage for any speed at or above a given threshold. This includes the new `share_broadband_baseline` (>=0.128 Mbps) and the standard tiers (>=1, >=6, >=30 Mbps).
-     c.  **Critical for 2005-2008**: The `share_broadband_baseline` variable includes `speed_mbps_gte == 0` which represents historical DSL availability (>=0.128 Mbps). This ensures 2005-2008 baseline coverage is correctly populated (~82% mean) rather than showing 0%.
-  3. **Hierarchical Consistency**: Ensures that `share_broadband_baseline >= share_gte1mbps >= share_gte6mbps >= share_gte30mbps`. Values are adjusted upwards if a lower-speed bucket has less coverage than a higher-speed bucket for the same AGS and year.
+     c.  **Critical for 2005-2008**: The `share_broadband_baseline` variable includes `speed_mbps_gte == 0.128`, representing historical DSL availability (>=0.128 Mbps). This ensures 2005-2008 baseline coverage is correctly populated (~81% mean in the final public file) rather than showing 0%.
+     d.  Missing speed tiers remain missing (`NA`) instead of being converted to zero. In 2005-2008, `share_gte1mbps`, `share_gte6mbps`, and `share_gte30mbps` are missing because the source files do not report those tiers.
+  3. **Hierarchical Consistency**: The "at or above" threshold construction enforces `share_broadband_baseline >= share_gte1mbps >= share_gte6mbps >= share_gte30mbps` whenever both adjacent tiers are observed. The script stops if violations remain.
   4. **2015 Methodological Change Dummy**: Based on external analysis indicating a methodological shift, a dummy variable `method_change_2015` is added. It takes the value `1` for observations in the year 2015 and `0` otherwise.
   5. **Diagnostic Checks**: Includes summaries of panel dimensions, AGS-year uniqueness, and share column distributions. Also calculates year-on-year changes in share columns to flag large increases (>50 ppt) or significant decreases (< -20 ppt), summarizing these by year and generating a plot (`output/large_yoy_changes_plot.png`).
 - **Outputs**:
@@ -260,9 +261,9 @@ The final public panel dataset (`output/panel_data_public.csv`) is structured at
 | `AGS`                      | character | 8-digit official municipality key, standardized to 2021 borders.                                                                                         | e.g., "01001000" |
 | `year`                     | integer   | The year of the observation.                                                                                                                             | 2005-2021        |
 | `share_broadband_baseline` | double    | Share of households (%) with access to basic broadband (**>=0.128 Mbps**). This variable provides the most complete time series, starting in 2005. | 0-100            |
-| `share_gte1mbps`           | double    | Share of households (%) with access to**>=1 Mbps**.                                                                                                | 0-100            |
-| `share_gte6mbps`           | double    | Share of households (%) with access to**>=6 Mbps**.                                                                                                | 0-100            |
-| `share_gte30mbps`          | double    | Share of households (%) with access to**>=30 Mbps**.                                                                                               | 0-100            |
+| `share_gte1mbps`           | double    | Share of households (%) with access to **>=1 Mbps**. Missing before the tier is reported.                                                          | 0-100 or missing |
+| `share_gte6mbps`           | double    | Share of households (%) with access to **>=6 Mbps**. Missing before the tier is reported.                                                          | 0-100 or missing |
+| `share_gte30mbps`          | double    | Share of households (%) with access to **>=30 Mbps**. Missing before the tier is reported.                                                         | 0-100 or missing |
 | `method_change_2015`       | integer   | Dummy variable:`1` if `year` is 2015, otherwise `0`.                                                                                               | `0`, `1`     |
 
 ## Analytical potential and data availability
@@ -281,8 +282,8 @@ The panel is unbalanced, as not all municipalities report data in all years, and
 
 - **Time Period**: The dataset covers the years **2005 to 2021**. The new `share_broadband_baseline` variable provides a consistent measure of basic availability across this entire period.
 - **Broadband Tiers**: Meaningful data for the higher-speed `share_*` variables still emerges over time:
-  - `share_gte1mbps` and `share_gte6mbps` can be measured relatively consistently from **2009 onwards**.
-  - `share_gte30mbps` becomes a consistently reported metric from around **2013 onwards**.
+  - `share_gte1mbps`, `share_gte6mbps`, and `share_gte30mbps` are observed from **2010 onwards** in the current final panel.
+  - Before 2010, higher speed tiers are left missing rather than filled with zero.
 - **AGS Standardization**: All municipal identifiers (`AGS`) have been standardized to the **31.12.2021** administrative boundaries. This ensures that analyses are not biased by municipal mergers or splits over the observation period.
 
 ### Observing changes over time
@@ -303,22 +304,22 @@ There are several dimensions that this dataset, by design, cannot measure:
 
 ### Methodological breaks
 
-1. **2010 baseline definition change**: `share_broadband_baseline` switches from >=0.128 Mbps (2005-2009) to >=1 Mbps (2010+). This creates a discontinuous jump in the series.
+1. **2010 baseline definition change**: `share_broadband_baseline` switches from >=0.128 Mbps (2005-2008) to >=1 Mbps (2010+). There is no 2009 municipality panel in the current input files. This creates a discontinuous jump in the series.
 2. **2015 provider change**: A new data provider and reporting standards caused a large discontinuous jump across all speed tiers. Use the `method_change_2015` dummy to control for this.
 
 ### Filtered observations
 
-~3.9% of observations (~1,388 unique AGS codes) were filtered out because they could not be mapped to official Destatis 2021 municipality boundaries. Most affected:
+Step 06 filters 68,328 post-deduplicated long rows (2.22%) covering 1,206 historical AGS codes because they cannot be mapped to official Destatis 2021 municipality boundaries. Most affected:
 
 - **Sachsen-Anhalt 2005-2006**: ~688 AGS codes used a non-standard coding scheme
-- **2018-2021**: Some newer AGS codes not yet in crosswalk files
+- **2018-2021**: Some source AGS codes are not in the official 2021 reference or deterministic reform-chain mapping
 
 See [unmapped_ags_documentation.md](unmapped_ags_documentation.md) for complete details.
 
 ### Missing geographic coverage
 
 - **City-states**: Hamburg (02) and Berlin (11) are not consistently present in the source data
-- **Sparse years**: 2009-2017 have limited data availability across all municipalities
+- **Sparse years and tiers**: 2009 is absent from the current municipality panel; 2005-2008 only report the historical baseline tier.
 
 ## Conclusion
 

@@ -3,6 +3,20 @@ library(stringr)
 library(dplyr)
 library(here)
 
+# Convert paths to repo-relative form so downstream scripts do not depend on
+# the absolute location where the inspection was generated.
+repo_relative_path <- function(path) {
+    root <- normalizePath(here(), winslash = "/", mustWork = TRUE)
+    normalized_path <- normalizePath(path, winslash = "/", mustWork = TRUE)
+    root_prefix <- paste0(root, "/")
+
+    ifelse(
+        str_starts(normalized_path, fixed(root_prefix)),
+        str_remove(normalized_path, fixed(root_prefix)),
+        normalized_path
+    )
+}
+
 # Helper function to find AGS column (adapted from clean_data.R)
 find_ags_column_name <- function(col_names) {
     col_names_lower <- tolower(col_names)
@@ -68,7 +82,7 @@ inspect_excel_sheets <- function(target_dirs) {
                     print(paste("        ", col_names))
 
                     inspection_results[[length(inspection_results) + 1]] <- tibble(
-                        file_path = file_path,
+                        file_path = repo_relative_path(file_path),
                         sheet_name = sheet_name,
                         ags_column_found = ags_found,
                         identified_ags_column = ifelse(ags_found, ags_col, NA_character_),

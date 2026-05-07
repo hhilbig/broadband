@@ -9,16 +9,17 @@ This document provides a brief descriptive overview of the harmonized German mun
 This dataset has known limitations that users should be aware of:
 
 1. **Methodological breaks**: Two major breaks (2010, 2015) affect comparability across years
-2. **Missing years**: 2009-2017 have limited data availability
-3. **Filtered observations**: ~3.9% of observations filtered due to unmapped AGS codes (see [unmapped_ags_documentation.md](unmapped_ags_documentation.md) for details)
+2. **Missing years and tiers**: 2009 is absent from the municipality panel; 2005-2008 only report the historical baseline tier
+3. **Filtered observations**: Step 06 filters 68,328 post-deduplicated long rows (2.22%) due to unmapped AGS codes (see [unmapped_ags_documentation.md](unmapped_ags_documentation.md) for details)
 
 ### If using prior data
 
 If you previously used this dataset, please re-download. Fixes include:
 
 - 2005-2008 baseline coverage now correctly populated (~82% mean, was 0%)
-- All values validated to [0, 100] range
+- All values validated to [0, 100] range without capping invalid percentages
 - AGS codes validated against official Destatis 2021 reference
+- Missing speed tiers preserved as missing values rather than filled with zero
 
 ## Discontinuous changes in the data
 
@@ -28,8 +29,8 @@ The panel data is constructed from historical sources with changing methodologie
 
 To create a continuous series for basic internet availability, the `share_broadband_baseline` variable was constructed from two different underlying sources:
 
-- **For 2005-2008**: The variable is based on historical DSL availability data (`speed_mbps_gte = 0`, representing >=0.128 Mbps).
-- **For 2009**: The variable blends historical and modern data sources.
+- **For 2005-2008**: The variable is based on historical DSL availability data (`speed_mbps_gte = 0.128`, representing >=0.128 Mbps).
+- **For 2009**: No municipality panel is available in the current input files.
 - **From 2010 onwards**: The variable is based on >=1 Mbps coverage. Since >=1 Mbps implies >=0.128 Mbps, this is a lower bound on basic access.
 
 **The consequence is a "jump" in the data where the definition of the baseline metric changes.** This is visible in the plots as a sharp jump between 2008 and 2010, when the data source switches. This is distinct from organic growth.

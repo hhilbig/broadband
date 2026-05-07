@@ -2,6 +2,8 @@ library(tidyverse)
 library(stringr)
 library(here)
 
+valid_ags_pattern <- "^(0[1-9]|1[0-6])\\d{6}$"
+
 # Define file paths for the processed long-format data from each Paket
 paket1_file <- here("output", "broadband_gemeinde_paket_1_long.rds")
 paket2_file <- here("output", "broadband_gemeinde_paket_2_long.rds")
@@ -33,7 +35,7 @@ load_and_check_paket_data <- function(file_path, paket_name) {
     # Filter out mobile technologies as a final safeguard
     initial_rows <- nrow(paket_data)
     paket_data <- paket_data %>%
-        filter(!str_detect(tolower(technology_group), "mobil"))
+        filter(!str_detect(tolower(coalesce(technology_group, "")), "mobil"))
     rows_removed <- initial_rows - nrow(paket_data)
     if (rows_removed > 0) {
         print(paste("Removed", rows_removed, "rows identified as mobile technologies from", paket_name))
@@ -50,6 +52,16 @@ load_and_check_paket_data <- function(file_path, paket_name) {
             filter(!is.na(AGS), str_length(AGS) == 8)
     } else {
         print(paste("AGS format check passed for", paket_name, "(all are 8 digits and not NA)."))
+    }
+
+    invalid_state_rows <- paket_data %>%
+        filter(!str_detect(AGS, valid_ags_pattern))
+    if (nrow(invalid_state_rows) > 0) {
+        warning(paste("Found", nrow(invalid_state_rows), "rows with invalid state-prefixed AGS in", paket_name, ". These will be filtered out."))
+        print("Examples of invalid state-prefixed AGS rows:")
+        print(head(invalid_state_rows))
+        paket_data <- paket_data %>%
+            filter(str_detect(AGS, valid_ags_pattern))
     }
 
     # Duplicate Metric Check: Are there multiple values for the same metric?
@@ -74,9 +86,10 @@ load_and_check_paket_data <- function(file_path, paket_name) {
         mutate(
             data_category = if ("data_category" %in% names(.)) as.character(data_category) else NA_character_,
             value = as.numeric(str_replace_all(as.character(value), ",", ".")),
-            speed_mbps_gte = as.integer(speed_mbps_gte),
+            speed_mbps_gte = as.numeric(speed_mbps_gte),
             year = as.integer(year)
         ) %>%
+        filter(!is.na(speed_mbps_gte), !is.na(value), value >= 0, value <= 100) %>%
         select(
             AGS, year, data_category, technology_group,
             speed_mbps_gte, value, original_variable, source_paket

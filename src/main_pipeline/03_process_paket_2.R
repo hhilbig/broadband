@@ -5,6 +5,69 @@ library(here)
 
 # --- Helper Functions ---
 
+resolve_input_path <- function(path) {
+    if (file.exists(path)) {
+        return(path)
+    }
+
+    repo_path <- here(path)
+    if (file.exists(repo_path)) {
+        return(repo_path)
+    }
+
+    path
+}
+
+validate_inspection_paths <- function(inspection_df) {
+    missing_paths <- inspection_df %>%
+        distinct(file_path) %>%
+        mutate(resolved_path = map_chr(file_path, resolve_input_path),
+               exists = file.exists(resolved_path)) %>%
+        filter(!exists)
+
+    if (nrow(missing_paths) > 0) {
+        print("Missing input files referenced by excel_sheet_inspection_summary.csv:")
+        print(missing_paths)
+        stop("Inspection summary contains missing input paths. Re-run 01_inspect_excel_sheets.R from the current repo.")
+    }
+
+    invisible(TRUE)
+}
+
+standardize_ags_8 <- function(ags) {
+    ags_chr <- str_trim(as.character(ags))
+    ags_chr <- str_replace_all(ags_chr, ",", ".")
+    numeric_like <- str_detect(ags_chr, "^[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?$")
+    numeric_like[is.na(numeric_like)] <- FALSE
+    ags_out <- rep(NA_character_, length(ags_chr))
+
+    if (any(numeric_like, na.rm = TRUE)) {
+        ags_num <- suppressWarnings(as.numeric(ags_chr[numeric_like]))
+        whole_number <- !is.na(ags_num) & abs(ags_num - round(ags_num)) < 0.001
+        formatted <- rep(NA_character_, length(ags_num))
+        formatted[whole_number] <- sprintf("%08.0f", round(ags_num[whole_number]))
+        ags_out[numeric_like] <- formatted
+    }
+
+    non_numeric <- !numeric_like & !is.na(ags_chr)
+    if (any(non_numeric, na.rm = TRUE)) {
+        ags_digits <- str_replace_all(ags_chr[non_numeric], "\\D", "")
+        ags_out[non_numeric] <- ifelse(
+            str_length(ags_digits) > 0,
+            str_pad(ags_digits, 8, pad = "0"),
+            NA_character_
+        )
+    }
+
+    ags_out
+}
+
+is_paket2_private_broadband_variable <- function(variable_name) {
+    variable_lower <- tolower(variable_name)
+    str_detect(variable_lower, "^priv_") |
+        str_detect(variable_lower, "^(leitungsg_technologien|dsl|catv|ftthb)_gtoe_\\d+_mbits$")
+}
+
 find_ags_column_name <- function(col_names) {
     col_names_lower <- tolower(col_names)
     ags_patterns <- c("^ags$", "^gemeindeschluessel$", "^gemeindeschlüssel$", "^gem$")
@@ -20,11 +83,11 @@ find_ags_column_name <- function(col_names) {
 parse_broadband_variable <- function(variable_name) {
     # Attempt to extract year from variable name first, e.g., verf_300_50_2010 -> 2010
     year_in_var <- NA_integer_
-    year_match_in_var <- str_match(tolower(variable_name), "_(\\\\d{4})$") # Matches _YYYY at the end
+    year_match_in_var <- str_match(tolower(variable_name), "_(\\d{4})$") # Matches _YYYY at the end
     if (!is.na(year_match_in_var[1, 2])) {
         year_in_var <- as.integer(year_match_in_var[1, 2])
         # Remove year from variable_name for further parsing if needed, e.g., "verf_300_50_2010" -> "verf_300_50"
-        variable_name_no_year <- str_replace(tolower(variable_name), "_\\\\d{4}$", "")
+        variable_name_no_year <- str_replace(tolower(variable_name), "_\\d{4}$", "")
     } else {
         variable_name_no_year <- tolower(variable_name)
     }
@@ -59,7 +122,7 @@ parse_broadband_variable <- function(variable_name) {
     }
 
     # Regex for historical verf_XXX_YY names (e.g., verf_100_30)
-    match_hist_verf <- str_match(variable_name_no_year, "^verf_(\\\\d{3})_(\\\\d+)")
+    match_hist_verf <- str_match(variable_name_no_year, "^verf_(\\d{3})_(\\d+)")
     if (!is.na(match_hist_verf[1, 1])) {
         group_code <- match_hist_verf[1, 2]
         speed <- as.integer(match_hist_verf[1, 3])
@@ -73,7 +136,7 @@ parse_broadband_variable <- function(variable_name) {
     }
 
     # Regex for historical tech_YY names (e.g., DSL_16, CATV_400)
-    match_hist_tech <- str_match(variable_name_no_year, "^(dsl|catv|ftthb|fttb|hfc)_(\\\\d+)") # Added HFC
+    match_hist_tech <- str_match(variable_name_no_year, "^(dsl|catv|ftthb|fttb|hfc)_(\\d+)") # Added HFC
     if (!is.na(match_hist_tech[1, 1])) {
         technology_raw <- match_hist_tech[1, 2]
         speed <- as.integer(match_hist_tech[1, 3])
@@ -208,7 +271,8 @@ process_sheet_data_paket2 <- function(data_df, ags_col_name, year_val_sheet_file
             data_category = "privat", # Assuming Paket 2 is also primarily 'privat' or general
             variable_original = names_map[variable_raw_clean]
         ) %>%
-        filter(!is.na(variable_original))
+        filter(!is.na(variable_original),
+               is_paket2_private_broadband_variable(variable_original))
 
     # Get unique original variable names to parse
     unique_vars_to_parse <- tibble(variable_original = unique(long_data$variable_original))
@@ -230,9 +294,12 @@ process_sheet_data_paket2 <- function(data_df, ags_col_name, year_val_sheet_file
         mutate(
             value_cleaned = str_replace_all(value, "[^0-9.,-]", ""), # Keep digits, comma, dot, minus
             value_cleaned = str_replace(value_cleaned, ",", "."),
-            value = as.numeric(value_cleaned)
+            value = suppressWarnings(as.numeric(value_cleaned))
         ) %>%
-        filter(!is.na(value), !is.na(AGS), str_length(AGS) > 0, !is.na(year))
+        filter(!is.na(value), !is.na(AGS), str_length(AGS) > 0, !is.na(year),
+               !is.na(speed_mbps_gte), value >= 0, value <= 100) %>%
+        mutate(AGS = standardize_ags_8(AGS)) %>%
+        filter(!is.na(AGS), str_detect(AGS, "^(0[1-9]|1[0-6])\\d{6}$"))
 
     return(processed_data)
 }
@@ -247,6 +314,7 @@ if (!file.exists(inspection_summary_file)) {
 }
 
 inspection_df <- read_csv(inspection_summary_file, show_col_types = FALSE)
+validate_inspection_paths(inspection_df)
 
 # Filter for Paket 2 and sheets with AGS
 paket2_sheets_to_process <- inspection_df %>%
@@ -260,7 +328,7 @@ if (nrow(paket2_sheets_to_process) == 0) {
 
     for (i in 1:nrow(paket2_sheets_to_process)) {
         sheet_info <- paket2_sheets_to_process[i, ]
-        file_path <- sheet_info$file_path
+        file_path <- resolve_input_path(sheet_info$file_path)
         sheet_name <- sheet_info$sheet_name
         ags_col <- sheet_info$identified_ags_column
         file_basename <- basename(file_path)
@@ -324,8 +392,7 @@ if (nrow(paket2_sheets_to_process) == 0) {
 
     if (length(all_processed_paket2_data) > 0) {
         final_paket2_df <- bind_rows(all_processed_paket2_data) %>%
-            mutate(AGS = str_pad(AGS, 8, pad = "0")) %>%
-            filter(str_length(AGS) == 8)
+            distinct()
 
         # Save the final combined data for Paket 2
         output_file_rds <- here("output", "broadband_gemeinde_paket_2_long.rds")

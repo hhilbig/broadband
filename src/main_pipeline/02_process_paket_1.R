@@ -5,6 +5,69 @@ library(here)
 
 # --- Helper Functions ---
 
+resolve_input_path <- function(path) {
+    if (file.exists(path)) {
+        return(path)
+    }
+
+    repo_path <- here(path)
+    if (file.exists(repo_path)) {
+        return(repo_path)
+    }
+
+    path
+}
+
+validate_inspection_paths <- function(inspection_df) {
+    missing_paths <- inspection_df %>%
+        distinct(file_path) %>%
+        mutate(resolved_path = map_chr(file_path, resolve_input_path),
+               exists = file.exists(resolved_path)) %>%
+        filter(!exists)
+
+    if (nrow(missing_paths) > 0) {
+        print("Missing input files referenced by excel_sheet_inspection_summary.csv:")
+        print(missing_paths)
+        stop("Inspection summary contains missing input paths. Re-run 01_inspect_excel_sheets.R from the current repo.")
+    }
+
+    invisible(TRUE)
+}
+
+is_paket1_municipality_sheet <- function(sheet_name) {
+    sheet_name_lower <- tolower(sheet_name)
+    str_detect(sheet_name_lower, "_gem$") |
+        sheet_name_lower == "verf_gemeinde_10_18_percent"
+}
+
+standardize_ags_8 <- function(ags) {
+    ags_chr <- str_trim(as.character(ags))
+    ags_chr <- str_replace_all(ags_chr, ",", ".")
+    numeric_like <- str_detect(ags_chr, "^[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?$")
+    numeric_like[is.na(numeric_like)] <- FALSE
+    ags_out <- rep(NA_character_, length(ags_chr))
+
+    if (any(numeric_like, na.rm = TRUE)) {
+        ags_num <- suppressWarnings(as.numeric(ags_chr[numeric_like]))
+        whole_number <- !is.na(ags_num) & abs(ags_num - round(ags_num)) < 0.001
+        formatted <- rep(NA_character_, length(ags_num))
+        formatted[whole_number] <- sprintf("%08.0f", round(ags_num[whole_number]))
+        ags_out[numeric_like] <- formatted
+    }
+
+    non_numeric <- !numeric_like & !is.na(ags_chr)
+    if (any(non_numeric, na.rm = TRUE)) {
+        ags_digits <- str_replace_all(ags_chr[non_numeric], "\\D", "")
+        ags_out[non_numeric] <- ifelse(
+            str_length(ags_digits) > 0,
+            str_pad(ags_digits, 8, pad = "0"),
+            NA_character_
+        )
+    }
+
+    ags_out
+}
+
 find_ags_column_name <- function(col_names) {
     col_names_lower <- tolower(col_names)
     ags_patterns <- c("^ags$", "^gemeindeschluessel$", "^gemeindeschlüssel$", "^gem$")
@@ -142,7 +205,7 @@ process_sheet_data_paket1 <- function(data_df, ags_col_name, year_val_sheet_file
     # Rename the identified AGS column to a standard name for simplicity.
     data_df <- data_df %>%
         rename(AGS = all_of(ags_col_name_clean)) %>%
-        mutate(AGS = as.character(AGS))
+        mutate(AGS = standardize_ags_8(AGS))
 
     # Identify all columns that should NOT be pivoted (id_cols)
     # These are AGS and any other known non-metric identifiers
@@ -195,8 +258,9 @@ process_sheet_data_paket1 <- function(data_df, ags_col_name, year_val_sheet_file
     processed_data <- long_data_with_parsed_vars %>%
         mutate(year = ifelse(!is.na(year_from_variable), year_from_variable, year_sheet_file)) %>%
         select(AGS, year, data_category, technology_group, speed_mbps_gte, value = value_raw, original_variable = variable_original) %>%
-        mutate(value = as.numeric(str_replace(value, ",", "."))) %>%
-        filter(!is.na(value), !is.na(AGS), str_length(AGS) > 0, !is.na(year)) # Ensure value, AGS, and year are valid
+        mutate(value = suppressWarnings(as.numeric(str_replace(value, ",", ".")))) %>%
+        filter(!is.na(value), value >= 0, value <= 100,
+               !is.na(AGS), str_length(AGS) > 0, !is.na(year))
 
     return(processed_data)
 }
@@ -211,10 +275,13 @@ if (!file.exists(inspection_summary_file)) {
 }
 
 inspection_df <- read_csv(inspection_summary_file, show_col_types = FALSE)
+validate_inspection_paths(inspection_df)
 
-# Filter for Paket 1 and sheets with AGS
+# Filter for Paket 1 and true municipality-level sheets with AGS
 paket1_sheets_to_process <- inspection_df %>%
-    filter(str_detect(tolower(file_path), "paket_1"), ags_column_found == TRUE)
+    filter(str_detect(tolower(file_path), "paket_1"),
+           ags_column_found == TRUE,
+           is_paket1_municipality_sheet(sheet_name))
 
 if (nrow(paket1_sheets_to_process) == 0) {
     print("No relevant sheets found for Paket 1 in the inspection summary.")
@@ -224,7 +291,7 @@ if (nrow(paket1_sheets_to_process) == 0) {
 
     for (i in 1:nrow(paket1_sheets_to_process)) {
         sheet_info <- paket1_sheets_to_process[i, ]
-        file_path <- sheet_info$file_path
+        file_path <- resolve_input_path(sheet_info$file_path)
         sheet_name <- sheet_info$sheet_name
         ags_col <- sheet_info$identified_ags_column
         file_basename <- basename(file_path)
@@ -284,9 +351,22 @@ if (nrow(paket1_sheets_to_process) == 0) {
     }
 
     if (length(all_processed_paket1_data) > 0) {
-        final_paket1_df <- bind_rows(all_processed_paket1_data) %>%
-            mutate(AGS = str_pad(AGS, 8, pad = "0")) %>%
-            filter(str_length(AGS) == 8) # Final safety check for AGS length
+        final_paket1_df_raw <- bind_rows(all_processed_paket1_data) %>%
+            mutate(AGS = standardize_ags_8(AGS))
+
+        invalid_ags <- final_paket1_df_raw %>%
+            filter(is.na(AGS) | !str_detect(AGS, "^(0[1-9]|1[0-6])\\d{6}$"))
+
+        if (nrow(invalid_ags) > 0) {
+            print(paste("Filtering", nrow(invalid_ags), "Paket 1 rows with invalid AGS format or state prefix."))
+            print(invalid_ags %>%
+                count(AGS, sort = TRUE) %>%
+                head(20))
+        }
+
+        final_paket1_df <- final_paket1_df_raw %>%
+            filter(!is.na(AGS),
+                   str_detect(AGS, "^(0[1-9]|1[0-6])\\d{6}$"))
 
         # Save the final combined data for Paket 1
         output_file_rds <- here("output", "broadband_gemeinde_paket_1_long.rds")

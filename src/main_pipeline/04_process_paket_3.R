@@ -5,6 +5,34 @@ library(here)
 
 # --- Helper Functions ---
 
+standardize_ags_8 <- function(ags) {
+    ags_chr <- str_trim(as.character(ags))
+    ags_chr <- str_replace_all(ags_chr, ",", ".")
+    numeric_like <- str_detect(ags_chr, "^[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?$")
+    numeric_like[is.na(numeric_like)] <- FALSE
+    ags_out <- rep(NA_character_, length(ags_chr))
+
+    if (any(numeric_like, na.rm = TRUE)) {
+        ags_num <- suppressWarnings(as.numeric(ags_chr[numeric_like]))
+        whole_number <- !is.na(ags_num) & abs(ags_num - round(ags_num)) < 0.001
+        formatted <- rep(NA_character_, length(ags_num))
+        formatted[whole_number] <- sprintf("%08.0f", round(ags_num[whole_number]))
+        ags_out[numeric_like] <- formatted
+    }
+
+    non_numeric <- !numeric_like & !is.na(ags_chr)
+    if (any(non_numeric, na.rm = TRUE)) {
+        ags_digits <- str_replace_all(ags_chr[non_numeric], "\\D", "")
+        ags_out[non_numeric] <- ifelse(
+            str_length(ags_digits) > 0,
+            str_pad(ags_digits, 8, pad = "0"),
+            NA_character_
+        )
+    }
+
+    ags_out
+}
+
 extract_year_from_filename <- function(filename) {
     # Try to extract a 4-digit year preceded by an underscore or at the start of a block
     # e.g., _2019_ or _2019. or 2019_
@@ -183,9 +211,11 @@ process_csv_file_paket3 <- function(file_path_full, year_val, data_cat) {
             value_cleaned = str_replace(value_cleaned, ",", "."),
             value = suppressWarnings(as.numeric(value_cleaned)) # Suppress warnings for NAs by coercion
         ) %>%
-        filter(!is.na(value), !is.na(AGS), str_length(AGS) > 0, !is.na(year)) %>%
-        mutate(AGS = str_pad(AGS, 8, pad = "0")) %>%
-        filter(str_length(AGS) == 8)
+        filter(!is.na(value), !is.na(AGS), str_length(AGS) > 0, !is.na(year),
+               !is.na(speed_mbps_gte), value >= 0, value <= 100,
+               !str_detect(tolower(coalesce(technology_group, "")), "mobil")) %>%
+        mutate(AGS = standardize_ags_8(AGS)) %>%
+        filter(!is.na(AGS), str_detect(AGS, "^(0[1-9]|1[0-6])\\d{6}$"))
 
 
     return(processed_data)
@@ -260,10 +290,12 @@ if (length(gemeinde_files_paket3) == 0) {
         final_paket3_df <- final_paket3_df %>%
             filter(!is.na(AGS), !is.na(year), !is.na(value)) %>%
             mutate(
-                AGS = str_pad(AGS, 8, pad = "0"),
-                speed_mbps_gte = as.integer(speed_mbps_gte)
+                AGS = standardize_ags_8(AGS),
+                speed_mbps_gte = as.numeric(speed_mbps_gte)
             ) %>%
-            filter(str_length(AGS) == 8) %>%
+            filter(!is.na(AGS), str_detect(AGS, "^(0[1-9]|1[0-6])\\d{6}$"),
+                   !str_detect(tolower(coalesce(technology_group, "")), "mobil"),
+                   value >= 0, value <= 100) %>%
             distinct()
 
         # Save the final combined data for Paket 3
