@@ -1,9 +1,11 @@
 library(tidyverse)
 library(here)
+library(readxl)
 
 # 1. Read cleaned long data ----------
 input_file <- here("output", "broadband_gemeinde_combined_long_ags2021.rds")
 ags_reference_file <- here("data", "ags_reference", "destatis_ags_2021.rds")
+crosswalk_file <- here("data", "muni_mergers", "ref-gemeinden-umrech-2021-2011-2020.xlsx")
 output_file_panel <- here("output", "panel_data_with_treatment.csv")
 output_file_panel_public <- here("output", "panel_data_public.csv")
 output_plot_avg_coverage <- here("output", "average_annual_coverage_plot.png")
@@ -18,7 +20,7 @@ share_cols <- c(
 )
 
 share_labels <- c(
-    share_broadband_baseline = "Basic access",
+    share_broadband_baseline = ">=0.128 Mbps",
     share_gte1mbps = ">=1 Mbps",
     share_gte6mbps = ">=6 Mbps",
     share_gte30mbps = ">=30 Mbps"
@@ -26,7 +28,7 @@ share_labels <- c(
 
 break_labels <- tibble(
     year = c(2010, 2015),
-    text_x = c(2009.85, 2014.85),
+    text_x = c(2010.18, 2015.18),
     label = c("definition break", "method break")
 )
 
@@ -40,6 +42,26 @@ max_or_na <- function(x) {
 
 threshold_max <- function(values, speeds, threshold) {
     max_or_na(values[speeds >= threshold])
+}
+
+standardize_ags_8 <- function(x) {
+    str_pad(str_replace_all(as.character(x), "\\D", ""), 8, pad = "0")
+}
+
+find_col <- function(names_vec, patterns) {
+    hit <- which(map_lgl(names_vec, ~ all(str_detect(str_to_lower(.x), patterns))))
+    if (length(hit) == 0) {
+        stop("Could not find column matching: ", paste(patterns, collapse = ", "))
+    }
+    names_vec[hit[1]]
+}
+
+weighted_mean_or_na <- function(values, weights) {
+    valid <- !is.na(values) & !is.na(weights) & weights > 0
+    if (!any(valid)) {
+        return(NA_real_)
+    }
+    weighted.mean(values[valid], weights[valid])
 }
 
 validate_drop <- function(n_drop, n_total, label) {
@@ -58,6 +80,10 @@ if (!file.exists(input_file)) {
 
 if (!file.exists(ags_reference_file)) {
     stop("AGS reference file not found: ", ags_reference_file)
+}
+
+if (!file.exists(crosswalk_file)) {
+    stop("Crosswalk file not found: ", crosswalk_file)
 }
 
 destatis_ags <- readRDS(ags_reference_file) %>%
@@ -112,6 +138,23 @@ print(bb_long %>%
               max_value = max(value, na.rm = TRUE)
           ))
 print(bb_long %>% count(year) %>% arrange(year), n = Inf)
+
+raw_pop <- read_excel(crosswalk_file, sheet = "2020")
+names_raw_pop <- names(raw_pop)
+
+ags_2021_col <- find_col(names_raw_pop, c("gemeinden", "2021"))
+pop_col <- find_col(names_raw_pop, c("bevölkerung", "2020"))
+transition_col <- find_col(names_raw_pop, c("bevölkerungs", "schlüssel"))
+
+population_weights <- raw_pop %>%
+    transmute(
+        AGS = standardize_ags_8(.data[[ags_2021_col]]),
+        transition_share = as.numeric(.data[[transition_col]]),
+        population = 100 * as.numeric(.data[[pop_col]])
+    ) %>%
+    filter(!is.na(AGS), !is.na(population), !is.na(transition_share)) %>%
+    group_by(AGS) %>%
+    summarise(population_weight = sum(population * transition_share, na.rm = TRUE), .groups = "drop")
 
 # 2. Collapse to "any technology" per speed threshold ----------
 panel <- bb_long %>%
@@ -279,14 +322,18 @@ ggsave(output_plot_yoy, plot_yoy_dist, width = 12, height = 6)
 print(paste("Saved year-on-year change plot to:", output_plot_yoy))
 
 avg_coverage_data <- panel %>%
-    select(year, all_of(share_cols)) %>%
+    left_join(population_weights, by = "AGS") %>%
+    select(year, population_weight, all_of(share_cols)) %>%
     pivot_longer(
         cols = all_of(share_cols),
         names_to = "share_type",
         values_to = "coverage"
     ) %>%
     group_by(year, share_type) %>%
-    summarise(mean_coverage = mean(coverage, na.rm = TRUE), .groups = "drop") %>%
+    summarise(
+        mean_coverage = weighted_mean_or_na(coverage, population_weight),
+        .groups = "drop"
+    ) %>%
     filter(is.finite(mean_coverage)) %>%
     mutate(share_type = factor(share_type, levels = share_cols, labels = share_labels))
 
@@ -299,24 +346,25 @@ avg_coverage_plot <- ggplot(avg_coverage_data, aes(x = year, y = mean_coverage, 
         linewidth = 0.4,
         color = "grey45"
     ) +
-    geom_text(
+    geom_line(linewidth = 1) +
+    geom_point(size = 2) +
+    geom_label(
         data = break_labels,
-        aes(x = text_x, y = 101, label = label),
+        aes(x = text_x, y = 100, label = label),
         inherit.aes = FALSE,
         angle = 90,
         hjust = 1,
         vjust = 0.5,
         size = 3.2,
+        linewidth = 0,
+        fill = "white",
         color = "grey25"
     ) +
-    geom_line(linewidth = 1) +
-    geom_point(size = 2) +
     labs(
-        title = "Average Annual Broadband Coverage in German Municipalities",
+        title = "Population-Weighted Annual Broadband Coverage in German Municipalities",
         x = "Year",
-        y = "Mean Coverage (%)",
-        color = NULL,
-        caption = "Basic access: >=0.128 Mbps in 2005-2008; >=1 Mbps from 2010 onward."
+        y = "Population-Weighted Coverage (%)",
+        color = NULL
     ) +
     scale_y_continuous(
         limits = c(0, 105),

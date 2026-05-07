@@ -1,9 +1,11 @@
 library(tidyverse)
 library(here)
+library(readxl)
 
 # --- Configuration ---
 # Use the public dataset for descriptions
 data_file_path <- here("output", "panel_data_public.csv")
+crosswalk_file <- here("data", "muni_mergers", "ref-gemeinden-umrech-2021-2011-2020.xlsx")
 output_dir <- here("output", "descriptives")
 
 # Create output directory if it doesn't exist
@@ -14,6 +16,43 @@ if (!dir.exists(output_dir)) {
 # --- Load Data ---
 panel_data <- read_csv(data_file_path, show_col_types = FALSE)
 
+standardize_ags_8 <- function(x) {
+    str_pad(str_replace_all(as.character(x), "\\D", ""), 8, pad = "0")
+}
+
+find_col <- function(names_vec, patterns) {
+    hit <- which(map_lgl(names_vec, ~ all(str_detect(str_to_lower(.x), patterns))))
+    if (length(hit) == 0) {
+        stop("Could not find column matching: ", paste(patterns, collapse = ", "))
+    }
+    names_vec[hit[1]]
+}
+
+weighted_mean_or_na <- function(values, weights) {
+    valid <- !is.na(values) & !is.na(weights) & weights > 0
+    if (!any(valid)) {
+        return(NA_real_)
+    }
+    weighted.mean(values[valid], weights[valid])
+}
+
+raw_pop <- read_excel(crosswalk_file, sheet = "2020")
+names_raw_pop <- names(raw_pop)
+
+ags_2021_col <- find_col(names_raw_pop, c("gemeinden", "2021"))
+pop_col <- find_col(names_raw_pop, c("bevölkerung", "2020"))
+transition_col <- find_col(names_raw_pop, c("bevölkerungs", "schlüssel"))
+
+population_weights <- raw_pop %>%
+    transmute(
+        AGS = standardize_ags_8(.data[[ags_2021_col]]),
+        transition_share = as.numeric(.data[[transition_col]]),
+        population = 100 * as.numeric(.data[[pop_col]])
+    ) %>%
+    filter(!is.na(AGS), !is.na(population), !is.na(transition_share)) %>%
+    group_by(AGS) %>%
+    summarise(population_weight = sum(population * transition_share, na.rm = TRUE), .groups = "drop")
+
 share_cols <- c(
     "share_broadband_baseline",
     "share_gte1mbps",
@@ -22,7 +61,7 @@ share_cols <- c(
 )
 
 share_labels <- c(
-    share_broadband_baseline = "Basic access",
+    share_broadband_baseline = ">=0.128 Mbps",
     share_gte1mbps = ">=1 Mbps",
     share_gte6mbps = ">=6 Mbps",
     share_gte30mbps = ">=30 Mbps"
@@ -30,7 +69,7 @@ share_labels <- c(
 
 break_labels <- tibble(
     year = c(2010, 2015),
-    text_x = c(2009.85, 2014.85),
+    text_x = c(2010.18, 2015.18),
     label = c("definition break", "method break")
 )
 
@@ -86,7 +125,7 @@ coverage_long <- panel_data %>%
     mutate(
         speed_tier = recode(
             speed_tier,
-            broadband_baseline = "Basic access",
+            broadband_baseline = ">=0.128 Mbps",
             gte1mbps = ">=1 Mbps",
             gte6mbps = ">=6 Mbps",
             gte30mbps = ">=30 Mbps"
@@ -118,14 +157,18 @@ print(coverage_long %>% group_by(speed_tier) %>% summarise(
 
 # --- Plot 3: Average Annual Coverage (from main pipeline) ---
 avg_coverage_data <- panel_data %>%
-    select(year, all_of(share_cols)) %>%
+    left_join(population_weights, by = "AGS") %>%
+    select(year, population_weight, all_of(share_cols)) %>%
     pivot_longer(
-        cols = -year,
+        cols = all_of(share_cols),
         names_to = "speed_tier",
         values_to = "coverage"
     ) %>%
     group_by(year, speed_tier) %>%
-    summarise(mean_coverage = mean(coverage, na.rm = TRUE), .groups = "drop") %>%
+    summarise(
+        mean_coverage = weighted_mean_or_na(coverage, population_weight),
+        .groups = "drop"
+    ) %>%
     filter(is.finite(mean_coverage)) %>%
     mutate(speed_tier = factor(speed_tier, levels = share_cols, labels = share_labels))
 
@@ -138,24 +181,25 @@ avg_coverage_plot <- ggplot(avg_coverage_data, aes(x = year, y = mean_coverage, 
         linewidth = 0.4,
         color = "grey45"
     ) +
-    geom_text(
+    geom_line(linewidth = 1) +
+    geom_point(size = 2) +
+    geom_label(
         data = break_labels,
-        aes(x = text_x, y = 101, label = label),
+        aes(x = text_x, y = 100, label = label),
         inherit.aes = FALSE,
         angle = 90,
         hjust = 1,
         vjust = 0.5,
         size = 3.2,
+        linewidth = 0,
+        fill = "white",
         color = "grey25"
     ) +
-    geom_line(linewidth = 1) +
-    geom_point(size = 2) +
     labs(
-        title = "Average Annual Broadband Coverage in German Municipalities",
+        title = "Population-Weighted Annual Broadband Coverage in German Municipalities",
         x = "Year",
-        y = "Mean Coverage (%)",
-        color = NULL,
-        caption = "Basic access: >=0.128 Mbps in 2005-2008; >=1 Mbps from 2010 onward."
+        y = "Population-Weighted Coverage (%)",
+        color = NULL
     ) +
     scale_y_continuous(
         limits = c(0, 105),

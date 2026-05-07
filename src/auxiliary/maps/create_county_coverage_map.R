@@ -107,8 +107,7 @@ plot_map <- ggplot(county_map) +
     labs(
         title = "Broadband Coverage >=30 Mbps by County, 2021",
         subtitle = "Population-weighted average of municipality coverage",
-        fill = NULL,
-        caption = "Color scale is log-transformed by uncovered share to show variation near full coverage."
+        fill = NULL
     ) +
     haschaR::theme_hanno() +
     theme(
