@@ -14,7 +14,9 @@ reform_mapping_file <- here("data", "gebietsreformen", "combined_reform_mappings
 
 supplementary_crosswalk_file <- here("output", "supplementary_ags_crosswalk.rds")
 supplementary_mapping_detail_file <- here("output", "missing_ags_to_2021_mapping.rds")
+nearest_year_fallback_detail_file <- here("output", "nearest_year_fallback_mapping.rds")
 unmapped_ags_file <- here("output", "unmapped_ags_for_review.csv")
+nonreporting_zero_blocks_file <- here("output", "nonreporting_zero_blocks.csv")
 
 valid_ags_pattern <- "^(0[1-9]|1[0-6])\\d{6}$"
 
@@ -221,8 +223,98 @@ resolve_reform_chain <- function(start_ags, source_year, reform_mappings, destat
     )
 }
 
-build_supplementary_crosswalk <- function(ags_not_in_crosswalk, destatis_ags) {
-    stable_crosswalk <- ags_not_in_crosswalk %>%
+build_supplementary_crosswalk <- function(ags_not_in_crosswalk, destatis_ags, master_crosswalk) {
+    # (1) Nearest-year crosswalk fallback. Some source deliveries carry AGS codes
+    # from a different boundary vintage than the year label (e.g. Sachsen-Anhalt
+    # 2005/2006 files use post-2007-Kreisreform codes), so the (AGS, year) join
+    # against the year-specific crosswalk sheet fails even though the code has a
+    # valid mapping in another sheet. For every such pair, use the sheet closest
+    # to the data year (ties broken toward the LATER sheet: target sets are
+    # identical across sheets for all affected codes, and later sheets sit closer
+    # to the 2021 boundaries the Umsteigeschluessel are constructed against).
+    sheet_pairs <- master_crosswalk %>% distinct(AGS_hist, year_hist)
+
+    fallback_pick <- ags_not_in_crosswalk %>%
+        inner_join(sheet_pairs, by = c("AGS" = "AGS_hist"), relationship = "many-to-many") %>%
+        mutate(year_dist = abs(year_hist - year)) %>%
+        group_by(AGS, year) %>%
+        filter(year_dist == min(year_dist)) %>%
+        filter(year_hist == max(year_hist)) %>%
+        ungroup() %>%
+        distinct(AGS, year, donor_year = year_hist)
+
+    fallback_detail <- fallback_pick %>%
+        inner_join(master_crosswalk, by = c("AGS" = "AGS_hist", "donor_year" = "year_hist"),
+                   relationship = "many-to-many") %>%
+        transmute(
+            AGS_hist_cw = AGS,
+            year_hist_cw = year,
+            AGS_2021,
+            transition_share,
+            population_weight,
+            source = "crosswalk_nearest_year",
+            donor_year
+        )
+
+    # Year-2021 data is already reported on 2021 boundaries, so a valid 2021 code
+    # must map to itself; the donor sheet's 2020->2021 transition would otherwise
+    # apply a spurious boundary split. Keep the identity target with share 1 and
+    # recover the donor-sheet population as the weight (weight/share = population).
+    identity_2021_keys <- fallback_detail %>%
+        filter(year_hist_cw == 2021,
+               AGS_hist_cw %in% destatis_ags,
+               AGS_2021 == AGS_hist_cw) %>%
+        distinct(AGS_hist_cw, year_hist_cw)
+
+    fallback_detail <- fallback_detail %>%
+        left_join(identity_2021_keys %>% mutate(force_identity = TRUE),
+                  by = c("AGS_hist_cw", "year_hist_cw")) %>%
+        filter(is.na(force_identity) | AGS_2021 == AGS_hist_cw) %>%
+        mutate(
+            population_weight = if_else(!is.na(force_identity) & transition_share > 0,
+                                        population_weight / transition_share,
+                                        population_weight),
+            transition_share = if_else(!is.na(force_identity), 1.0, transition_share)
+        ) %>%
+        select(-force_identity)
+
+    saveRDS(fallback_detail, nearest_year_fallback_detail_file)
+
+    fallback_crosswalk <- fallback_detail %>%
+        select(-donor_year) %>%
+        distinct()
+
+    # (2) Berlin/Hamburg Bezirk codes -> city (2020-2021 only). The 2020/2021
+    # source data reports the two city-states only at Bezirk level; the Bezirk
+    # codes exist in no crosswalk sheet. Each Bezirk maps fully into its city.
+    # No per-Bezirk household weights exist in the source, so the city value is
+    # an UNWEIGHTED mean across Bezirke (documented caveat; all observed Bezirk
+    # values lie in 97-100, so the approximation error is below 1 ppt). 2019
+    # Bezirk rows are deliberately excluded: city-level 2019 data already exists.
+    bezirk_to_city <- tibble(
+        AGS_hist = c(sprintf("020000%02d", 1:7), sprintf("110000%02d", 1:12)),
+        AGS_city = c(rep("02000000", 7), rep("11000000", 12))
+    )
+
+    bezirk_crosswalk <- ags_not_in_crosswalk %>%
+        anti_join(fallback_pick, by = c("AGS", "year")) %>%
+        filter(year >= 2020) %>%
+        inner_join(bezirk_to_city, by = c("AGS" = "AGS_hist")) %>%
+        transmute(
+            AGS_hist_cw = AGS,
+            year_hist_cw = year,
+            AGS_2021 = AGS_city,
+            transition_share = 1.0,
+            population_weight = 1.0,
+            source = "bezirk_to_city_unweighted"
+        )
+
+    # (3) Stable 1:1 and (4) reform chains operate on the remainder.
+    remaining_pairs <- ags_not_in_crosswalk %>%
+        anti_join(fallback_pick, by = c("AGS", "year")) %>%
+        anti_join(bezirk_crosswalk, by = c("AGS" = "AGS_hist_cw", "year" = "year_hist_cw"))
+
+    stable_crosswalk <- remaining_pairs %>%
         filter(AGS %in% destatis_ags) %>%
         transmute(
             AGS_hist_cw = AGS,
@@ -255,7 +347,7 @@ build_supplementary_crosswalk <- function(ags_not_in_crosswalk, destatis_ags) {
                    !is.na(reform_year)) %>%
             distinct()
 
-        reform_candidates <- ags_not_in_crosswalk %>%
+        reform_candidates <- remaining_pairs %>%
             filter(!AGS %in% destatis_ags) %>%
             distinct(AGS, year)
 
@@ -284,16 +376,24 @@ build_supplementary_crosswalk <- function(ags_not_in_crosswalk, destatis_ags) {
 
     saveRDS(mapped_details, supplementary_mapping_detail_file)
 
-    supplementary_crosswalk <- bind_rows(stable_crosswalk, reform_crosswalk) %>%
+    supplementary_crosswalk <- bind_rows(
+        fallback_crosswalk,
+        bezirk_crosswalk,
+        stable_crosswalk,
+        reform_crosswalk
+    ) %>%
         distinct()
 
     saveRDS(
         supplementary_crosswalk %>%
-            filter(source == "gebietsreformen_chain") %>%
+            filter(source %in% c("gebietsreformen_chain", "crosswalk_nearest_year", "bezirk_to_city_unweighted")) %>%
             distinct(AGS_hist = AGS_hist_cw, AGS_2021, source),
         supplementary_crosswalk_file
     )
 
+    print(paste("Supplementary nearest-year fallback AGS-year mappings:", nrow(fallback_crosswalk),
+                "covering", n_distinct(fallback_crosswalk$AGS_hist_cw), "unique AGS"))
+    print(paste("Supplementary Bezirk-to-city AGS-year mappings:", nrow(bezirk_crosswalk)))
     print(paste("Supplementary stable 1:1 AGS-year mappings:", nrow(stable_crosswalk)))
     print(paste("Supplementary reform-chain AGS-year mappings:", nrow(reform_crosswalk)))
 
@@ -375,6 +475,61 @@ bb_data_hist <- readRDS(input_file) %>%
 
 print(paste("Loaded", nrow(bb_data_hist), "valid combined broadband rows."))
 
+# --- Non-reporting coded as zero (2010-2014) ---
+# In the 2010-2014 Paket 1 verf_300_* data, roughly 6,300-6,700 municipalities
+# per year carry exactly 0 across ALL speed tiers while averaging 87% baseline
+# coverage in 2008 and 98% in 2015. These blocks are non-reporting coded as
+# zero, not true zeros, and they are removed here. The rule conditions on ALL
+# tiers (speed_mbps_gte >= 1) being exactly 0 for the municipality-year, so
+# genuine zeros at high tiers only (e.g. 0% at >=30 Mbps with high >=1 Mbps
+# coverage) are untouched, as are the genuine 2005-2008 DSL (>=0.128) zeros.
+# All-tier-zero municipality-years in 2015-2021 (~700, mostly persistently-zero
+# tiny units where a true zero is conceivable) are NOT dropped; they are only
+# written to the audit file for review.
+zero_block_keys <- bb_data_hist %>%
+    filter(year >= 2010, speed_mbps_gte >= 1) %>%
+    group_by(AGS, year) %>%
+    summarise(all_zero = all(value == 0), n_rows = n(), .groups = "drop") %>%
+    filter(all_zero)
+
+adjacent_max <- bb_data_hist %>%
+    filter(speed_mbps_gte >= 1) %>%
+    group_by(AGS, year) %>%
+    summarise(year_max_value = max(value), .groups = "drop")
+
+zero_block_audit <- zero_block_keys %>%
+    left_join(adjacent_max %>% mutate(year = year + 1L) %>% rename(prev_year_max = year_max_value),
+              by = c("AGS", "year")) %>%
+    left_join(adjacent_max %>% mutate(year = year - 1L) %>% rename(next_year_max = year_max_value),
+              by = c("AGS", "year")) %>%
+    mutate(dropped = year <= 2014) %>%
+    select(AGS, year, n_rows, prev_year_max, next_year_max, dropped) %>%
+    arrange(AGS, year)
+
+write_csv(zero_block_audit, nonreporting_zero_blocks_file)
+
+zero_drop_keys <- zero_block_keys %>%
+    filter(year <= 2014) %>%
+    select(AGS, year)
+
+if (any(zero_drop_keys$year < 2010 | zero_drop_keys$year > 2014)) {
+    stop("Zero-block drop keys outside 2010-2014 - rule is broken.")
+}
+
+rows_to_drop <- bb_data_hist %>% semi_join(zero_drop_keys, by = c("AGS", "year"))
+if (any(rows_to_drop$value != 0)) {
+    stop("Zero-block drop would remove non-zero rows - rule is broken.")
+}
+
+bb_data_hist <- bb_data_hist %>% anti_join(zero_drop_keys, by = c("AGS", "year"))
+
+print("Non-reporting all-tier-zero municipality-years dropped (2010-2014):")
+print(zero_drop_keys %>% count(year), n = 10)
+print(paste("Total dropped:", nrow(zero_drop_keys), "municipality-years,",
+            nrow(rows_to_drop), "long rows."))
+print(paste("Flagged but kept (2015+):", sum(!zero_block_audit$dropped),
+            "municipality-years, see", basename(nonreporting_zero_blocks_file)))
+
 bb_data_hist <- collapse_duplicate_source_metrics(bb_data_hist)
 print(paste("Rows after duplicate metric collapse:", nrow(bb_data_hist)))
 
@@ -390,10 +545,30 @@ ags_not_in_crosswalk <- broadband_ags_years %>%
 
 print(paste("AGS-year combinations not covered by official crosswalk:", nrow(ags_not_in_crosswalk)))
 
-supplementary_crosswalk <- build_supplementary_crosswalk(ags_not_in_crosswalk, destatis_ags)
+supplementary_crosswalk <- build_supplementary_crosswalk(ags_not_in_crosswalk, destatis_ags, master_crosswalk)
 
 crosswalk_for_join <- bind_rows(crosswalk_renamed, supplementary_crosswalk) %>%
     distinct(AGS_hist_cw, year_hist_cw, AGS_2021, transition_share, population_weight, source)
+
+multi_source_keys <- crosswalk_for_join %>%
+    group_by(AGS_hist_cw, year_hist_cw) %>%
+    filter(n_distinct(source) > 1) %>%
+    ungroup()
+
+if (nrow(multi_source_keys) > 0) {
+    print(head(multi_source_keys, 50))
+    stop("Crosswalk keys served by multiple mapping sources - precedence is broken.")
+}
+
+supplementary_share_check <- supplementary_crosswalk %>%
+    group_by(AGS_hist_cw, year_hist_cw) %>%
+    summarise(total_transition_share = sum(transition_share, na.rm = TRUE), .groups = "drop") %>%
+    filter(total_transition_share < 0.99 | total_transition_share > 1.01)
+
+if (nrow(supplementary_share_check) > 0) {
+    print(head(supplementary_share_check, 50))
+    stop("Supplementary crosswalk keys with transition shares outside [0.99, 1.01].")
+}
 
 joined_data <- bb_data_hist %>%
     left_join(
@@ -410,7 +585,12 @@ if (nrow(missing_join_info) > 0) {
     drop_unit_share <- n_distinct(missing_join_info$AGS) / n_distinct(joined_data$AGS)
 
     unmapped_ags <- missing_join_info %>%
-        distinct(AGS) %>%
+        group_by(AGS) %>%
+        summarise(
+            years = paste(sort(unique(year)), collapse = ";"),
+            n_rows = n(),
+            .groups = "drop"
+        ) %>%
         arrange(AGS)
 
     write_csv(unmapped_ags, unmapped_ags_file)
@@ -424,8 +604,18 @@ if (nrow(missing_join_info) > 0) {
         stop("More than 20% of rows or units lack a 2021 AGS mapping. Inspect ", unmapped_ags_file)
     }
 } else {
-    write_csv(tibble(AGS = character()), unmapped_ags_file)
+    write_csv(tibble(AGS = character(), years = character(), n_rows = integer()), unmapped_ags_file)
     print("All rows have a valid 2021 AGS mapping.")
+}
+
+dropped_by_reference <- joined_data %>%
+    filter(!is.na(AGS_2021), !is.na(population_weight)) %>%
+    filter(!AGS_2021 %in% destatis_ags)
+
+if (nrow(dropped_by_reference) > 0) {
+    print(dropped_by_reference %>% count(AGS_2021, sort = TRUE) %>% head(50))
+    warning("Reference filter silently drops ", nrow(dropped_by_reference),
+            " rows whose mapped AGS_2021 is missing from the Destatis 2021 reference.")
 }
 
 joined_data <- joined_data %>%
