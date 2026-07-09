@@ -1,11 +1,21 @@
 # Data processing pipeline for Breitbandatlas historical data
 
+## Recent updates (July 2026)
+
+This version recovers most data previously dropped during AGS standardization:
+
+1. **Reproducible AGS reference (new step 00)**: `00_build_ags_reference.R` generates `data/ags_reference/destatis_ags_2021.rds` (10,994 municipalities) from the 2020 sheet of the Destatis Umsteigeschlüssel workbook. The previous committed binary lacked Berlin and Hamburg because their round numeric AGS codes were rendered in scientific notation and mangled during extraction; both city-states are now in the panel.
+2. **Nearest-year crosswalk fallback**: step 06 maps historical AGS codes that appear in a different year's crosswalk sheet than the data year label (e.g., Sachsen-Anhalt 2005-2006 files carrying post-2007-Kreisreform codes). This recovers 1,084 of the previously 1,206 unmapped codes; the residual filter drops 9,948 rows (0.33%) covering 122 codes.
+3. **Non-reporting zero fix**: municipality-years with exactly 0 across all speed tiers in 2010-2014 (33,138 municipality-years, 79,432 long rows) are removed as non-reporting; see the "Known limitations" section for details and consequences.
+4. **Berlin/Hamburg 2020-2021 via Bezirke**: the two city-states are reported only at Bezirk level in 2020-2021; step 06 aggregates the 7+12 Bezirk codes to the city codes with an unweighted mean (no Bezirk household weights exist in the source; all Bezirk values lie in 97-100).
+5. **Consistent population weighting**: recovered constituents enter the population-weighted aggregation with donor-sheet population weights, which revises some 2005-2007 values in Sachsen-Anhalt, Sachsen, and Thüringen.
+
 ## Recent updates (May 2026)
 
 This version fixes several data quality issues:
 
 1. **2005-2008 Baseline Fix**: Historical DSL coverage (`speed_mbps_gte = 0.128`) is correctly included in `share_broadband_baseline`. Previously these years showed 0% coverage.
-2. **AGS Validation**: All output AGS codes are validated against the Destatis 2021 reference. Step 06 filters 1,206 unmapped historical AGS codes, affecting 68,328 post-deduplicated long rows (2.22%).
+2. **AGS Validation**: All output AGS codes are validated against the Destatis 2021 reference. Step 06 filters unmapped historical AGS codes (see the July 2026 update for current counts).
 3. **Value Bounds**: Coverage values outside [0, 100] are filtered before aggregation. Standardized outputs fail validation if out-of-bounds values remain; they are not capped.
 4. **Deduplication**: Duplicate AGS-year-technology-speed cells are collapsed with `max(value)` before AGS standardization so overlapping source files do not inflate percentages.
 
@@ -218,8 +228,8 @@ This list is not exhaustive, as new or unparsed variable names would become thei
      a.  Loads `output/broadband_gemeinde_combined_long.rds`.
      b.  Ensures `AGS` and `year` columns are of the correct type for joining (character and integer, respectively).
   3. **Joining Broadband Data with Master Crosswalk**:
-     a.  The `master_crosswalk` is augmented only when a defensible mapping exists: valid 2021 AGS codes are mapped 1:1, and selected invalid historical AGS codes are mapped through deterministic reform chains in `data/gebietsreformen/combined_reform_mappings.rds`.
-     b.  Invalid AGS codes that cannot be mapped to the Destatis 2021 reference are written to `output/unmapped_ags_for_review.csv` and filtered. The current run filters 68,328 post-deduplicated long rows (2.22%) covering 1,206 historical AGS codes.
+     a.  The `master_crosswalk` is augmented only when a defensible mapping exists, in order of precedence: (i) a nearest-year crosswalk fallback for codes present in another year's sheet than the data year (donor-year target sets are identical for all affected codes; details in `output/nearest_year_fallback_mapping.rds`), (ii) Bezirk-to-city aggregation for Berlin/Hamburg 2020-2021, (iii) 1:1 mappings for valid 2021 AGS codes in no crosswalk sheet, and (iv) deterministic reform chains from `data/gebietsreformen/combined_reform_mappings.rds`. Assertions verify that no (AGS, year) key is served by multiple sources and that supplementary transition shares sum to 1.
+     b.  Invalid AGS codes that cannot be mapped to the Destatis 2021 reference are written to `output/unmapped_ags_for_review.csv` (with years and row counts) and filtered. The current run filters 9,948 post-deduplicated long rows (0.33%) covering 122 historical AGS codes.
      c.  Before joining, duplicate historical AGS-year-technology-speed cells are collapsed with `max(value)`, preserving traceability in `original_variable` and `source_paket`.
      d.  The broadband data is left-joined with the crosswalk using historical `AGS` and `year`.
   4. **Aggregating Percentage Values to 2021 AGS**:
@@ -309,16 +319,19 @@ There are several dimensions that this dataset, by design, cannot measure:
 
 ### Filtered observations
 
-Step 06 filters 68,328 post-deduplicated long rows (2.22%) covering 1,206 historical AGS codes because they cannot be mapped to official Destatis 2021 municipality boundaries. Most affected:
-
-- **Sachsen-Anhalt 2005-2006**: ~688 AGS codes used a non-standard coding scheme
-- **2018-2021**: Some source AGS codes are not in the official 2021 reference or deterministic reform-chain mapping
+Step 06 filters 9,948 post-deduplicated long rows (0.33%) covering 122 historical AGS codes because they cannot be mapped to official Destatis 2021 municipality boundaries. These are mostly Bavarian gemeindefreie Gebiete (unincorporated areas, no 2021 municipality equivalent) and sub-municipal district codes whose parent cities are already covered. The formerly large Sachsen-Anhalt gap (post-2007 codes in 2005-2006 files) is resolved by the nearest-year crosswalk fallback.
 
 See [unmapped_ags_documentation.md](unmapped_ags_documentation.md) for complete details.
 
+### Non-reporting coded as zero, 2010-2014 (fixed July 2026)
+
+About 6,600 municipalities per year, including Berlin, showed exactly 0 across all speed tiers throughout 2010-2014 while averaging 87% baseline coverage in 2008 and 98% in 2015. These were non-reporting municipalities coded as zero in the historical Paket 1 source (`verf_300_*` columns), not true zeros. Step 06 removes municipality-years where all tiers (`speed_mbps_gte >= 1`) are exactly zero, restricted to 2010-2014: 33,138 municipality-years (79,432 long rows). The rule preserves genuine zeros at high tiers only (6,771 municipality-years in 2010-2014 have 0% at `>=30 Mbps` alongside `>=1 Mbps` coverage above 80%) and does not touch the genuine 2005-2008 DSL zeros. All-tier-zero municipality-years in 2015-2021 (697, mostly persistently zero small municipalities) are retained and written to `output/nonreporting_zero_blocks.csv` for review.
+
+Consequences: 2010-2014 covers only reporting municipalities (~4,400-4,500 per year, skewed toward larger municipalities), and the 2015 break is largely resolved. The unweighted mean baseline jump from 2014 to 2015 was 57.3 percentage points before the fix; the within-municipality jump among the 4,536 continuous reporters is 1.2 percentage points, so 98% of the apparent jump was the false zeros. Higher-tier within-municipality jumps at 2015 (8-10 ppt) are in line with adjacent-year rollout growth. `method_change_2015` is retained; its main remaining content is the return to near-complete municipality coverage in 2015 (a composition change). Diagnostics: `src/auxiliary/verification/verify_zero_fix.R`.
+
 ### Missing geographic coverage
 
-- **City-states**: Hamburg (02) and Berlin (11) are not consistently present in the source data
+- **City-states**: Berlin and Hamburg are included at city level for 2005-2019; their 2020-2021 values are unweighted means across Bezirke (see caveats in README). Berlin's 2010-2014 values are affected by the non-reporting issue above.
 - **Sparse years and tiers**: 2009 is absent from the current municipality panel; 2005-2008 only report the historical baseline tier.
 
 ## Conclusion
