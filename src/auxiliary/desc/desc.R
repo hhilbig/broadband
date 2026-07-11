@@ -29,9 +29,9 @@ share_labels <- c(
 )
 
 break_labels <- tibble(
-    year = c(2010, 2015),
-    text_x = c(2010.18, 2015.18),
-    label = c("definition break", "method break")
+    year = c(2010, 2013, 2015, 2018),
+    text_x = c(2010.18, 2013.18, 2015.18, 2018.18),
+    label = c("definition break", "tier break", "method break", "tier break")
 )
 
 # --- Plot 1: Year-over-Year Change in Mean Coverage ---
@@ -58,11 +58,17 @@ yoy_changes <- panel_data %>%
 plot_yoy <- ggplot(yoy_changes, aes(x = year, y = yoy_change, color = speed_tier)) +
     geom_line(linewidth = 1) +
     geom_point(size = 2) +
-    geom_vline(xintercept = 2015, linetype = "dashed", color = "red") +
-    annotate("text", x = 2015.5, y = max(yoy_changes$yoy_change, na.rm = TRUE), label = "2015 Break", hjust = 0, size = 3) +
+    geom_vline(
+        data = break_labels,
+        aes(xintercept = year),
+        inherit.aes = FALSE,
+        linetype = "dashed",
+        linewidth = 0.4,
+        color = "grey45"
+    ) +
     labs(
         title = "Year-over-Year Change in Mean Broadband Coverage",
-        subtitle = "The structural break in 2015 is clearly visible across all speed tiers.",
+        subtitle = "Dashed lines: 2010 definition break, 2013/2018 tier breaks, 2015 method break.",
         x = "Year",
         y = "Change in Mean Coverage (Percentage Points)",
         color = "Speed Tier"
