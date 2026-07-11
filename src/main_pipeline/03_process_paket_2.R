@@ -293,7 +293,7 @@ process_sheet_data_paket2 <- function(data_df, ags_col_name, year_val_sheet_file
         select(AGS, year, data_category, technology_group, speed_mbps_gte, value = value_raw, original_variable = variable_original) %>%
         mutate(
             value_cleaned = str_replace_all(value, "[^0-9.,-]", ""), # Keep digits, comma, dot, minus
-            value_cleaned = str_replace(value_cleaned, ",", "."),
+            value_cleaned = str_replace_all(value_cleaned, ",", "."),
             value = suppressWarnings(as.numeric(value_cleaned))
         ) %>%
         filter(!is.na(value), !is.na(AGS), str_length(AGS) > 0, !is.na(year),

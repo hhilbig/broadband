@@ -167,7 +167,7 @@ extract_year_for_sheet <- function(sheet_name, file_name_base) {
         return(as.integer(year_match_file_direct))
     }
 
-    year_match_file_general <- str_extract(file_name_base, "(?<!\\\\d)(200[5-9]|201[0-9]|202[0-4])(?!\\\\d)")
+    year_match_file_general <- str_extract(file_name_base, "(?<!\\d)(200[5-9]|201[0-9]|202[0-4])(?!\\d)")
     if (!is.na(year_match_file_general)) {
         return(as.integer(year_match_file_general))
     }
@@ -258,7 +258,7 @@ process_sheet_data_paket1 <- function(data_df, ags_col_name, year_val_sheet_file
     processed_data <- long_data_with_parsed_vars %>%
         mutate(year = ifelse(!is.na(year_from_variable), year_from_variable, year_sheet_file)) %>%
         select(AGS, year, data_category, technology_group, speed_mbps_gte, value = value_raw, original_variable = variable_original) %>%
-        mutate(value = suppressWarnings(as.numeric(str_replace(value, ",", ".")))) %>%
+        mutate(value = suppressWarnings(as.numeric(str_replace_all(value, ",", ".")))) %>%
         filter(!is.na(value), value >= 0, value <= 100,
                !is.na(AGS), str_length(AGS) > 0, !is.na(year))
 

@@ -113,34 +113,42 @@ parse_broadband_variable <- function(variable_name) {
 process_csv_file_paket3 <- function(file_path_full, year_val, data_cat) {
     print(paste("Processing:", basename(file_path_full)))
 
-    raw_data <- NULL
-    tryCatch(
-        {
-            # Try with semicolon delimiter first, common in German CSVs
-            raw_data <- read_csv2(file_path_full, show_col_types = FALSE, locale = locale(encoding = "UTF-8"))
-            if (ncol(raw_data) <= 1 && nrow(raw_data) > 0) { # Check if parsing failed (e.g. wrong delimiter)
-                message(paste("  Trying comma delimiter for CSV:", basename(file_path_full)))
-                raw_data <- read_csv(file_path_full, show_col_types = FALSE, locale = locale(encoding = "UTF-8"))
+    # Try semicolon delimiter first (common in German CSVs), fall back to comma
+    # if the result is a single column, and retry both with latin1 if UTF-8
+    # errors. Each attempt returns its data (or NULL) so fallback results
+    # propagate; a previous version assigned inside a tryCatch error handler,
+    # which silently discarded the latin1 result.
+    read_encoding <- function(enc) {
+        data_semi <- tryCatch(
+            read_csv2(file_path_full, show_col_types = FALSE, locale = locale(encoding = enc)),
+            error = function(e) {
+                message(paste0("  Error reading CSV with ", enc, " (", basename(file_path_full), "): ", e$message))
+                NULL
             }
-        },
-        error = function(e_utf8) {
-            message(paste("  Error reading CSV with UTF-8 (", basename(file_path_full), "):", e_utf8$message))
-            tryCatch(
-                {
-                    message(paste("  Trying latin1 encoding for CSV:", basename(file_path_full)))
-                    raw_data <- read_csv2(file_path_full, show_col_types = FALSE, locale = locale(encoding = "latin1"))
-                    if (ncol(raw_data) <= 1 && nrow(raw_data) > 0) {
-                        message(paste("  Trying comma delimiter with latin1 for CSV:", basename(file_path_full)))
-                        raw_data <- read_csv(file_path_full, show_col_types = FALSE, locale = locale(encoding = "latin1"))
-                    }
-                },
-                error = function(e_latin1) {
-                    message(paste("  Failed to read CSV with latin1 as well (", basename(file_path_full), "):", e_latin1$message))
-                    return(NULL)
+        )
+
+        if (is.null(data_semi) || (ncol(data_semi) <= 1 && nrow(data_semi) > 0)) {
+            message(paste("  Trying comma delimiter for CSV:", basename(file_path_full)))
+            data_comma <- tryCatch(
+                read_csv(file_path_full, show_col_types = FALSE, locale = locale(encoding = enc)),
+                error = function(e) {
+                    message(paste0("  Error reading CSV (comma) with ", enc, " (", basename(file_path_full), "): ", e$message))
+                    NULL
                 }
             )
+            if (!is.null(data_comma)) {
+                return(data_comma)
+            }
         }
-    )
+
+        data_semi
+    }
+
+    raw_data <- read_encoding("UTF-8")
+    if (is.null(raw_data)) {
+        message(paste("  Trying latin1 encoding for CSV:", basename(file_path_full)))
+        raw_data <- read_encoding("latin1")
+    }
 
     if (is.null(raw_data) || nrow(raw_data) == 0) {
         message(paste("  No data read or empty file for:", basename(file_path_full)))
@@ -208,7 +216,7 @@ process_csv_file_paket3 <- function(file_path_full, year_val, data_cat) {
         mutate(
             # Basic cleaning for value column before numeric conversion
             value_cleaned = str_replace_all(value, "[^0-9.,-]", ""), # Keep digits, comma, dot, minus
-            value_cleaned = str_replace(value_cleaned, ",", "."),
+            value_cleaned = str_replace_all(value_cleaned, ",", "."),
             value = suppressWarnings(as.numeric(value_cleaned)) # Suppress warnings for NAs by coercion
         ) %>%
         filter(!is.na(value), !is.na(AGS), str_length(AGS) > 0, !is.na(year),

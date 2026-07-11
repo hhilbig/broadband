@@ -57,6 +57,9 @@ inspect_excel_sheets <- function(target_dirs) {
 
     for (file_path in all_excel_files) {
         print(paste("--- Inspecting File:", file_path, "---"))
+        # Track the sheet being processed at function scope so the error
+        # handler (a closure over this frame) can report it.
+        current_sheet_name <- NULL
         tryCatch(
             {
                 sheet_names <- excel_sheets(file_path)
@@ -67,6 +70,7 @@ inspect_excel_sheets <- function(target_dirs) {
                 print(paste("  Sheets found:", paste(sheet_names, collapse = ", ")))
 
                 for (sheet_name in sheet_names) {
+                    current_sheet_name <- sheet_name
                     print(paste("    -- Analyzing Sheet:", sheet_name, "--"))
                     header_data <- read_excel(file_path, sheet = sheet_name, n_max = 5) # Read only a few rows for header
                     col_names <- colnames(header_data)
@@ -91,13 +95,9 @@ inspect_excel_sheets <- function(target_dirs) {
                 }
             },
             error = function(e) {
-                # Construct error message carefully, as sheet_name might not be defined
-                # if the error happens before or during sheet_names <- excel_sheets(file_path)
+                # current_sheet_name is NULL if the error happened before or
+                # during sheet enumeration.
                 base_error_msg <- paste("  Error processing file:", basename(file_path))
-                current_sheet_name <- NULL
-                if (exists("sheet_name", inherits = FALSE) && !is.null(sheet_name)) {
-                    current_sheet_name <- sheet_name
-                }
 
                 if (!is.null(current_sheet_name)) {
                     print(paste0(base_error_msg, ", Sheet: ", current_sheet_name, ", Error: ", e$message))
