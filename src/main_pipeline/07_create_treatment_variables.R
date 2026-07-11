@@ -25,9 +25,9 @@ share_labels <- c(
 )
 
 break_labels <- tibble(
-    year = c(2010, 2015),
-    text_x = c(2010.18, 2015.18),
-    label = c("definition break", "method break")
+    year = c(2010, 2013, 2015, 2018),
+    text_x = c(2010.18, 2013.18, 2015.18, 2018.18),
+    label = c("definition break", "tier break", "method break", "tier break")
 )
 
 max_or_na <- function(x) {
@@ -38,8 +38,24 @@ max_or_na <- function(x) {
     max(x, na.rm = TRUE)
 }
 
+min_or_na <- function(x) {
+    if (length(x) == 0 || all(is.na(x))) {
+        return(NA_real_)
+    }
+
+    min(x, na.rm = TRUE)
+}
+
 threshold_max <- function(values, speeds, threshold) {
     max_or_na(values[speeds >= threshold])
+}
+
+# The tier that actually feeds each share column: the lowest reported tier at
+# or above the threshold. Source files do not report every named tier in every
+# year (e.g. no >=6 tier before 2018), so a share can be measured at a higher
+# tier than its name suggests; the tier_* columns make this observable.
+threshold_tier <- function(speeds, threshold) {
+    min_or_na(speeds[speeds >= threshold])
 }
 
 validate_drop <- function(n_drop, n_total, label) {
@@ -123,6 +139,10 @@ panel <- bb_long %>%
         share_gte1mbps = threshold_max(coverage_at_specific_speed, speed_mbps_gte, 1),
         share_gte6mbps = threshold_max(coverage_at_specific_speed, speed_mbps_gte, 6),
         share_gte30mbps = threshold_max(coverage_at_specific_speed, speed_mbps_gte, 30),
+        tier_baseline = threshold_tier(speed_mbps_gte, 0.128),
+        tier_gte1 = threshold_tier(speed_mbps_gte, 1),
+        tier_gte6 = threshold_tier(speed_mbps_gte, 6),
+        tier_gte30 = threshold_tier(speed_mbps_gte, 30),
         .groups = "drop"
     ) %>%
     mutate(method_change_2015 = if_else(year == 2015L, 1L, 0L))
@@ -150,6 +170,38 @@ if (nrow(hierarchy_violations) > 0) {
     print(head(hierarchy_violations, 50))
     stop("Panel share columns violate speed-tier hierarchy.")
 }
+
+tier_thresholds <- c(
+    tier_baseline = 0.128,
+    tier_gte1 = 1,
+    tier_gte6 = 6,
+    tier_gte30 = 30
+)
+tier_share_map <- c(
+    tier_baseline = "share_broadband_baseline",
+    tier_gte1 = "share_gte1mbps",
+    tier_gte6 = "share_gte6mbps",
+    tier_gte30 = "share_gte30mbps"
+)
+
+for (tier_col in names(tier_thresholds)) {
+    share_col <- tier_share_map[[tier_col]]
+    if (any(is.na(panel[[tier_col]]) != is.na(panel[[share_col]]))) {
+        stop("Column ", tier_col, " is not missing exactly when ", share_col, " is missing.")
+    }
+    if (any(panel[[tier_col]] < tier_thresholds[[tier_col]], na.rm = TRUE)) {
+        stop("Column ", tier_col, " contains tiers below its threshold.")
+    }
+}
+
+print("--- Measurement tier composition by year ---")
+print(panel %>%
+          group_by(year) %>%
+          summarise(across(all_of(names(tier_thresholds)),
+                           ~ paste(sort(unique(.x)), collapse = ",")),
+                    .groups = "drop") %>%
+          arrange(year),
+      n = Inf)
 
 print("--- Panel diagnostics after speed bucket aggregation ---")
 print(paste("Panel dimensions:", nrow(panel), "rows,", ncol(panel), "columns"))
@@ -233,6 +285,10 @@ panel_public <- panel %>%
         share_gte1mbps,
         share_gte6mbps,
         share_gte30mbps,
+        tier_baseline,
+        tier_gte1,
+        tier_gte6,
+        tier_gte30,
         method_change_2015
     )
 
