@@ -1,6 +1,6 @@
 # German Municipal Broadband Availability, 2005-2021
 
-**Current version: v2.0.0 (July 2026).** If you downloaded an earlier version, please update: v2.0.0 removes a large block of false zeros in 2010-2014, adds Berlin and Hamburg, and recovers previously dropped municipalities. See [CHANGELOG.md](CHANGELOG.md) for what changed between versions and who is affected.
+**Current version: v2.1.0 (July 2026).** If you downloaded an earlier version, please update: v2.1.0 adds `tier_*` columns that record which reported speed tier feeds each share variable (the named tiers are not reported in all years; see the caveats) and corrects codebook errors; v2.0.0 removed a large block of false zeros in 2010-2014, added Berlin and Hamburg, and recovered previously dropped municipalities. See [CHANGELOG.md](CHANGELOG.md) for what changed between versions and who is affected.
 
 This repository provides a harmonized panel of broadband internet availability for German municipalities. The public file is `output/panel_data_public.csv`.
 
@@ -9,6 +9,13 @@ The data should be used with care. The source files come from three historical B
 ## Versioning
 
 Releases follow a semantic scheme: major versions change existing values or observations, minor versions add data or variables, patch versions change documentation only. Each version is a git tag and a [GitHub Release](https://github.com/hhilbig/broadband/releases) with the panel CSV attached, and the current version is recorded in the `VERSION` file. All changes are documented in [CHANGELOG.md](CHANGELOG.md).
+
+## v2.1.0 (July 2026)
+
+This update makes the measurement tiers behind the share variables observable and corrects the codebook:
+
+- **The named speed tiers are not reported in all years.** The share variables take the lowest reported tier at or above their named threshold, so before 2018 they measure stricter tiers than their names suggest: `share_gte6mbps` is `>=50 Mbps` coverage in 2010-2012 and `>=16 Mbps` in 2013-2017, `share_gte30mbps` is `>=50 Mbps` through 2017, and `share_gte1mbps` (and the 2010+ baseline) is `>=2 Mbps` through 2017. Earlier codebook versions incorrectly stated that these columns were missing before their named tier was reported.
+- **New `tier_baseline`, `tier_gte1`, `tier_gte6`, `tier_gte30` columns** record, per municipality-year, the tier (in Mbps) that produced each share value. All existing share values are unchanged.
 
 ## v2.0.0 (July 2026)
 
@@ -33,7 +40,17 @@ Relative to the initial June 2025 upload, this release fixed several issues:
 ## Main Caveats
 
 - There is no 2009 municipality panel in the current source files.
-- The baseline measure changes in 2010: `share_broadband_baseline` uses `>=0.128 Mbps` in 2005-2008 and `>=1 Mbps` from 2010 onward.
+- **The share variables track the lowest reported tier at or above their named threshold, and the reported tiers change over time.** The source files do not report the 1, 6, and 30 Mbps tiers before 2018, so each share is measured at a stricter tier than its name suggests in earlier years. The typical tier behind each column (recorded per observation in the `tier_*` columns) is:
+
+  | Column | 2005-2008 | 2010-2012 | 2013-2017 | 2018-2021 |
+  | --- | --- | --- | --- | --- |
+  | `share_broadband_baseline` | 0.128 | 2 | 2 | 1 |
+  | `share_gte1mbps` | missing | 2 | 2 | 1 |
+  | `share_gte6mbps` | missing | 50 | 16 | 6 |
+  | `share_gte30mbps` | missing | 50 | 50 | 30 |
+
+  This creates definitional breaks at 2013 (`share_gte6mbps` switches from `>=50` to `>=16`) and 2018 (all columns switch to their named tiers, coinciding with a source change): part of the level jumps at these years is definitional, not rollout. In 2010-2012, `share_gte6mbps` and `share_gte30mbps` are identical by construction. Analyses of the `>=6` or `>=30` tiers that span these years should condition on the `tier_*` columns or restrict to years with a constant tier.
+- The baseline measure changes over time: `share_broadband_baseline` uses `>=0.128 Mbps` in 2005-2008, `>=2 Mbps` in 2010-2017, and `>=1 Mbps` from 2018 onward.
 - **2010-2014 covers only reporting municipalities** (roughly 4,400-4,500 per year). Municipality-years with exactly 0 across all speed tiers in this window were non-reporting coded as zero in the source and have been removed (see `output/nonreporting_zero_blocks.csv` for the full list). Reporters skew toward larger municipalities, so unweighted means over 2010-2014 describe a selected sample.
 - The 2015 provider change (`method_change_2015`) remains flagged, but after the removal of false zeros the residual break is small: the within-municipality baseline jump from 2014 to 2015 is 1.2 percentage points, and higher-tier jumps are in line with adjacent-year rollout growth. The main effect of 2015 is the return to near-complete municipality coverage, i.e., a composition change.
 - About 700 all-tier-zero municipality-years remain in 2015-2021. Most are persistently zero small municipalities where a genuine zero is plausible; they are retained and listed in `output/nonreporting_zero_blocks.csv` for review.
@@ -56,10 +73,14 @@ Details on filtered AGS codes are in `docs/unmapped_ags_documentation.md`.
 | --- | --- | --- |
 | `AGS` | character | 8-digit official municipality key, standardized to 2021 boundaries. |
 | `year` | integer | Observation year. The panel covers 2005-2021, excluding 2009. |
-| `share_broadband_baseline` | double | Share of households with access to basic broadband. Uses `>=0.128 Mbps` in 2005-2008 and `>=1 Mbps` from 2010 onward. |
-| `share_gte1mbps` | double | Share of households with access to `>=1 Mbps`; missing before this tier is reported. |
-| `share_gte6mbps` | double | Share of households with access to `>=6 Mbps`; missing before this tier is reported. |
-| `share_gte30mbps` | double | Share of households with access to `>=30 Mbps`; missing before this tier is reported. |
+| `share_broadband_baseline` | double | Share of households with access to basic broadband, measured at the lowest reported tier: `>=0.128 Mbps` in 2005-2008, `>=2 Mbps` in 2010-2017, `>=1 Mbps` from 2018. See `tier_baseline`. |
+| `share_gte1mbps` | double | Share of households with access at the lowest reported tier `>=1 Mbps` (`>=2 Mbps` in 2010-2017, `>=1 Mbps` from 2018); missing when no such tier is reported (2005-2008). See `tier_gte1`. |
+| `share_gte6mbps` | double | Share of households with access at the lowest reported tier `>=6 Mbps` (`>=50 Mbps` in 2010-2012, `>=16 Mbps` in 2013-2017, `>=6 Mbps` from 2018); missing when no such tier is reported (2005-2008). See `tier_gte6`. |
+| `share_gte30mbps` | double | Share of households with access at the lowest reported tier `>=30 Mbps` (`>=50 Mbps` in 2010-2017, `>=30 Mbps` from 2018); missing when no such tier is reported (2005-2008). See `tier_gte30`. |
+| `tier_baseline` | double | Speed tier in Mbps at which `share_broadband_baseline` is measured for this observation. |
+| `tier_gte1` | double | Speed tier in Mbps at which `share_gte1mbps` is measured; missing when the share is missing. |
+| `tier_gte6` | double | Speed tier in Mbps at which `share_gte6mbps` is measured; missing when the share is missing. |
+| `tier_gte30` | double | Speed tier in Mbps at which `share_gte30mbps` is measured; missing when the share is missing. |
 | `method_change_2015` | integer | Indicator for the 2015 methodological break. |
 
 All share variables are percentages on the 0-100 scale.

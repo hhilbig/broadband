@@ -2,6 +2,24 @@
 
 All notable changes to the harmonized German municipal broadband panel are documented here. Each version is a git tag and a GitHub Release with `panel_data_public.csv` attached. Versioning follows a semantic scheme: **major** versions change existing values or observations, **minor** versions add data or variables without changing existing content, **patch** versions change documentation only.
 
+## v2.1.0 (2026-07-11)
+
+No existing share values change. This release makes the measurement tier behind each share column observable and corrects codebook errors.
+
+### Added
+
+- **`tier_baseline`, `tier_gte1`, `tier_gte6`, `tier_gte30` columns** in the public panel: the speed tier (Mbps) at which each share is measured, per municipality-year. The share construction takes the lowest reported tier at or above the named threshold, and the 1, 6, and 30 Mbps tiers are only reported from 2018, so before 2018 the shares measure stricter tiers: `share_gte6mbps` is >=50 Mbps coverage in 2010-2012 (identical to `share_gte30mbps` there) and >=16 Mbps in 2013-2017; `share_gte30mbps` is >=50 Mbps through 2017; `share_gte1mbps` and the 2010+ baseline are >=2 Mbps through 2017.
+- Break markers at 2013 and 2018 (tier changes) in the release coverage plot.
+
+### Fixed
+
+- **Codebook misstatements**: earlier versions claimed the higher-tier share columns were "missing before this tier is reported" (they are populated from higher tiers from 2010 onward) and that the baseline uses ">=1 Mbps from 2010 onward" (it uses >=2 Mbps in 2010-2017).
+- Latent pipeline bugs with no effect on outputs: the Paket 3 latin1 encoding fallback now propagates its result instead of being silently discarded, an inert lookaround regex in the Paket 1 year extraction was corrected, decimal-comma replacement handles multiple commas, and inspection error messages now include the sheet name.
+
+### Who must update
+
+- Anyone comparing `share_gte6mbps` or `share_gte30mbps` **across 2012/2013 or 2017/2018**: part of the level jump at those years is definitional (tier change), not rollout. Use the new `tier_*` columns to condition on the measurement tier.
+
 ## v2.0.0 (2026-07-10)
 
 **Update if you use any earlier version.** This release removes a large block of false zeros, recovers previously dropped municipalities, and adds Berlin and Hamburg. Panel dimensions change from 171,621 rows / 10,992 municipalities to **140,232 rows / 10,994 municipalities**.
