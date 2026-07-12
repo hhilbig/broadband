@@ -2,6 +2,25 @@
 
 All notable changes to the harmonized German municipal broadband panel are documented here. Each version is a git tag and a GitHub Release with `panel_data_public.csv` attached. Versioning follows a semantic scheme: **major** versions change existing values or observations, **minor** versions add data or variables without changing existing content, **patch** versions change documentation only.
 
+## v3.0.0 (2026-07-12)
+
+**Update if you use 2019-2021 data or the affected municipalities.** This release removes a block of trailing non-reporting zeros and recovers one previously dropped unit. Panel dimensions change from 140,232 to **140,093 municipality-year rows** (10,994 municipalities unchanged). The change is small and well-contained: 141 municipality-years removed, 2 added, and 1 existing value revised.
+
+### Changed
+
+- **Trailing non-reporting zeros removed from 2015-2021.** A group of units, predominantly gemeindefreie Gebiete and forest districts, reported positive coverage through an earlier year and then exactly 0 across all speed tiers in a later year (overwhelmingly a 100% -> 0% drop at 2021). Coverage does not physically vanish, so an all-tier-zero municipality-year for a unit that had positive coverage in an earlier year is treated as non-reporting and removed (141 municipality-years: 115 in 2021, 18 in 2020, the rest 2015-2019). Persistent zeros (units zero in every observed year) and leading zeros before a unit's first positive year are retained. The full list is in `output/nonreporting_zero_blocks_2015_2021.csv`.
+- **One revised value.** Harz (Landkreis Göttingen), gemfr. Geb. (`03159501`) for 2018 now aggregates both source deliveries (its `>=6 Mbps` value rises from 67 to 95); previously only one source was mapped.
+
+### Added
+
+- **Recovered `03159501` for 2019-2020.** "Harz (Landkreis Göttingen), gemeindefreies Gebiet" is reported in 2018-2021 under its pre-2016 Osterode Kreis code (`03156501`), which the 2016 Kreis reform folded into Landkreis Göttingen. A new relaxed reform-chain fallback in step 06 applies a reform that predates the data year when the legacy code carries actual coverage and maps unambiguously to a valid 2021 reference unit. This adds 2019-2020 (baseline 100%); the unit's 2021 value is a genuine all-zero dropout and is removed by the rule above. The residual unmapped filter now removes 9,726 long rows (0.32%) covering 121 historical AGS codes (was 9,948 / 122).
+- **`output/nonreporting_zero_blocks_2015_2021.csv`** audit (all 2015-2021 all-tier-zero municipality-years on 2021 boundaries, flagged dropped vs retained) and a consolidated release-check gate `src/auxiliary/verification/run_release_checks.R`.
+
+### Who must update
+
+- Anyone using **2019-2021 values** for gemeindefreie Gebiete or forest districts: false 100% -> 0% dropouts (mostly at 2021) are removed. This affects 141 municipality-years.
+- Anyone matching on the **Harz (Landkreis Göttingen) gemeindefreies Gebiet** (`03159501`): 2019-2020 are now present and its 2018 value is revised.
+
 ## v2.1.0 (2026-07-11)
 
 No existing share values change. This release makes the measurement tier behind each share column observable and corrects codebook errors.

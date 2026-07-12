@@ -1,5 +1,11 @@
 # Data processing pipeline for Breitbandatlas historical data
 
+## Recent updates (July 2026, v3.0.0)
+
+1. **Trailing non-reporting zeros removed (2015-2021)**: on 2021 boundaries, an all-tier-zero municipality-year for a unit that had positive coverage in an earlier year is removed as non-reporting (141 municipality-years, 115 of them at 2021; predominantly gemeindefreie Gebiete and forest districts dropping from ~100% to 0%). Persistent zeros (zero in every observed year) and leading zeros (before a unit's first positive year) are retained. Applied in step 06 after AGS standardization; audit in `output/nonreporting_zero_blocks_2015_2021.csv`.
+2. **Relaxed reform-chain fallback**: step 06 adds a last-resort reform pass that applies a reform predating the data year when the legacy code carries actual coverage and maps unambiguously to a valid 2021 reference unit. Recovers `03159501` ("Harz, gemeindefreies Gebiet") for 2019-2020, reported under the pre-2016 Osterode Kreis code (`03156501`). The residual unmapped filter is now 9,726 rows (0.32%) over 121 codes.
+3. **Release-check gate**: `src/auxiliary/verification/run_release_checks.R` consolidates all release invariants into one fail-loud script.
+
 ## Recent updates (July 2026, v2.1.0)
 
 1. **Measurement-tier metadata**: the panel now carries `tier_baseline`, `tier_gte1`, `tier_gte6`, `tier_gte30` columns recording, per municipality-year, the speed tier that produced each share value. The share construction takes the lowest reported tier at or above the named threshold, and the 1, 6, and 30 Mbps tiers are not reported before 2018, so the shares measure stricter tiers in earlier years (see "Known limitations"). Existing share values are unchanged.
@@ -235,7 +241,7 @@ This list is not exhaustive, as new or unparsed variable names would become thei
      b.  Ensures `AGS` and `year` columns are of the correct type for joining (character and integer, respectively).
   3. **Joining Broadband Data with Master Crosswalk**:
      a.  The `master_crosswalk` is augmented only when a defensible mapping exists, in order of precedence: (i) a nearest-year crosswalk fallback for codes present in another year's sheet than the data year (donor-year target sets are identical for all affected codes; details in `output/nearest_year_fallback_mapping.rds`), (ii) Bezirk-to-city aggregation for Berlin/Hamburg 2020-2021, (iii) 1:1 mappings for valid 2021 AGS codes in no crosswalk sheet, and (iv) deterministic reform chains from `data/gebietsreformen/combined_reform_mappings.rds`. Assertions verify that no (AGS, year) key is served by multiple sources and that supplementary transition shares sum to 1.
-     b.  Invalid AGS codes that cannot be mapped to the Destatis 2021 reference are written to `output/unmapped_ags_for_review.csv` (with years and row counts) and filtered. The current run filters 9,948 post-deduplicated long rows (0.33%) covering 122 historical AGS codes.
+     b.  Invalid AGS codes that cannot be mapped to the Destatis 2021 reference are written to `output/unmapped_ags_for_review.csv` (with years and row counts) and filtered. The current run filters 9,726 post-deduplicated long rows (0.32%) covering 121 historical AGS codes.
      c.  Before joining, duplicate historical AGS-year-technology-speed cells are collapsed with `max(value)`, preserving traceability in `original_variable` and `source_paket`.
      d.  The broadband data is left-joined with the crosswalk using historical `AGS` and `year`.
   4. **Aggregating Percentage Values to 2021 AGS**:
@@ -331,15 +337,19 @@ There are several dimensions that this dataset, by design, cannot measure:
 
 ### Filtered observations
 
-Step 06 filters 9,948 post-deduplicated long rows (0.33%) covering 122 historical AGS codes because they cannot be mapped to official Destatis 2021 municipality boundaries. These are mostly Bavarian gemeindefreie Gebiete (unincorporated areas, no 2021 municipality equivalent) and sub-municipal district codes whose parent cities are already covered. The formerly large Sachsen-Anhalt gap (post-2007 codes in 2005-2006 files) is resolved by the nearest-year crosswalk fallback.
+Step 06 filters 9,726 post-deduplicated long rows (0.32%) covering 121 historical AGS codes because they cannot be mapped to official Destatis 2021 municipality boundaries. These are mostly Bavarian gemeindefreie Gebiete (unincorporated areas, no 2021 municipality equivalent) and sub-municipal district codes whose parent cities are already covered. The formerly large Sachsen-Anhalt gap (post-2007 codes in 2005-2006 files) is resolved by the nearest-year crosswalk fallback, and the Niedersachsen "Harz" gemeindefreies Gebiet (`03156501`) is recovered by the relaxed reform fallback (see `unmapped_ags_documentation.md`).
 
 See [unmapped_ags_documentation.md](unmapped_ags_documentation.md) for complete details.
 
 ### Non-reporting coded as zero, 2010-2014 (fixed July 2026)
 
-About 6,600 municipalities per year, including Berlin, showed exactly 0 across all speed tiers throughout 2010-2014 while averaging 87% baseline coverage in 2008 and 98% in 2015. These were non-reporting municipalities coded as zero in the historical Paket 1 source (`verf_300_*` columns), not true zeros. Step 06 removes municipality-years where all tiers (`speed_mbps_gte >= 1`) are exactly zero, restricted to 2010-2014: 33,138 municipality-years (79,432 long rows). The rule preserves genuine zeros at high tiers only (6,771 municipality-years in 2010-2014 have 0% at `>=30 Mbps` alongside `>=1 Mbps` coverage above 80%) and does not touch the genuine 2005-2008 DSL zeros. All-tier-zero municipality-years in 2015-2021 (697, mostly persistently zero small municipalities) are retained and written to `output/nonreporting_zero_blocks.csv` for review.
+About 6,600 municipalities per year, including Berlin, showed exactly 0 across all speed tiers throughout 2010-2014 while averaging 87% baseline coverage in 2008 and 98% in 2015. These were non-reporting municipalities coded as zero in the historical Paket 1 source (`verf_300_*` columns), not true zeros. Step 06 removes municipality-years where all tiers (`speed_mbps_gte >= 1`) are exactly zero, restricted to 2010-2014: 33,138 municipality-years (79,432 long rows). The rule preserves genuine zeros at high tiers only (6,771 municipality-years in 2010-2014 have 0% at `>=30 Mbps` alongside `>=1 Mbps` coverage above 80%) and does not touch the genuine 2005-2008 DSL zeros. All-tier-zero municipality-years in 2015-2021 are handled by the separate trailing-zero rule below (v3.0.0); before that rule they were all retained and written to `output/nonreporting_zero_blocks.csv`.
 
 Consequences: 2010-2014 covers only reporting municipalities (~4,400-4,500 per year, skewed toward larger municipalities), and the 2015 break is largely resolved. The unweighted mean baseline jump from 2014 to 2015 was 57.3 percentage points before the fix; the within-municipality jump among the 4,536 continuous reporters is 1.2 percentage points, so 98% of the apparent jump was the false zeros. Higher-tier within-municipality jumps at 2015 (8-10 ppt) are in line with adjacent-year rollout growth. `method_change_2015` is retained; its main remaining content is the return to near-complete municipality coverage in 2015 (a composition change). Diagnostics: `src/auxiliary/verification/verify_zero_fix.R`.
+
+### Trailing non-reporting zeros, 2015-2021 (added v3.0.0)
+
+A separate non-reporting pattern appears in 2015-2021 on 2021 boundaries: a group of units, predominantly gemeindefreie Gebiete and forest districts, report positive coverage through an earlier year and then exactly 0 across all speed tiers in a later year, overwhelmingly a 100% to 0% drop at 2021. Because coverage does not physically vanish, step 06 removes any all-tier-zero municipality-year in 2015-2021 for a unit that had positive coverage in an earlier year (141 municipality-years: 115 at 2021, 18 at 2020, the remainder 2015-2019). Units that are zero in every observed year (persistently zero, genuine zero plausible) and zero only before their first positive year (leading zeros) are retained: 422 such municipality-years. This rule is applied after AGS standardization because the dropout pattern is a property of the 2021-boundary units. Audit: `output/nonreporting_zero_blocks_2015_2021.csv`.
 
 ### Missing geographic coverage
 

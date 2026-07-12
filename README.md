@@ -1,6 +1,6 @@
 # German Municipal Broadband Availability, 2005-2021
 
-**Current version: v2.1.0 (July 2026).** If you downloaded an earlier version, please update: v2.1.0 adds `tier_*` columns that record which reported speed tier feeds each share variable (the named tiers are not reported in all years; see the caveats) and corrects codebook errors; v2.0.0 removed a large block of false zeros in 2010-2014, added Berlin and Hamburg, and recovered previously dropped municipalities. See [CHANGELOG.md](CHANGELOG.md) for what changed between versions and who is affected.
+**Current version: v3.0.0 (July 2026).** If you downloaded an earlier version, please update: v3.0.0 removes trailing non-reporting zeros in 2019-2021 (mostly gemeindefreie Gebiete dropping from full coverage to 0% at 2021) and recovers one previously dropped unit; v2.1.0 added `tier_*` columns recording which reported speed tier feeds each share variable (the named tiers are not reported in all years; see the caveats) and corrected codebook errors; v2.0.0 removed a large block of false zeros in 2010-2014, added Berlin and Hamburg, and recovered previously dropped municipalities. See [CHANGELOG.md](CHANGELOG.md) for what changed between versions and who is affected.
 
 This repository provides a harmonized panel of broadband internet availability for German municipalities. The public file is `output/panel_data_public.csv`.
 
@@ -9,6 +9,13 @@ The data should be used with care. The source files come from three historical B
 ## Versioning
 
 Releases follow a semantic scheme: major versions change existing values or observations, minor versions add data or variables, patch versions change documentation only. Each version is a git tag and a [GitHub Release](https://github.com/hhilbig/broadband/releases) with the panel CSV attached, and the current version is recorded in the `VERSION` file. All changes are documented in [CHANGELOG.md](CHANGELOG.md).
+
+## v3.0.0 (July 2026)
+
+This update removes trailing non-reporting zeros and recovers one previously dropped unit. The change is small and well-contained (141 municipality-years removed, 2 added, 1 value revised); the panel has 140,093 municipality-year rows.
+
+- **Trailing non-reporting zeros removed from 2015-2021.** A group of units, predominantly gemeindefreie Gebiete and forest districts, report positive coverage through an earlier year and then exactly 0 across all speed tiers in a later year, overwhelmingly a 100% to 0% drop at 2021. Coverage does not physically vanish, so an all-tier-zero municipality-year for a unit that had positive coverage earlier is treated as non-reporting and removed (141 municipality-years, 115 of them in 2021). Persistent and leading zeros are retained. Full list in `output/nonreporting_zero_blocks_2015_2021.csv`.
+- **`03159501` ("Harz, gemeindefreies Gebiet") recovered for 2019-2020.** It is reported under a pre-2016 Kreis code that a relaxed reform-chain fallback now maps to its 2021 boundary. The residual unmapped filter is now 9,726 rows (0.32%) over 121 codes.
 
 ## v2.1.0 (July 2026)
 
@@ -53,7 +60,7 @@ Relative to the initial June 2025 upload, this release fixed several issues:
 - The baseline measure changes over time: `share_broadband_baseline` uses `>=0.128 Mbps` in 2005-2008, `>=2 Mbps` in 2010-2017, and `>=1 Mbps` from 2018 onward.
 - **2010-2014 covers only reporting municipalities** (roughly 4,400-4,500 per year). Municipality-years with exactly 0 across all speed tiers in this window were non-reporting coded as zero in the source and have been removed (see `output/nonreporting_zero_blocks.csv` for the full list). Reporters skew toward larger municipalities, so unweighted means over 2010-2014 describe a selected sample.
 - The 2015 provider change (`method_change_2015`) remains flagged, but after the removal of false zeros the residual break is small: the within-municipality baseline jump from 2014 to 2015 is 1.2 percentage points, and higher-tier jumps are in line with adjacent-year rollout growth. The main effect of 2015 is the return to near-complete municipality coverage, i.e., a composition change.
-- About 700 all-tier-zero municipality-years remain in 2015-2021. Most are persistently zero small municipalities where a genuine zero is plausible; they are retained and listed in `output/nonreporting_zero_blocks.csv` for review.
+- Trailing non-reporting zeros are removed from 2015-2021 (141 municipality-years, mostly gemeindefreie Gebiete dropping from full coverage to 0% at 2021; see `output/nonreporting_zero_blocks_2015_2021.csv`). 422 all-tier-zero municipality-years remain: units that are zero in every observed year (persistently zero, where a genuine zero is plausible) or zero only before their first positive year. These are retained.
 - Step 06 filters 9,948 post-deduplicated long rows, 0.33% of the standardization input, because 122 historical AGS codes cannot be mapped defensibly to Destatis 2021 boundaries (mostly Bavarian unincorporated areas and sub-municipal district codes).
 - Berlin and Hamburg values for 2020-2021 are unweighted means across their 19 Bezirke, because the source reports only Bezirk-level coverage in those years and contains no Bezirk household weights. All underlying Bezirk values lie between 97 and 100, so the approximation error is below 1 percentage point.
 

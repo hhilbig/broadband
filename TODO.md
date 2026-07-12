@@ -2,26 +2,28 @@
 
 ## Current Pipeline Status
 
-- v2.1.0 (July 2026): the public panel gains `tier_baseline`/`tier_gte1`/`tier_gte6`/`tier_gte30` columns recording the speed tier behind each share value. A review found the share columns are filled from the lowest reported tier at or above the named threshold, and the 1/6/30 Mbps tiers are only reported from 2018 (`share_gte6mbps` is >=50 coverage in 2010-2012 and >=16 in 2013-2017; `share_gte30mbps` is >=50 through 2017; gte1/baseline are >=2 through 2017). Codebook corrected; share values unchanged. Four latent code bugs fixed (Paket 3 latin1 fallback, inert regex guard in 02, single-comma replacement, inspection error messages).
-- Main pipeline scripts `00` through `07` have been rerun after the July 2026 AGS recovery fixes and the 2010-2014 non-reporting zero fix.
+- v3.0.0 (July 2026): trailing non-reporting zeros removed from 2015-2021 (141 municipality-years, mostly gemeindefreie Gebiete dropping ~100% -> 0% at 2021; audit `output/nonreporting_zero_blocks_2015_2021.csv`), and NI `03159501` ("Harz, gemeindefreies Gebiet") recovered for 2019-2020 via a relaxed reform fallback. Net: -141 / +2 municipality-years, 1 revised value. Standing release gate added: `src/auxiliary/verification/run_release_checks.R`.
+- v2.1.0 (July 2026): the public panel gains `tier_baseline`/`tier_gte1`/`tier_gte6`/`tier_gte30` columns recording the speed tier behind each share value. The share columns are filled from the lowest reported tier at or above the named threshold, and the 1/6/30 Mbps tiers are only reported from 2018 (`share_gte6mbps` is >=50 coverage in 2010-2012 and >=16 in 2013-2017; `share_gte30mbps` is >=50 through 2017; gte1/baseline are >=2 through 2017). Codebook corrected; share values unchanged. Four latent code bugs fixed.
 - Final public panel: `output/panel_data_public.csv`.
-- Final panel dimensions: 140,232 municipality-year rows, 10,994 Destatis 2021 AGS codes (including Berlin and Hamburg), years 2005-2021 with no 2009 municipality panel.
-- The Destatis 2021 reference is generated reproducibly by `src/main_pipeline/00_build_ags_reference.R` (the previous committed binary lacked Berlin and Hamburg due to a scientific-notation formatting bug).
-- A nearest-year crosswalk fallback in step 06 recovers historical AGS codes delivered under a different boundary vintage than their year label. The residual filter drops 9,948 post-deduplicated long rows (0.33%) covering 122 historical AGS codes.
-- The 2010-2014 non-reporting zero fix removes 33,138 municipality-years that carried exactly 0 across all speed tiers (false zeros from non-reporting). 2010-2014 now covers ~4,400-4,500 reporting municipalities per year. The residual within-municipality 2015 break is 1.2 ppt for the baseline; 98% of the previous 57 ppt jump was the false zeros.
+- Final panel dimensions: 140,093 municipality-year rows, 10,994 Destatis 2021 AGS codes (including Berlin and Hamburg), years 2005-2021 with no 2009 municipality panel.
+- The Destatis 2021 reference is generated reproducibly by `src/main_pipeline/00_build_ags_reference.R`.
+- A nearest-year crosswalk fallback and a relaxed reform fallback in step 06 recover historical AGS codes delivered under a different boundary vintage than their year label. The residual filter drops 9,726 post-deduplicated long rows (0.32%) covering 121 historical AGS codes.
+- The 2010-2014 non-reporting zero fix removes 33,138 municipality-years that carried exactly 0 across all speed tiers (false zeros from non-reporting). 2010-2014 now covers ~4,400-4,500 reporting municipalities per year.
 - Missing higher-speed tiers are preserved as missing values in 2005-2008 rather than filled with zero.
-- Diagnostics: `src/auxiliary/verification/verify_ags_recovery.R` and `src/auxiliary/verification/verify_zero_fix.R`.
+- Diagnostics: `verify_ags_recovery.R`, `verify_zero_fix.R`, and `run_release_checks.R` in `src/auxiliary/verification/`.
 
 ## Follow-Up Plan (drafted 2026-07-11, priority order)
 
-### 1. Case-review the 26 unmapped codes — DONE (2026-07-12)
+### 1. Case-review the 26 unmapped codes — DONE (2026-07-12), NI recovery SHIPPED in v3.0.0
 
 Reviewed against the 2021 reference, reform mappings, and raw source (see `docs/unmapped_ags_documentation.md`, "Case-review outcome"):
 
 - **25 correctly excluded** (24 RP `07932*`/`07935*` + 1 SL `10942115`): all-tier-zero in 2018-2019, absent from the 2021 municipality reference, no reform path, non-standard Regierungsbezirk-digit-9 coding. Documentation updated; no data change.
 - **1 recoverable** (NI `03156501` = "Harz, gemeindefreies Gebiet") -> `03159501`, which is in the 2021 reference. Currently missing from the panel for 2019-2021. Root cause: `resolve_reform_chain` only applies reforms with `reform_year >= source_year`, so the 2016 Osterode->Göttingen reform is skipped for 2018-2021 data carrying the old code. **Fix (value-changing, bundle into the v3.0.0 below):** add a last-resort reform fallback that ignores the year constraint, accepting only unambiguous chains ending in a valid 2021 reference code (analogous to the nearest-year crosswalk fallback). Verify it recovers `03159501` for 2019-2021 and does not perturb any other mapping.
 
-### 2. Retained all-tier-zero municipality-years in 2015-2021 — DIAGNOSED (2026-07-12); treatment decision pending
+### 2. Retained all-tier-zero municipality-years in 2015-2021 — SHIPPED in v3.0.0 (2026-07-12)
+
+Implemented: the recommended rule (drop any 2015-2021 all-tier-zero municipality-year for a unit with prior positive coverage) removed 141 municipality-years; persistent and leading zeros retained (422). Implemented as a drop (consistent with the 2010-2014 non-reporting removal and preserving the "baseline always observed" property) rather than NA-filled rows. Audit: `output/nonreporting_zero_blocks_2015_2021.csv`. Original diagnosis below for reference.
 
 Analyzed from the final panel (563 all-tier-zero municipality-years across 208 municipalities in 2015-2021; the earlier audit-file count of 697/284 is the pre-standardization historical view). Both earlier notes were wrong about the mechanism: it is not "sandwiched"/embedded zeros. Refined classification by full trajectory:
 

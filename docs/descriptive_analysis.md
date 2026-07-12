@@ -2,7 +2,7 @@
 
 This document provides a brief descriptive overview of the harmonized German municipal broadband panel dataset (2005-2021).
 
-Last updated: July 11, 2026 (v2.1.0). Plots were regenerated from `output/panel_data_public.csv`.
+Last updated: July 12, 2026 (v3.0.0). Plots were regenerated from `output/panel_data_public.csv`.
 
 ## Data quality notes
 
@@ -13,11 +13,12 @@ This dataset has known limitations that users should be aware of:
 1. **Methodological breaks**: the 2010 baseline definition change, tier changes at 2013 and 2018, and the 2015 provider change affect comparability across years (see below)
 2. **Missing years and tiers**: 2009 is absent from the municipality panel; 2005-2008 only report the historical baseline tier; the 1, 6, and 30 Mbps tiers are only reported from 2018, so before then the higher-tier share columns are measured at stricter tiers (recorded in the `tier_*` columns)
 3. **2010-2014 covers only reporting municipalities** (~4,400-4,500 per year, skewed toward larger municipalities); non-reporting municipalities coded as zero were removed in v2.0.0
-4. **Filtered observations**: Step 06 filters 9,948 post-deduplicated long rows (0.33%) covering 122 historical AGS codes that cannot be mapped to Destatis 2021 boundaries (see [unmapped_ags_documentation.md](unmapped_ags_documentation.md) for details)
+4. **Trailing non-reporting zeros removed (2015-2021)**: 141 municipality-years, mostly gemeindefreie Gebiete dropping from full coverage to 0% at 2021, were removed in v3.0.0 (`output/nonreporting_zero_blocks_2015_2021.csv`); persistent and leading zeros are retained
+5. **Filtered observations**: Step 06 filters 9,726 post-deduplicated long rows (0.32%) covering 121 historical AGS codes that cannot be mapped to Destatis 2021 boundaries (see [unmapped_ags_documentation.md](unmapped_ags_documentation.md) for details)
 
 ### If using prior data
 
-If you previously used this dataset, please re-download and see [CHANGELOG.md](../CHANGELOG.md). Highlights: v2.0.0 removed ~33,000 false-zero municipality-years in 2010-2014, added Berlin and Hamburg, and recovered previously unmapped municipalities; v2.1.0 added the `tier_*` columns that record the speed tier behind each share value and corrected codebook errors.
+If you previously used this dataset, please re-download and see [CHANGELOG.md](../CHANGELOG.md). Highlights: v2.0.0 removed ~33,000 false-zero municipality-years in 2010-2014, added Berlin and Hamburg, and recovered previously unmapped municipalities; v2.1.0 added the `tier_*` columns that record the speed tier behind each share value and corrected codebook errors; v3.0.0 removed 141 trailing non-reporting zeros in 2015-2021 and recovered one further unit.
 
 ## Discontinuous changes in the data
 
