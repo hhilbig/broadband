@@ -15,7 +15,7 @@ set.seed(20260712)
 # variables named in the getenv() calls. Every other check encodes a structural
 # invariant that must hold regardless of version.
 
-expected_rows <- as.integer(Sys.getenv("RELEASE_EXPECTED_ROWS", unset = "140232"))
+expected_rows <- as.integer(Sys.getenv("RELEASE_EXPECTED_ROWS", unset = "140093"))
 expected_ags  <- as.integer(Sys.getenv("RELEASE_EXPECTED_AGS", unset = "10994"))
 expected_years <- c(2005:2008, 2010:2021) # no 2009 municipality panel
 

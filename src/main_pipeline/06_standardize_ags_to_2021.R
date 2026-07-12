@@ -17,6 +17,7 @@ supplementary_mapping_detail_file <- here("output", "missing_ags_to_2021_mapping
 nearest_year_fallback_detail_file <- here("output", "nearest_year_fallback_mapping.rds")
 unmapped_ags_file <- here("output", "unmapped_ags_for_review.csv")
 nonreporting_zero_blocks_file <- here("output", "nonreporting_zero_blocks.csv")
+trailing_zero_blocks_file <- here("output", "nonreporting_zero_blocks_2015_2021.csv")
 
 valid_ags_pattern <- "^(0[1-9]|1[0-6])\\d{6}$"
 
@@ -151,7 +152,8 @@ build_master_crosswalk <- function() {
         distinct()
 }
 
-resolve_reform_chain <- function(start_ags, source_year, reform_mappings, destatis_ags, max_hops = 25) {
+resolve_reform_chain <- function(start_ags, source_year, reform_mappings, destatis_ags,
+                                 max_hops = 25, min_reform_year = source_year) {
     current_ags <- start_ags
     path <- current_ags
 
@@ -168,7 +170,7 @@ resolve_reform_chain <- function(start_ags, source_year, reform_mappings, destat
     for (hop in seq_len(max_hops)) {
         candidates <- reform_mappings %>%
             filter(old_ags == current_ags,
-                   reform_year >= source_year,
+                   reform_year >= min_reform_year,
                    reform_year <= 2021) %>%
             arrange(reform_year, new_ags)
 
@@ -223,7 +225,8 @@ resolve_reform_chain <- function(start_ags, source_year, reform_mappings, destat
     )
 }
 
-build_supplementary_crosswalk <- function(ags_not_in_crosswalk, destatis_ags, master_crosswalk) {
+build_supplementary_crosswalk <- function(ags_not_in_crosswalk, destatis_ags, master_crosswalk,
+                                          positive_coverage_ags = character()) {
     # (1) Nearest-year crosswalk fallback. Some source deliveries carry AGS codes
     # from a different boundary vintage than the year label (e.g. Sachsen-Anhalt
     # 2005/2006 files use post-2007-Kreisreform codes), so the (AGS, year) join
@@ -327,6 +330,7 @@ build_supplementary_crosswalk <- function(ags_not_in_crosswalk, destatis_ags, ma
 
     if (!file.exists(reform_mapping_file)) {
         reform_crosswalk <- tibble()
+        relaxed_crosswalk <- tibble()
         reform_details <- tibble(
             old_ags = character(),
             final_ags_2021 = character(),
@@ -368,6 +372,49 @@ build_supplementary_crosswalk <- function(ags_not_in_crosswalk, destatis_ags, ma
                 source = "gebietsreformen_chain"
             ) %>%
             distinct()
+
+        # (5) Relaxed reform fallback. Some 2018-2021 deliveries carry a
+        # pre-reform legacy code whose reform predates the data year (e.g. NI
+        # 03156501 "Harz, gemeindefreies Gebiet" under the pre-2016 Osterode
+        # Kreis code, folded into Landkreis Göttingen in 2016). The constrained
+        # pass above skips these because reform_year < source_year. Retry the
+        # still-unmapped codes ignoring the lower year bound, accepting only
+        # unambiguous chains that terminate in a valid 2021 reference code (the
+        # ambiguity, cycle, and terminate-in-reference guards in
+        # resolve_reform_chain still apply). Restrict to codes that carry actual
+        # coverage: an all-zero legacy code (e.g. an unpopulated gemeindefreies
+        # Gebiet) carries no data to recover, and folding it into a populated
+        # successor would inject a spurious non-reporting zero into a real unit.
+        still_unmapped <- reform_details %>%
+            filter(status != "mapped") %>%
+            filter(old_ags %in% positive_coverage_ags) %>%
+            distinct(old_ags, source_year)
+
+        if (nrow(still_unmapped) > 0) {
+            relaxed_details <- pmap_dfr(
+                list(still_unmapped$old_ags, still_unmapped$source_year),
+                ~ resolve_reform_chain(..1, ..2, reform_mappings, destatis_ags,
+                                       min_reform_year = -Inf) %>%
+                    mutate(source_year = ..2)
+            )
+        } else {
+            relaxed_details <- reform_details[0, ]
+        }
+
+        relaxed_crosswalk <- relaxed_details %>%
+            filter(!is.na(final_ags_2021), status == "mapped") %>%
+            transmute(
+                AGS_hist_cw = old_ags,
+                year_hist_cw = source_year,
+                AGS_2021 = final_ags_2021,
+                transition_share = 1.0,
+                population_weight = 1.0,
+                source = "gebietsreformen_chain_relaxed"
+            ) %>%
+            distinct()
+
+        reform_crosswalk <- bind_rows(reform_crosswalk, relaxed_crosswalk)
+        reform_details <- bind_rows(reform_details, relaxed_details %>% filter(status == "mapped"))
     }
 
     mapped_details <- reform_details %>%
@@ -386,7 +433,8 @@ build_supplementary_crosswalk <- function(ags_not_in_crosswalk, destatis_ags, ma
 
     saveRDS(
         supplementary_crosswalk %>%
-            filter(source %in% c("gebietsreformen_chain", "crosswalk_nearest_year", "bezirk_to_city_unweighted")) %>%
+            filter(source %in% c("gebietsreformen_chain", "gebietsreformen_chain_relaxed",
+                                 "crosswalk_nearest_year", "bezirk_to_city_unweighted")) %>%
             distinct(AGS_hist = AGS_hist_cw, AGS_2021, source),
         supplementary_crosswalk_file
     )
@@ -395,7 +443,10 @@ build_supplementary_crosswalk <- function(ags_not_in_crosswalk, destatis_ags, ma
                 "covering", n_distinct(fallback_crosswalk$AGS_hist_cw), "unique AGS"))
     print(paste("Supplementary Bezirk-to-city AGS-year mappings:", nrow(bezirk_crosswalk)))
     print(paste("Supplementary stable 1:1 AGS-year mappings:", nrow(stable_crosswalk)))
-    print(paste("Supplementary reform-chain AGS-year mappings:", nrow(reform_crosswalk)))
+    print(paste("Supplementary constrained reform-chain AGS-year mappings:",
+                nrow(reform_crosswalk) - nrow(relaxed_crosswalk)))
+    print(paste("Supplementary relaxed reform-chain AGS-year mappings:", nrow(relaxed_crosswalk),
+                "covering", n_distinct(relaxed_crosswalk$AGS_hist_cw), "unique AGS"))
 
     supplementary_crosswalk
 }
@@ -545,7 +596,13 @@ ags_not_in_crosswalk <- broadband_ags_years %>%
 
 print(paste("AGS-year combinations not covered by official crosswalk:", nrow(ags_not_in_crosswalk)))
 
-supplementary_crosswalk <- build_supplementary_crosswalk(ags_not_in_crosswalk, destatis_ags, master_crosswalk)
+# Historical codes that carry at least one positive coverage value; the relaxed
+# reform fallback is restricted to these so all-zero legacy codes are not folded
+# into populated successors.
+positive_coverage_ags <- bb_data_hist %>% filter(value > 0) %>% distinct(AGS) %>% pull(AGS)
+
+supplementary_crosswalk <- build_supplementary_crosswalk(ags_not_in_crosswalk, destatis_ags,
+                                                         master_crosswalk, positive_coverage_ags)
 
 crosswalk_for_join <- bind_rows(crosswalk_renamed, supplementary_crosswalk) %>%
     distinct(AGS_hist_cw, year_hist_cw, AGS_2021, transition_share, population_weight, source)
@@ -641,6 +698,43 @@ standardized_data <- joined_data %>%
             TRUE ~ value
         )
     )
+
+# --- Trailing non-reporting zeros (2015-2021) ---
+# On 2021 boundaries, a group of units (predominantly gemeindefreie Gebiete /
+# forests) report positive coverage through an earlier year and then exactly 0
+# across all tiers in a later year, overwhelmingly a 100% -> 0% drop at 2021.
+# Coverage does not physically vanish, so an all-tier-zero municipality-year in
+# 2015-2021 for a unit that had positive coverage in an EARLIER year is treated
+# as non-reporting and removed (mirrors the 2010-2014 zero fix, but assessed on
+# 2021 boundaries because the pattern is created by post-standardization units).
+# Units that are zero in every observed year (persistent, plausibly genuine, and
+# leading zeros before a unit's first positive year) are retained.
+ay_max_std <- standardized_data %>%
+    group_by(AGS, year) %>%
+    summarise(year_max = max(value), .groups = "drop")
+
+first_positive_year <- ay_max_std %>%
+    filter(year_max > 0) %>%
+    group_by(AGS) %>%
+    summarise(first_pos_year = min(year), .groups = "drop")
+
+trailing_zero_candidates <- ay_max_std %>%
+    filter(year >= 2015, year_max == 0) %>%
+    left_join(first_positive_year, by = "AGS") %>%
+    mutate(dropped = !is.na(first_pos_year) & year > first_pos_year) %>%
+    arrange(AGS, year)
+
+trailing_zero_drop <- trailing_zero_candidates %>% filter(dropped) %>% select(AGS, year)
+
+write_csv(trailing_zero_candidates, trailing_zero_blocks_file)
+
+standardized_data <- standardized_data %>% anti_join(trailing_zero_drop, by = c("AGS", "year"))
+
+print(paste("Trailing non-reporting zeros dropped (2015-2021):", nrow(trailing_zero_drop),
+            "municipality-years across", n_distinct(trailing_zero_drop$AGS), "units."))
+print(paste("Retained all-tier-zero municipality-years (2015-2021, persistent/leading):",
+            sum(!trailing_zero_candidates$dropped), "- see", basename(trailing_zero_blocks_file)))
+print(trailing_zero_drop %>% count(year), n = 20)
 
 out_of_bounds <- standardized_data %>%
     filter(value < 0 | value > 100 | is.na(value))
