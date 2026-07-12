@@ -21,11 +21,18 @@ Reviewed against the 2021 reference, reform mappings, and raw source (see `docs/
 - **25 correctly excluded** (24 RP `07932*`/`07935*` + 1 SL `10942115`): all-tier-zero in 2018-2019, absent from the 2021 municipality reference, no reform path, non-standard Regierungsbezirk-digit-9 coding. Documentation updated; no data change.
 - **1 recoverable** (NI `03156501` = "Harz, gemeindefreies Gebiet") -> `03159501`, which is in the 2021 reference. Currently missing from the panel for 2019-2021. Root cause: `resolve_reform_chain` only applies reforms with `reform_year >= source_year`, so the 2016 Osterode->Göttingen reform is skipped for 2018-2021 data carrying the old code. **Fix (value-changing, bundle into the v3.0.0 below):** add a last-resort reform fallback that ignores the year constraint, accepting only unambiguous chains ending in a valid 2021 reference code (analogous to the nearest-year crosswalk fallback). Verify it recovers `03159501` for 2019-2021 and does not perturb any other mapping.
 
-### 2. Classify the 697 retained all-tier-zero municipality-years in 2015-2021 (needs a decision before any change)
+### 2. Retained all-tier-zero municipality-years in 2015-2021 — DIAGNOSED (2026-07-12); treatment decision pending
 
-Correction to the earlier note: the audit file does not support "~150 sandwiched between high-coverage years". Only 3 of the 697 kept blocks have positive coverage in both adjacent years (none above 20%); 180 have one positive neighbor, which is consistent with normal rollout starts. The 697 blocks cover 284 municipalities; only 7 are persistently zero in 5+ years.
+Analyzed from the final panel (563 all-tier-zero municipality-years across 208 municipalities in 2015-2021; the earlier audit-file count of 697/284 is the pre-standardization historical view). Both earlier notes were wrong about the mechanism: it is not "sandwiched"/embedded zeros. Refined classification by full trajectory:
 
-Plan: classify each of the 284 municipalities by full coverage trajectory (not just +/-1 year): (a) zeros embedded anywhere inside an otherwise high-coverage trajectory -> likely non-reporting; (b) leading zeros before first observed rollout -> plausible genuine; (c) persistently or near-persistently zero -> check municipality size (tiny units can genuinely have 0% fixed-line coverage). Produce a classification table, then decide treatment per class (drop vs set NA vs keep) - value-changing, so v3.0.0 territory. Discuss the rule before implementing.
+- **trailing_zero: 114 municipalities** — had positive coverage, then dropped to exactly 0 in a later year (overwhelmingly 100% through 2020 -> 0 in 2021). Almost all are gemeindefreie Gebiete (names "gemfr. Gebiet", "Forstgutsbez.", "...Forst", "...Wald"). This is the false-zero residual: coverage does not physically vanish, so the 2021 zero is a reporting dropout. 75% of all 208 affected units are named as gemeindefreie Gebiete/Forst/Wald/Gutsbezirk; 115 of the 204 all-tier-zero cases in 2021 had positive coverage in a prior year.
+- **persistent_zero: 89** — 0 in every observed year; gemeindefreie Gebiete forests where a genuine zero is plausible (or arguably not populated units at all).
+- **embedded_zero: 4** (7 municipality-years) — positive before and after a zero; cleanest false zeros (Schöningen gemfr. Gebiet, Enzen, Scheitenkorb, Scheiditz).
+- **leading_zero: 1** — negligible.
+
+Classification script: `scratchpad/zero_refine.R` (promote to `src/auxiliary/verification/` when the v3.0.0 work lands).
+
+**Treatment decision needed (value-changing, v3.0.0):** recommended rule = set to NA (non-reporting) any 2015-2021 all-tier-zero municipality-year for a unit that had positive coverage in an earlier year (covers the 114 trailing + 4 embedded = ~119 units); leave persistent zeros as genuine. Alternative: also drop persistent-zero gemeindefreie Gebiete. Confirm the rule before implementing.
 
 ### 3. Standing verification script (cheap insurance; do with the next release)
 
