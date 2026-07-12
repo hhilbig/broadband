@@ -33,13 +33,20 @@ The remaining **122 unique historical AGS codes** (9,948 rows) are saved in `out
 | State code | Unique AGS | Rows | Assessment |
 |------------|------------|------|------------|
 | 09 Bayern | 63 | 5,241 | Gemeindefreie Gebiete (unincorporated areas, pattern `xxxxx444`); no 2021 municipality equivalent, correctly excluded |
-| 07 Rheinland-Pfalz | 24 | 2,016 | Case review pending |
+| 07 Rheinland-Pfalz | 24 | 2,016 | Non-municipal codes (`07932*`, `07935*`), all-tier-zero in the 2018-2019 source, absent from the Destatis 2021 municipality reference with no reform path; correctly excluded (see case-review note below) |
 | 11 Berlin | 12 | 348 | 2019 Bezirk rows; city-level 2019 data already covers Berlin, so these are deliberately not aggregated |
 | 05 Nordrhein-Westfalen | 9 | 1,179 | Köln Stadtbezirke (`05315001-05315009`); parent city already covered, mapping skipped to avoid blending sub-municipal with city values |
 | 02 Hamburg | 7 | 203 | 2019 Bezirk rows; city-level 2019 data already covers Hamburg |
 | 04 Bremen | 5 | 655 | Bremen Stadtteile (`04011001-04011005`); parent city already covered, mapping skipped |
-| 03 Niedersachsen | 1 | 222 | Case review pending |
-| 10 Saarland | 1 | 84 | Case review pending |
+| 03 Niedersachsen | 1 | 222 | `03156501` = "Harz (Landkreis Osterode), gemeindefreies Gebiet". Recoverable: maps to `03159501` ("Harz (Landkreis Göttingen), gemfr. Geb."), which is in the 2021 reference. Currently excluded (see case-review note); flagged for recovery in a future major release |
+| 10 Saarland | 1 | 84 | Non-municipal code (`10942115`), all-tier-zero in the 2018-2019 source, absent from the 2021 reference with no reform path; correctly excluded |
+
+### Case-review outcome (2026-07-12)
+
+The 26 codes previously marked "case review pending" (24 Rheinland-Pfalz, 1 Niedersachsen, 1 Saarland) were reviewed against the Destatis 2021 reference, the reform mappings, and the raw source:
+
+- **25 codes correctly excluded** (24 RP + 1 SL). All carry exactly zero across every speed tier in both 2018 and 2019, are absent from the Destatis 2021 municipality reference, and have no reform mapping to any 2021 code. They share the non-standard Regierungsbezirk digit `9` (`07-9-32`, `07-9-35`, `10-9-42`) that the Destatis municipality scheme does not use for these as municipalities, consistent with non-municipal/special territories in the source delivery. Excluding them loses only zeros.
+- **1 code genuinely recoverable** (NI `03156501`). The source labels it "Gemeindefreies Gebiet, Harz (Landkreis Osterode)"; it uses the pre-2016 Osterode Kreis code (`03156`) that the 2016 Kreis reform folded into Landkreis Göttingen (`03159`). It carries real coverage (baseline ~100%, `>=30 Mbps` in the 20-50% range) for 2018-2021 and maps unambiguously to `03159501` ("Harz (Landkreis Göttingen), gemfr. Geb."), which **is** in the 2021 reference. The reform-chain fallback in step 06 misses it because `resolve_reform_chain` only applies reforms with `reform_year >= source_year`, and here the reform (2016) predates the data year (2018-2021). As a result `03159501` is present in the panel for 2013-2018 (reported under the new code in Paket 1) but **missing for 2019-2021** (reported only under the old code in Paket 2/3). Recovering it requires relaxing the reform-chain year constraint for legacy codes; because it adds municipality-years and revises the 2018 aggregation, it changes published values and is deferred to the next major release (see `TODO.md`).
 
 ## Decision: Filter the Residual
 
@@ -60,5 +67,5 @@ The 122 residual codes are filtered in `06_standardize_ags_to_2021.R` because:
 
 ## Future Improvements
 
-- Review the 26 case-review codes (Rheinland-Pfalz, Niedersachsen, Saarland).
+- Recover NI `03156501` -> `03159501` by relaxing the reform-chain year constraint for legacy codes (value-changing; deferred to the next major release). The other 25 case-review codes are confirmed correctly excluded.
 - If external Bezirk household or population data are added, the 2020-2021 Berlin/Hamburg unweighted Bezirk aggregation can be upgraded to a weighted mean.

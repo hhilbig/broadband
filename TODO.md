@@ -14,9 +14,12 @@
 
 ## Follow-Up Plan (drafted 2026-07-11, priority order)
 
-### 1. Case-review the 26 unmapped codes (small, bounded; do first)
+### 1. Case-review the 26 unmapped codes — DONE (2026-07-12)
 
-24 Rheinland-Pfalz codes (2,016 rows), 1 Niedersachsen (222), 1 Saarland (84) in `output/unmapped_ags_for_review.csv`. Look each up in the Destatis Gemeindeverzeichnis (GV-ISys) to identify what the code was and whether a defensible 2021 mapping exists (Rheinland-Pfalz had several Verbandsgemeinde reforms in 2014-2020; the codes may be VG-level or dissolved-municipality codes with clean successors). If mappable, extend `data/gebietsreformen/combined_reform_mappings.rds`; adding constituents to existing weighted means changes values, so recovery ships as a major version (bundle with item 2). If not mappable, document them as correctly excluded in `docs/unmapped_ags_documentation.md` (patch release).
+Reviewed against the 2021 reference, reform mappings, and raw source (see `docs/unmapped_ags_documentation.md`, "Case-review outcome"):
+
+- **25 correctly excluded** (24 RP `07932*`/`07935*` + 1 SL `10942115`): all-tier-zero in 2018-2019, absent from the 2021 municipality reference, no reform path, non-standard Regierungsbezirk-digit-9 coding. Documentation updated; no data change.
+- **1 recoverable** (NI `03156501` = "Harz, gemeindefreies Gebiet") -> `03159501`, which is in the 2021 reference. Currently missing from the panel for 2019-2021. Root cause: `resolve_reform_chain` only applies reforms with `reform_year >= source_year`, so the 2016 Osterode->Göttingen reform is skipped for 2018-2021 data carrying the old code. **Fix (value-changing, bundle into the v3.0.0 below):** add a last-resort reform fallback that ignores the year constraint, accepting only unambiguous chains ending in a valid 2021 reference code (analogous to the nearest-year crosswalk fallback). Verify it recovers `03159501` for 2019-2021 and does not perturb any other mapping.
 
 ### 2. Classify the 697 retained all-tier-zero municipality-years in 2015-2021 (needs a decision before any change)
 
