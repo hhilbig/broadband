@@ -97,3 +97,7 @@ All share variables are percentages on the 0-100 scale.
 The original data come from the Breitbandatlas / Gigabit-Grundbuch. When using this harmonized dataset, cite the original source and make clear that the data have been modified and harmonized.
 
 Original source: Breitbandatlas | Gigabit-Grundbuch (<https://gigabitgrundbuch.bund.de>)
+
+## License
+
+The code is MIT licensed (see [LICENSE](LICENSE)). The harmonized panel is released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The Federal Network Agency (Bundesnetzagentur) permits use of the Breitbandatlas data on the condition that the source is named, so any use must also cite "Breitbandatlas | Gigabit-Grundbuch (https://gigabitgrundbuch.bund.de)".
